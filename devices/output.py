@@ -22,6 +22,9 @@ class Output:
         self.data_path = data_path
         self.save_extension = save_extension
 
+    def __str__(self):
+        pass
+
     def analyze(self):
         operation = 2+2
 

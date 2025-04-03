@@ -54,6 +54,9 @@ class Device:
         self.name = name
         self.device_outputs = {}
 
+    def __str__(self):
+        pass
+
     def analyze(self, save_bool=True):
         for output in self.device_outputs:
             output_save_path = os.path.join(self.analysis_save_path, output, output.extension)
@@ -63,7 +66,7 @@ class Device:
                 output.save_analysis(output_save_path)
 
     def _scrape(self):
-        """Locates data at the specified path"""
+        """Locates data at the specified path and extracts the data as appropriate"""
 
 
 
