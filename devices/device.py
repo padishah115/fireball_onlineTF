@@ -1,31 +1,13 @@
 #Module imports
 import os
+import sys
 
-#Homebrew output 
-from output import Output
+#Homebrew output class
+from devices.output import Output
 
 ##########################
 # DIAGNOSTICS BASE CLASS #
 ##########################
-
-#Sample device_outputs
-
-Temp1 = Output(
-    name="Temp1",
-    data_path="/path/to/temp1/data",
-    save_extension=".csv"
-)
-
-Temp2 = Output(
-    name="Temp2",
-    data_path="/path/to/temp2/data",
-    save_extension=".csv"
-)
-
-device_outputs = {
-    "Temperature_1" : Temp1,
-    "Temperature_2" : Temp2
-}
 
 class Device:
     """Parent class for all diagnostic devices on FIREBALL-III.
@@ -34,46 +16,42 @@ class Device:
     ----------
         name : str
             The name of the device.
-        device_outputs : dict[Output]
-            Dictionary of all diagnostics output by the device.
-        data_source_path : str
-            Path where we want to 
-        analysis_save_path : str
+        device_outputs : list[Output]
+            List of all diagnostics outputs from the device.
 
+    Methods
+    -------
     
     """
 
-    def __init__(self, name:str, data_path:str):
+    def __init__(self, device_name:str, outputs:list[Output]):
         """
         Parameters
         ----------
-            name : str
-                The name of the diagnostic
-                    """
+            device_name : str
+                The name of the diagnostic device.
+            outputs : list
+                List of all device outputs
+
+        """
         
-        self.name = name
-        self.device_outputs = {}
+        self.device_name = device_name
+        self.outputs = outputs
 
-    def __str__(self):
-        pass
+    def __repr__(self):
+        return f"{self.name} (Device Object)"
 
-    def analyze(self, save_bool=True):
-        for output in self.device_outputs:
-            output_save_path = os.path.join(self.analysis_save_path, output, output.extension)
+    def get_outputs(self):
+        """Returns list of outputs from the device"""
+        print(f"Outputs from {self.device_name}", self.outputs)
+
+    def call_analysis(self):
+        """Calls all relevant analysis on the device outputs"""
+        
+        #Loop through all of the device's outputs and call their analyze functions one-by-one
+        for output in self.outputs:
+            print(f"Calling analysis for {output} from {self.device_name}...")
             output.analyze()
 
-            if save_bool:
-                output.save_analysis(output_save_path)
-
-    def _scrape(self):
-        """Locates data at the specified path and extracts the data as appropriate"""
 
 
-
-
-
-class FaradayProbe(Device):
-    """Class for """
-
-    def __init__(self, name, data_path:str, ):
-        super.__init__(name)
