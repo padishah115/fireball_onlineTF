@@ -18,7 +18,7 @@ import pandas as pd
 
 class Output:
 
-    def __init__(self, shot_no, device_name, output_name, data_path):
+    def __init__(self, shot_no:int, device_name:str, output_name:str, data_path:str):
         """
         Parameters 
         ----------
@@ -58,8 +58,20 @@ class Output:
 class Image(Output):
     """Class for outputs that take the form of images."""
 
-    def __init__(self, shot_no, device_name, output_name, data_path):
-        """"""
+    def __init__(self, shot_no:int, device_name:str, output_name:str, data_path:str):
+        """
+            shot_no : int
+                The shot number corresponding to the image output- which shot is the image coming from?
+            device_name : str
+                The name of the parent device that the image output is being passed to. Note
+                that, due to the fact that multiple instruments pass images as outputs, it's necessary to 
+                specify the camera name.
+            output_name : str
+                The name of the image output- what exactly are we looking at?
+            data_path : str
+                Path to the raw image data.
+        
+        """
 
         # INITIALIZE BASE CLASS
         super().__init__(shot_no, device_name, output_name, data_path)

@@ -22,6 +22,11 @@ class Device:
 
     Methods
     -------
+        get_outputs()
+            Prints a list of all the outputs associated with the device.
+        call_analysis()
+            Iterates through all outputs assigned to the device, and calls the .analyze() methods
+            on each of those outputs.
     
     """
 
@@ -41,8 +46,9 @@ class Device:
         # INTIALIZE BASIC DEVICE PARAMETERS #
         #####################################
 
-        # NAME
+        # NAME AND SHOT NUMBER OF DEVICE. 
         self.device_name = device_name
+        # RECALL THAT WE ARE CREATING SEPARATE DEVICE OBJECTS FOR EACH SHOT
         self.shot_no = shot_no
         
         # OUTPUTS FOR THE SHOT
@@ -51,7 +57,6 @@ class Device:
 
     def __repr__(self):
         return f"{self.device_name} (Device Object)"
-    
 
     def get_outputs(self):
         """Returns list of outputs from the device for the shot."""
@@ -64,7 +69,7 @@ class Device:
         # Loop through all of the device's outputs and call their analyze functions one-by-one
         for output in self.outputs:
             print(f"Calling analysis for {output} from {self.device_name}...")
-            output.analyze()
+            output.analyze() # CALL .analyze() METHOD ON ALL OUTPUTS
 
 
 

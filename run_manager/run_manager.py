@@ -27,14 +27,14 @@ from run_manager.paths import *
 class RunManager:
     """Manages the run during data collection."""
 
-    def __init__(self, devices:List[Device], shots, plots):
+    def __init__(self, devices:List[Device], shots:List[int], plots:bool):
         """
         
         Parameters
         ----------
-            devices : list[Device]
+            devices : List[Device]
                 List of devices that we want to gather diagnostic information from.
-            shots : list[int]
+            shots : List[int]
                 List of shots that we are interested in collecting data for.
             plots : bool
                 Boolean determining whether we are interested in plotting/visualizing data during analysis.

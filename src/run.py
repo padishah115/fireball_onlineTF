@@ -1,4 +1,6 @@
-#SCRIPT TO TEST IMPLEMENTATION OF RUN MANAGER
+###################
+# MAIN RUN SCRIPT #
+###################
 
 #Module imports
 import os
@@ -31,7 +33,7 @@ def main():
         plots=plots
     )
 
-    #Execute the run
+    #Execute the run!
     myManager.run()
 
 
