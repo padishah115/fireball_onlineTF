@@ -1,6 +1,7 @@
 #################################################################################
 # INPUT FILE CONTAINING ALL PATHS TO ALL DATA FOR ALL INSTRUMENTS FOR ALL SHOTS #
 #################################################################################
+# eventually will need to develop a script that can build this for us using a master .csv file
 
 # FARADAY PROBE 1
 FP1_efield_data_paths = {

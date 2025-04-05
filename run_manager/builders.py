@@ -37,7 +37,7 @@ class Builder():
 class ProbeBuilder(Builder):
     """Class responsible for building Faraday or Bdot Probe device objects for the desired shot numbers at run time."""
 
-    def __init__(self, shots:List[int], device_name:str, efield_data_paths:Dict[int, str]):
+    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str]):
         """
         Parameters
         ----------
@@ -58,7 +58,7 @@ class ProbeBuilder(Builder):
         self.device_name = device_name
 
         # ASSIGN DATA PATH- HERE, THIS WILL BE E_FIELD DATA
-        self.efield_data_paths = efield_data_paths
+        self.efield_data_paths = data_paths_dict
 
         # OVERRIDE PARENT BUILDER CLASS' _build() METHOD
         self._build = self._build_probe
@@ -133,12 +133,12 @@ class ProbeBuilder(Builder):
 class CamBuilder(Builder):
     """Builder class for cameras, which produce image outputs."""
     
-    def __init__(self, shots:List[int], camera_name:str, image_data_paths:Dict[int, str]):
+    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str]):
         """
         Parameters
         ----------
             shots : List[int]
-            camera_name : str
+            device_name : str
             image_data_paths : Dict[int, str]
         
         """
@@ -147,10 +147,10 @@ class CamBuilder(Builder):
         super().__init__(shots = shots)
 
         # MULTIPLE CAMERAS EXIST ON THE EXPERIMENT, SO WE NEED TO SPECIFY THE CAMERA NAME RIGHT OFF THE BAT
-        self.camera_name = camera_name
+        self.camera_name = device_name
 
         # ASSIGN DATA PATHS- HERE, THESE ARE PATHS TO IMAGES
-        self.image_data_paths = image_data_paths
+        self.image_data_paths = data_paths_dict
 
         # OVERRIDE EMPTY ._build() METHOD FROM PARENT BUILDER CLASS
         self._build = self._build_camera

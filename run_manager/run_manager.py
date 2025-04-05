@@ -44,46 +44,61 @@ class RunManager:
         # INITIALIZE LIST OF DEVICES WE WANT TO SCRAPE DATA FROM
         self.devices = devices
 
-        # INITIALIZE LIST OF SHOTS FOR WHICH WE ARE INTERESTED IN FOR THESE DEVICES
+        # INITIALIZE LIST OF SHOTS FOR WHICH WE ARE INTERESTED IN DATA FROM THESE DEVICES
         self.shots = shots
 
         # PLOT BOOLEAN- DO WE WANT TO ACTUALLY VISUALIZE THE DATA?
         self.plots = plots
+
+        #  The following might be a bit difficult to understand at first, so take a look at the self.run() function of the RunManager class below,
+        # and then come back here to get a better feel for why we need these dictionaries. Broadly, these dictionaries allow us to significantly
+        # clean up the self.run() function by allowing us to mostly ignore which specific device is being called as the self.run() function
+        # iterates through the self.devices list. Therefore, we don't have to specify whether we need CamBuilder or Probebuilder etc., as these
+        # dictionaries below will take a look at the device name at the beginning of self.run(), and then provide us with the appropriate Builder OR 
+        # the appropriate paths_dictionary.
+        # Remember that the paths_dictionary is the dictionary containing the paths to all data for a specific device across all shots.
+
+        # BUILDER DICTIONARY: 
+        self.builder_key : Dict[str, Builder]= {
+            "Faraday Probe" : ProbeBuilder,
+            "HRM3" : CamBuilder
+        }
+
+        # DICTIONARY OF PATHS DICTIONARIES (dictionary squared)
+        self.paths_key : Dict[str, Dict[int, str]] = {
+            "Faraday Probe" : FP1_efield_data_paths,
+            "HRM3" : HRM3_image_data_paths
+        }
+
     
-    
-    def run(self,):
-        """Controls the actions of the RunManager at run time, building appropriate device objects for devices of interest at specified shot numbers."""
+    def run(self):
+        """Controls the actions of the RunManager at run time, building appropriate dictionaries of  objects for devices of interest at 
+        specified shot numbers."""
+
+        #  ITERATE OVER ALL SPECIFIED DEVICES, AND THEN CALL BUILDER FUNCTIONS TO CONSTRUCT DEVICE OBJECTS AT THE CORRECT
+        # SHOT NUMBERS
+        for device in self.devices:
+
+            # GET DEVICE NAME AS STRING
+            device_name = device
+
+            # CREATE ALIAS "device_builder" FOR THE SPECIFIC DEVICE BUILDER CLASS- this could be CamBuilder or ProbeBuilder, etc.
+            device_builder = self.builder_key[device]
+
+            # GET THE DATA PATHS DICTIONARY FOR THE DEVICE- this is the dictionary of the form {SHOT NO : /path/to/device/data/for/shot_no}
+            data_paths_dict = self.paths_key[device]
+
+            # CONSTRUCT INSTANCE OF THE DEVICE BUILDER CLASS, e.g. builder_instance = CamBuilder(shots=...)
+            builder_instance = device_builder(shots=self.shots, device_name=device_name, data_paths_dict=data_paths_dict)
+            
+            #  RECEIVE DICTIONARY OF THE DEVICE OBJECTS FOR ALL SPECIFIED SHOTS, FORM {SHOT NO : DEVICE}
+            devices_objs = builder_instance.builds() #THIS COULD BE A DICTIONARY OF PROBES AT DIFFERENT SHOTS, OR OF HRM3 CAMS AT DIFFERENT SHOTS
+
+            # IF PLOTS=TRUE, ITERATE OVER DEVICE OBJECTS IN THE devices_obj DICTIONARY AND CALL THE ANALYSIS METHOD
+            if self.plots:
+                for _, device in devices_objs.items():
+                    device.call_analysis()
         
-        if "Faraday Probe" in self.devices:
-            
-            device_name = "Faraday Probe"
-
-            #! WARNING- THIS HARDCODED DICTIONARY _MUST_ BE REMOVED AT SOME POINT !
-            
-            # INITIALIZE PROBEBUILDER OBJECT, WHICH CONTROLS CONSTRUCTION OF FARADAY PROBE OBJECTS
-            probe_builder = ProbeBuilder(shots=self.shots, device_name=device_name, efield_data_paths=FP1_efield_data_paths)
-            
-            # GET A DICTIONARY OF FARADAY PROBES OF FORM {SHOT_NO : PROBE OBJECT}
-            self.faraday_probes = probe_builder.builds()
-
-            if self.plots:
-                for _, faraday_probe in self.faraday_probes.items():
-                    faraday_probe.call_analysis()
-
-        if "HRM3" in self.devices:
-
-            # CAM NAME
-            camera_name = "HRM3"
-
-            #INITIALIZE CAMERABUILDER OBJECT, WHICH CONTROLS CONSTRUCTION OF HRM3 OBJECTS
-            hrm3_builder = CamBuilder(shots=self.shots, camera_name=camera_name, image_data_paths=HRM3_image_data_paths)
-
-            # GET A DICTIONARY OF CAMERAS OF FORM {SHOT_NO : CAMERA OBJECT}
-            self.hrm3_cams = hrm3_builder.builds()
-
-            if self.plots:
-                for _, hrm3_cam in self.hrm3_cams.items():
-                    hrm3_cam.call_analysis()
 
 
         
