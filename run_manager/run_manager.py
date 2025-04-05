@@ -5,16 +5,20 @@
 # MODULE IMPORTS
 import sys
 import os
-
-# Add devices module to path
-sys.path.append(os.path.abspath("."))
-
 from typing import List, Dict
 
-from run_manager.constructors import *
+# Add . to path so that the interpreter can find the devices modules.
+sys.path.append(os.path.abspath("."))
 
+#Import device and output classes for device object construction
 from devices.device import Device
 from devices.output import *
+
+#Import builder classes that construct multiple instances of an object for different shots
+from run_manager.builders import *
+
+#Import information from configuration file, paths.py, containing the location of all paths to all data.
+from run_manager.paths import *
 
 #####################
 # RUN MANAGER CLASS #
@@ -23,7 +27,7 @@ from devices.output import *
 class RunManager:
     """Manages the run during data collection."""
 
-    def __init__(self, devices:list[Device], shots, plots):
+    def __init__(self, devices:List[Device], shots, plots):
         """
         
         Parameters
@@ -52,21 +56,35 @@ class RunManager:
         
         if "Faraday Probe" in self.devices:
             
+            device_name = "Faraday Probe"
+
             #! WARNING- THIS HARDCODED DICTIONARY _MUST_ BE REMOVED AT SOME POINT !
-            efield_data_paths = {
-                1:"./example_data/C1--XX_SCOPE2--00081.csv",
-                2:"./example_data/C1--XX_SCOPE2--00081.csv",
-                4:"./example_data/C1--XX_SCOPE2--00081.csv"
-            }
+            
             # INITIALIZE PROBEBUILDER OBJECT, WHICH CONTROLS CONSTRUCTION OF FARADAY PROBE OBJECTS
-            pbuilder = ProbeBuilder(shots=self.shots, efield_data_paths=efield_data_paths)
+            probe_builder = ProbeBuilder(shots=self.shots, device_name=device_name, efield_data_paths=FP1_efield_data_paths)
             
             # GET A DICTIONARY OF FARADAY PROBES OF FORM {SHOT_NO : PROBE OBJECT}
-            self.FaradayProbes = pbuilder.build_probes()
+            self.faraday_probes = probe_builder.builds()
 
             if self.plots:
-                for _, FaradayProbe in self.FaradayProbes.items():
-                    FaradayProbe.call_analysis()
+                for _, faraday_probe in self.faraday_probes.items():
+                    faraday_probe.call_analysis()
+
+        if "HRM3" in self.devices:
+
+            # CAM NAME
+            camera_name = "HRM3"
+
+            #INITIALIZE CAMERABUILDER OBJECT, WHICH CONTROLS CONSTRUCTION OF HRM3 OBJECTS
+            hrm3_builder = CamBuilder(shots=self.shots, camera_name=camera_name, image_data_paths=HRM3_image_data_paths)
+
+            # GET A DICTIONARY OF CAMERAS OF FORM {SHOT_NO : CAMERA OBJECT}
+            self.hrm3_cams = hrm3_builder.builds()
+
+            if self.plots:
+                for _, hrm3_cam in self.hrm3_cams.items():
+                    hrm3_cam.call_analysis()
+
 
         
 

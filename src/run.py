@@ -16,16 +16,16 @@ def main():
     #Think about passing the devices list from an input/configuration file here instead of passing them one-by-one to a list.
     #WHICH DEVICES ARE WE INTERESTED IN ANALYZING DATA FROM?
     myDevices = [
-        "Faraday Probe",
+        "Faraday Probe", "HRM3"
     ]
 
     #WHICH SHOTS ARE WE INTERESTED IN GATHERING DATA FROM?
-    myShots = [1, 2, 4]
+    myShots = [1, 2, 3]
 
     #ARE WE INTERESTED IN SEEING ANY VISUALISATION OF THE DATA?
     plots=True
 
-    myManager = RunManager(
+    myManager=RunManager(
         devices=myDevices,
         shots=myShots,
         plots=plots

@@ -1,6 +1,5 @@
-# OUTPUT CLASS THAT KEEPS TRACK OF WHAT TYPE OF EXTENSION IS NEEDED BY EACH MEASUREMENT ETC
-
 # MODULE IMPORTS
+import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -19,7 +18,7 @@ import pandas as pd
 
 class Output:
 
-    def __init__(self, shot_no, device_name, name):
+    def __init__(self, shot_no, device_name, output_name, data_path):
         """
         Parameters 
         ----------
@@ -27,18 +26,21 @@ class Output:
                 The shot number during which the output measurement was taken.
             device_name : str
                 The name of the parent device from which the output is being read (e.g. PROBE1)
-            name : str
+            output_name : str
                 The name of the output itself (e.g. TEMPERATURE1)
+            data_path : str
+                Path to where the relevant data for the output was dumped during beamtime.
             
         """
         
         self.shot_no = shot_no
         self.device_name = device_name
-        self.name = name
+        self.output_name = output_name
+        self.data_path = data_path
         
 
     def __repr__(self):
-        return f"{self.name} (Output) from {self.device_name}"
+        return f"{self.output_name} (Output) from {self.device_name}"
 
     def analyze(self):
         """Empty placeholder function defining the method by which data is analyzed from a certain device_name's output."""
@@ -54,9 +56,31 @@ class Output:
 # magnet (e+/e- energy estimations).
 
 class Image(Output):
-    def __init__(self, device_name, name, data_path):
-        super().__init__(device_name, name)
-        self.data_path = data_path
+    """Class for outputs that take the form of images."""
+
+    def __init__(self, shot_no, device_name, output_name, data_path):
+        """"""
+
+        # INITIALIZE BASE CLASS
+        super().__init__(shot_no, device_name, output_name, data_path)
+
+        # OVERRIDE BASE CLASS ANALYZE METHOD
+        self.analyze = self.plot_image
+
+    def __repr__(self):
+        """Representation dunder method."""
+        return super().__repr__() # MAINTAIN SAME __repr__ AS BASE CLASS
+    
+    def plot_image(self):
+        """Plots image data."""
+        
+        # CONVERT IMAGE FROM .CSV FORMAT TO NUMPY ARRAY
+        image_array = np.genfromtxt(self.data_path, delimiter=',')
+
+        #Plot the bitmap of the captured image.
+        plt.title(f"Image Capture from {self.device_name}")
+        plt.imshow(image_array)
+        plt.show()
 
 
 ##################
@@ -71,7 +95,7 @@ class eField(Output):
     def __init__(self, 
                  shot_no, 
                  device_name:str, 
-                 name:str="E Field", 
+                 output_name:str="E Field", 
                  data_path:str="", 
                  t_units:str="s", 
                  e_units:str="V", 
@@ -86,10 +110,8 @@ class eField(Output):
             shot_no : int
                 The shot number during which the output measurement was taken.
             device_name : str
-                The parent device_name string.
-            device_name : str
                 The name of the parent device from which the output is being read (e.g. PROBE1)
-            name : str
+            output_name : str
                 The name of the output itself (e.g. E Field)
             data_path : str
                 The path to the location containing data for the electric field.
@@ -106,10 +128,7 @@ class eField(Output):
         """
 
         # CALL INIT FUNCTION ON OUTPUT BASE CLASS
-        super().__init__(shot_no, device_name, name)
-
-        # PATH TO DATA
-        self.data_path = data_path
+        super().__init__(shot_no=shot_no, device_name=device_name, output_name=output_name, data_path=data_path)
         
         # SPECIFY UNITS IN WHICH TIME AND ELECTRIC FIELD ARE MEASURED BY THE device_name
         self.t_units = t_units
@@ -126,6 +145,7 @@ class eField(Output):
         self.analyze = self.plot_trace
 
     def __repr__(self):
+        """Representation dunder method."""
         return super().__repr__() #MAINTAIN SAME REPRESENTATION AS OUTPUT BASE CLASS
     
     def plot_trace(self):
