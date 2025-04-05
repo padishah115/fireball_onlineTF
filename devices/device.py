@@ -1,6 +1,7 @@
 #Module imports
 import os
 import sys
+from typing import Dict, List
 
 #Homebrew output class
 from devices.output import Output
@@ -24,31 +25,43 @@ class Device:
     
     """
 
-    def __init__(self, device_name:str, outputs:list[Output]):
+    def __init__(self, device_name:str, shot_no:int, outputs:List[Output]):
         """
         Parameters
         ----------
             device_name : str
                 The name of the diagnostic device.
-            outputs : list
-                List of all device outputs
+            shot_no : int
+                The shot number for which we have built the device.
+            outputs : List[Outputs]
 
         """
         
+        #####################################
+        # INTIALIZE BASIC DEVICE PARAMETERS #
+        #####################################
+
+        # NAME
         self.device_name = device_name
+        self.shot_no = shot_no
+        
+        # OUTPUTS FOR THE SHOT
         self.outputs = outputs
 
+
     def __repr__(self):
-        return f"{self.name} (Device Object)"
+        return f"{self.device_name} (Device Object)"
+    
 
     def get_outputs(self):
-        """Returns list of outputs from the device"""
-        print(f"Outputs from {self.device_name}", self.outputs)
+        """Returns list of outputs from the device for the shot."""
+
+        print(f"Outputs from {self.device_name} (SHOT {self.shot_no}):", self.outputs)
 
     def call_analysis(self):
-        """Calls all relevant analysis on the device outputs"""
-        
-        #Loop through all of the device's outputs and call their analyze functions one-by-one
+        """Calls all relevant analysis on the device outputs."""
+
+        # Loop through all of the device's outputs and call their analyze functions one-by-one
         for output in self.outputs:
             print(f"Calling analysis for {output} from {self.device_name}...")
             output.analyze()

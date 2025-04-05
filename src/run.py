@@ -1,23 +1,37 @@
+#SCRIPT TO TEST IMPLEMENTATION OF RUN MANAGER
+
 #Module imports
 import os
+import sys
 
-#Imports from diagnostics module- this is a little dirty but I think it's OK here.
-from devices import *
+# Add devices module to path
+sys.path.append(os.path.abspath("."))
 
-#Imports from run-manger
+
+#Imports from run_manger
 from run_manager.run_manager import RunManager
 
 def main():
     
     #Think about passing the devices list from an input/configuration file here instead of passing them one-by-one to a list.
-    #Which devices would we like for the run?
-    myDevices = []
+    #WHICH DEVICES ARE WE INTERESTED IN ANALYZING DATA FROM?
+    myDevices = [
+        "Faraday Probe",
+    ]
+
+    #WHICH SHOTS ARE WE INTERESTED IN GATHERING DATA FROM?
+    myShots = [1, 2, 4]
+
+    #ARE WE INTERESTED IN SEEING ANY VISUALISATION OF THE DATA?
+    plots=True
 
     myManager = RunManager(
-        devices=myDevices
+        devices=myDevices,
+        shots=myShots,
+        plots=plots
     )
 
-    #Execute the run- call all of the data collection that we want to do.
+    #Execute the run
     myManager.run()
 
 
