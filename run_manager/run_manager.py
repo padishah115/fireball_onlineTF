@@ -27,13 +27,13 @@ from run_manager.paths import *
 class RunManager:
     """Manages the run during data collection."""
 
-    def __init__(self, devices:List[Device], shots:List[int], plots:bool):
+    def __init__(self, devices:List[str], shots:List[int], plots:bool=False):
         """
         
         Parameters
         ----------
-            devices : List[Device]
-                List of devices that we want to gather diagnostic information from.
+            devices : List[str]
+                List of names of devices which we want to gather diagnostic information from.
             shots : List[int]
                 List of shots that we are interested in collecting data for.
             plots : bool
@@ -60,14 +60,14 @@ class RunManager:
 
         # BUILDER DICTIONARY: 
         self.builder_key : Dict[str, Builder]= {
-            "Faraday Probe" : ProbeBuilder,
-            "HRM3" : CamBuilder
+            "faraday probe" : ProbeBuilder,
+            "hrm3" : CamBuilder
         }
 
         # DICTIONARY OF PATHS DICTIONARIES (dictionary squared)
         self.paths_key : Dict[str, Dict[int, str]] = {
-            "Faraday Probe" : FP1_efield_data_paths,
-            "HRM3" : HRM3_image_data_paths
+            "faraday probe" : FP1_efield_data_paths,
+            "hrm3" : HRM3_image_data_paths
         }
 
     
@@ -80,19 +80,19 @@ class RunManager:
         for device in self.devices:
 
             # GET DEVICE NAME AS STRING
-            device_name = device
+            device_name = device.upper()
 
             # CREATE ALIAS "device_builder" FOR THE SPECIFIC DEVICE BUILDER CLASS- this could be CamBuilder or ProbeBuilder, etc.
-            device_builder = self.builder_key[device]
+            device_builder = self.builder_key[device.lower()]
 
             # GET THE DATA PATHS DICTIONARY FOR THE DEVICE- this is the dictionary of the form {SHOT NO : /path/to/device/data/for/shot_no}
-            data_paths_dict = self.paths_key[device]
+            data_paths_dict = self.paths_key[device.lower()]
 
             # CONSTRUCT INSTANCE OF THE DEVICE BUILDER CLASS, e.g. builder_instance = CamBuilder(shots=...)
             builder_instance = device_builder(shots=self.shots, device_name=device_name, data_paths_dict=data_paths_dict)
             
             #  RECEIVE DICTIONARY OF THE DEVICE OBJECTS FOR ALL SPECIFIED SHOTS, FORM {SHOT NO : DEVICE}
-            devices_objs = builder_instance.builds() #THIS COULD BE A DICTIONARY OF PROBES AT DIFFERENT SHOTS, OR OF HRM3 CAMS AT DIFFERENT SHOTS
+            devices_objs = builder_instance.build_devices() #THIS COULD BE A DICTIONARY OF PROBES AT DIFFERENT SHOTS, OR OF HRM3 CAMS AT DIFFERENT SHOTS
 
             # IF PLOTS=TRUE, ITERATE OVER DEVICE OBJECTS IN THE devices_obj DICTIONARY AND CALL THE ANALYSIS METHOD
             if self.plots:

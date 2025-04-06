@@ -1,4 +1,0 @@
-# LIST OF DIAGNOSTICS FOR FIREBALL-III
-
-Name            Channel no.
-Faraday rot         2(?)

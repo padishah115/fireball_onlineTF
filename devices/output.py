@@ -1,6 +1,7 @@
 # MODULE IMPORTS
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 import pandas as pd
 
 ################
@@ -18,7 +19,7 @@ import pandas as pd
 
 class Output:
 
-    def __init__(self, shot_no:int, device_name:str, output_name:str, data_path:str):
+    def __init__(self, device_name:str, output_name:str, data_path:str):
         """
         Parameters 
         ----------
@@ -33,7 +34,6 @@ class Output:
             
         """
         
-        self.shot_no = shot_no
         self.device_name = device_name
         self.output_name = output_name
         self.data_path = data_path
@@ -44,7 +44,7 @@ class Output:
 
     def analyze(self):
         """Empty placeholder function defining the method by which data is analyzed from a certain device_name's output."""
-        pass
+        raise NotImplementedError(f"Error: no analyze() method produced for {self}")
 
 
 #########
@@ -58,10 +58,8 @@ class Output:
 class Image(Output):
     """Class for outputs that take the form of images."""
 
-    def __init__(self, shot_no:int, device_name:str, output_name:str, data_path:str):
+    def __init__(self, device_name:str, output_name:str, data_path:str, lognorm=True):
         """
-            shot_no : int
-                The shot number corresponding to the image output- which shot is the image coming from?
             device_name : str
                 The name of the parent device that the image output is being passed to. Note
                 that, due to the fact that multiple instruments pass images as outputs, it's necessary to 
@@ -70,14 +68,19 @@ class Image(Output):
                 The name of the image output- what exactly are we looking at?
             data_path : str
                 Path to the raw image data.
+            lognorm : bool
+                Determines whether we want to use logarithmic normalisation when depicting the image data.
         
         """
 
         # INITIALIZE BASE CLASS
-        super().__init__(shot_no, device_name, output_name, data_path)
+        super().__init__(device_name, output_name, data_path)
 
         # OVERRIDE BASE CLASS ANALYZE METHOD
         self.analyze = self.plot_image
+
+        # BOOLEAN DETERMINING WHETHER THE IMAGES ARE PLOTTED WITH LOGARITHMIC NORMALIZATION
+        self.lognorm = lognorm
 
     def __repr__(self):
         """Representation dunder method."""
@@ -88,10 +91,20 @@ class Image(Output):
         
         # CONVERT IMAGE FROM .CSV FORMAT TO NUMPY ARRAY
         image_array = np.genfromtxt(self.data_path, delimiter=',')
+        pmax = np.nanmax(image_array) # pixel intensity maximum
+        pmin = np.nanmin(image_array) # pixel intensity minimum
 
-        #Plot the bitmap of the captured image.
+        # Plot the bitmap of the captured image.
         plt.title(f"Image Capture from {self.device_name}")
-        plt.imshow(image_array)
+        
+        # Check whether we are using logarithmic normalization, and plot image appropriately.
+        if self.lognorm:
+            print(f'pmax: {pmax}, pmin: {pmin}')
+            normalization = LogNorm(vmin=pmin, vmax=pmax)
+            plt.imshow(image_array, norm=normalization)
+        else:
+            plt.imshow(image_array)
+        
         plt.show()
 
 
@@ -105,7 +118,6 @@ class eField(Output):
     """Class for electric field/voltage readouts from an oscilloscope trace."""
 
     def __init__(self, 
-                 shot_no, 
                  device_name:str, 
                  output_name:str="E Field", 
                  data_path:str="", 
@@ -119,8 +131,6 @@ class eField(Output):
 
         Parameters
         ----------
-            shot_no : int
-                The shot number during which the output measurement was taken.
             device_name : str
                 The name of the parent device from which the output is being read (e.g. PROBE1)
             output_name : str
@@ -140,7 +150,7 @@ class eField(Output):
         """
 
         # CALL INIT FUNCTION ON OUTPUT BASE CLASS
-        super().__init__(shot_no=shot_no, device_name=device_name, output_name=output_name, data_path=data_path)
+        super().__init__(device_name=device_name, output_name=output_name, data_path=data_path)
         
         # SPECIFY UNITS IN WHICH TIME AND ELECTRIC FIELD ARE MEASURED BY THE device_name
         self.t_units = t_units

@@ -1,6 +1,4 @@
 #Module imports
-import os
-import sys
 from typing import Dict, List
 
 #Homebrew output class
@@ -68,7 +66,7 @@ class Device:
 
         # Loop through all of the device's outputs and call their analyze functions one-by-one
         for output in self.outputs:
-            print(f"Calling analysis for {output} from {self.device_name}...")
+            print(f"Calling analysis for {output} ...")
             output.analyze() # CALL .analyze() METHOD ON ALL OUTPUTS
 
 

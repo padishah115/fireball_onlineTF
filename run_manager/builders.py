@@ -20,15 +20,51 @@ class Builder():
     a certain species of device at certain shot numbers. Each device has a separate constructor to account for the fact that we want
     differene names."""
 
-    def __init__(self, shots:List[int]):
+    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str]):
+        """
+        Parameters
+        ----------
+            shots : List[int]
+                List of all the shot numbers that we are interested in collecting data from.
+            device_name : str
+                Name of the device itself.
+            data_paths_dict : Dict[int, str]
+                Dictionary containing paths to all data, indexed (key'd) by shot number.
+        
+        """
         self.shots = shots
+        self.device_name = device_name
+        self.data_paths_dict = data_paths_dict
 
-    def _build(self):
+        self.Devices = {}
+
+    def _build(self, data_path, shot_no)->Device:
         """Placeholder _build function to be overriden in derivative classes."""
-        pass
+        raise NotImplementedError(f"Error: no _build() method supplied fo r")
 
-    def builds(self)->Dict[int, Device]:
-        pass
+    def build_devices(self)->Dict[int, Device]:
+        """Builds probe objects for the specified shot numbers, returning a dictionary of such objects, where the keys are
+        the shot numbers, and the values are probe objects for that shot number. Can be seen as building devices ACROSS TIME....... sp00ky
+        
+        Returns
+        -------
+            self.Devices : Dict[int, Device]
+                Dictionary of form {SHOT_NO : Device Object} containing all of the constructed objects for the specified shot numbers.
+        """
+        
+        # ITERATE OVER EACH OF THE SPECIFIED SHOT NUMBERS
+        for shot in self.shots:
+            # MAKE SURE DATA FOR THE RELEVANT SHOT ACTUALLY EXISTS FOR THE OBJECT 
+            try:
+                data_path = self.data_paths_dict[shot]
+            except:
+                KeyError(f"Error: specified shot number {shot} for {self.device_name}, but no data exists for this shot.")
+
+            # ADD DEVICE OBJECT TO DEVICES DICTIONARY, WHERE THE KEY IS GIVEN BY THE SHOT NUMBER
+            self.Devices[shot] = self._build(data_path=data_path, shot_no=shot)
+
+        # RETURN DEVICES DICTIONARY, WHICH IS OF FORM {SHOT NO : DEVICE OBJECT}
+        return self.Devices
 
 ##############################
 # FARADAY/BDOT PROBE BUILDER #
@@ -46,33 +82,26 @@ class ProbeBuilder(Builder):
             device_name : str
                 Name of the device as a string. There are both Bdot Probes and Faraday Probes on the experiment,
                 which we will need to differentiate between.
-            efield_data_paths : Dict[int, str]
+            data_paths_dict : Dict[int, str]
                 Dictionary of form {SHOT_NO : PATH} containing paths to all E field oscilloscope data for each shot.
         
         """
         
         # INITIALIZE PARENT BUILDER CLASS
-        super().__init__(shots=shots)
-
-        # SPECIFY WHETHER IT IS A BDOT OR FARADAY PROBE
-        self.device_name = device_name
-
-        # ASSIGN DATA PATH- HERE, THIS WILL BE E_FIELD DATA
-        self.efield_data_paths = data_paths_dict
+        super().__init__(shots=shots, device_name=device_name, data_paths_dict=data_paths_dict)
 
         # OVERRIDE PARENT BUILDER CLASS' _build() METHOD
         self._build = self._build_probe
-        self.builds = self.build_probes
 
         self.Probes = {}
 
 
-    def _build_probe(self, efield_data_path:str, shot_no:int)->Device:
+    def _build_probe(self, data_path:str, shot_no:int)->Device:
         """Builds a single Probe at a specified shot number.
     
         Parameters
         ----------
-            efield_data_path : str
+            data_path : str
                 The path where the relevant data (for the specified shot!) of the Electric Field is stored.
             shot_no : int
                 The shot number for which we want to build the probe.
@@ -86,46 +115,25 @@ class ProbeBuilder(Builder):
         """
 
         # INITIALIZE THE FARADAY PROBE'S NAME, REFERENCING THE SHOT NUMBER
-        device_name = f"{self.device_name} (SHOT {shot_no})"
+        device_name_with_shot = f"{self.device_name} (SHOT {shot_no})" 
+        #  note that it is important to add shot information to the self.device_name belonging to the Builder class- 
+        # the self.device_name from the builder class will tell us (e.g.) whether it's HRM3 or HRM4, but WON'T tell us what shot
+        # we are looking at.
 
         # INITIALIZE EMPTY OUTPUTS LIST- WE WILL LATER APPEND OUTPUTS TO THIS FOR EACH OBJECT 
         outputs = []
 
         # INTIALIZE EFIELD OUTPUT   
-        efield = eField(shot_no=shot_no, device_name=device_name, data_path=efield_data_path)
+        efield = eField(device_name=device_name_with_shot, data_path=data_path)
         outputs.append(efield)
 
         Probe = Device(
-            device_name=device_name,
+            device_name=device_name_with_shot,
             shot_no=shot_no,
             outputs=outputs
         )
 
         return Probe
-
-    def build_probes(self, )->Dict[int, Device]:
-        """Builds probe objects for the specified shot numbers, returning a dictionary of such objects, where the keys are
-        the shot numbers, and the values are probe objects for that shot number. Can be seen as building devices ACROSS TIME....... sp00ky
-        
-        Returns
-        -------
-            self.Probes : Dict[int, Device]
-                Dictionary of form {SHOT_NO : Probe Object} containing all of the constructed probe objects for the specified shot numbers.
-        """
-        
-        # ITERATE OVER EACH OF THE SPECIFIED SHOT NUMBERS
-        for shot in self.shots:
-            # MAKE SURE DATA FOR THE RELEVANT SHOT ACTUALLY EXISTS FOR THE OBJECT 
-            try:
-                efield_data_path = self.efield_data_paths[shot]
-            except:
-                KeyError(f"Error: specified shot number {shot} for {self.device_name}, but no data exists for this shot.")
-
-            # ADD PROBE OBJECT TO PROBES DICTIONARY, WHERE THE KEY IS GIVEN BY THE SHOT NUMBER
-            self.Probes[shot] = self._build(efield_data_path=efield_data_path, shot_no=shot)
-
-        # RETURN PROBE DICTIONARY, WHICH IS OF FORM {SHOT NO : PROBE_OBJECT}
-        return self.Probes
     
 
 ##################
@@ -149,23 +157,16 @@ class CamBuilder(Builder):
         """
 
         # INITIALIZE PARENT BUILDER CLASS
-        super().__init__(shots = shots)
-
-        # MULTIPLE CAMERAS EXIST ON THE EXPERIMENT, SO WE NEED TO SPECIFY THE CAMERA NAME RIGHT OFF THE BAT
-        self.camera_name = device_name
-
-        # ASSIGN DATA PATHS- HERE, THESE ARE PATHS TO IMAGES
-        self.image_data_paths = data_paths_dict
+        super().__init__(shots = shots, device_name=device_name, data_paths_dict=data_paths_dict)
 
         # OVERRIDE EMPTY ._build() METHOD FROM PARENT BUILDER CLASS
         self._build = self._build_camera
-        self.builds = self.build_cameras
 
         # EMPTY CAMERAS DICTIONARY- WILL EVENTUALLY BE OF FORM {SHOT NO : CAMERA OBJECT}
         self.Cameras = {}
 
 
-    def _build_camera(self, image_data_path:str, shot_no:int)->Device:
+    def _build_camera(self, data_path:str, shot_no:int)->Device:
         """Builds a single camera object at the specified shot number.
         
         Parameters
@@ -183,57 +184,31 @@ class CamBuilder(Builder):
         """
 
         # INTIALIZE CAMERA NAME- MULTIPLE CAMERAS IN THE EXPERIMENT, SO NEED TO SPECIFY CAMERA NAME
-        device_name = f"{self.camera_name} (SHOT {shot_no})"
+        device_name_with_shot = f"{self.device_name} (SHOT {shot_no})"
+        #  note that it is important to add shot information to the self.device_name belonging to the Builder class- 
+        # the self.device_name from the builder class will tell us (e.g.) whether it's HRM3 or HRM4, but WON'T tell us what shot
+        # we are looking at.
         
         # INITIALIZE EMPTY OUTPUTS LIST FOR EACH CAMERA OBJECT
         outputs = []
         
         # IMAGE OUTPUT
         image_out = Image(
-            shot_no=shot_no,
-            device_name=device_name,
-            output_name="Image",
-            data_path=image_data_path
+            device_name=device_name_with_shot,
+            output_name=f"Image",
+            data_path=data_path
         )
         # APPEND IMAGE OUTPUT TO THE DEVICE OBJECT'S OUTPUTS LIST
         outputs.append(image_out)
 
         # CREATE THE DEVICE OBJECT USING THE OUTPUT LIST CONSTRUCTED ABOVE
         camera = Device(
-            device_name=device_name,
+            device_name=device_name_with_shot,
             shot_no=shot_no,
             outputs=outputs,
         )
 
         return camera
     
-
-    def build_cameras(self)->Dict[int, Device]:
-        """Builds multiple camera objects, one for each specified shot, and adds to the class dictionary of form {Shot no: Camera}, then
-        returns the dictionary.
-        
-        Returns
-        -------
-            self.Cameras : Dict[int, Device]
-                Dictionary of devices, where the key number is the shot number, and the value is the Device object.
-        
-        """
-
-        # ITERATE OVER ALL SPECIFIED SHOTS IN CLASS' SHOT LIST
-        for shot in self.shots:
-            # CHECK TO MAKE SURE DATA EXISTS FOR THE OBJECT AT THE APPROPRIATE SHOT NUMBER
-            try:
-                image_data_path = self.image_data_paths[shot]
-            except:
-                KeyError(f"Error: specified shot number {shot} for device {self.camera_name}, but no data exists for this shot.")
-            
-            # BUILD CAMERA OBJECT AT SINGLE SHOT AND ADD TO DICTIONARY 
-            cam = self._build(image_data_path, shot)
-
-            # ADD CAMERA OBJECT TO CAMERAS DICTIONARY, WHERE THE KEY IS GIVEN BY THE SHOT NUMBER
-            self.Cameras[shot] = cam
-
-        # RETURNS DICTIONARY OF FORM {SHOT NO : CAMERA_OBJECT}
-        return self.Cameras
 
         
