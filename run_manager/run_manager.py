@@ -11,7 +11,7 @@ from typing import List, Dict
 sys.path.append(os.path.abspath("."))
 
 # Import configuration information- this tells the run_manager which devices correspond to which builder species and which data_paths. 
-from input.run_manager_config import *
+from src.config import rm_builder_key, rm_background_data_paths_key, rm_raw_data_paths_key
 
 #####################
 # RUN MANAGER CLASS #
@@ -51,9 +51,9 @@ class RunManager:
         # the appropriate paths_dictionary.
         # Remember that the paths_dictionary is the dictionary containing the paths to all data for a specific device across all shots.
 
-        self.builder_key = builder_key
-        self.raw_data_paths_key = raw_data_paths_key
-        self.background_data_paths_key = background_data_paths_key
+        self.builder_key = rm_builder_key
+        self.raw_data_paths_key = rm_raw_data_paths_key
+        self.background_data_paths_key = rm_background_data_paths_key
 
     
     def run(self):

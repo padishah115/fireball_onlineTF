@@ -9,14 +9,10 @@
 # MODULE IMPORTS
 import pandas as pd
 
-# .csv for camerafiles
-camera_timestamp_csv_path = './example_data/HRMT64_timestamps_shots_camerafiles.csv' # !!!!!!! HARDCODED !!!!!!!
-camera_timestamp_df = pd.read_csv(camera_timestamp_csv_path, delimiter=',')
-
 class PathFinder:
     """Class responsible for scraping .csv files which contain information about the storage location of data for all equipment across all shots."""
 
-    def __init__(self, timestamp_csv_path):
+    def __init__(self, timestamp_csv_path, device_names):
         """
         Parameters
         ----------
@@ -30,5 +26,13 @@ class PathFinder:
 
     def _find_shots(self):
         """Scrape through the specified .csv looking to see which shots actually happened."""
-        pass
+        
+        # GET THE COLUMN OF THE .CSV INDEXING THE SHOT NUMBERS
+        shot_numbers = self.csv_path["Shot number"]
+        
+        for i, shot in enumerate(shot_numbers):
+            if not shot == None:
+                print(shot)
+
+
 

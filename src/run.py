@@ -9,7 +9,6 @@ import sys
 # Add devices module to path
 sys.path.append(os.path.abspath("."))
 
-
 #Imports from run_manger
 from run_manager.run_manager import RunManager
 
