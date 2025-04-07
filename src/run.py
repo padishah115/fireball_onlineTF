@@ -5,6 +5,7 @@
 #Module imports
 import os
 import sys
+from config import get_config
 
 # Add devices module to path
 sys.path.append(os.path.abspath("."))
@@ -14,6 +15,10 @@ from run_manager.run_manager import RunManager
 
 def main():
     
+    # CALL CONFIGURATION SCRIPT- initializes runmanager configuration (where to find data for all shots for all devices) 
+    # eventually will want to pass shot numbers as arguments to the get_config function
+    rm_builder_key,rm_RAW_data_paths_key, rm_BKG_data_paths_key  = get_config()
+
     #Think about passing the devices list from an input/configuration file here instead of passing them one-by-one to a list.
     #WHICH DEVICES ARE WE INTERESTED IN ANALYZING DATA FROM?
     myDevices = [
@@ -26,10 +31,13 @@ def main():
     #ARE WE INTERESTED IN SEEING ANY VISUALISATION OF THE DATA?
     plots=True
 
-    # INITIALIZE THE RUN MANAGER
+    # INITIALIZE THE RUN MANAGER USING CONFIGURATION GIVEN ABOVE
     myManager=RunManager(
         devices=myDevices,
         shots=myShots,
+        rm_builder_key=rm_builder_key,
+        rm_RAW_data_paths_key=rm_RAW_data_paths_key,
+        rm_BKG_data_paths_key=rm_BKG_data_paths_key,
         plots=plots
     )
 

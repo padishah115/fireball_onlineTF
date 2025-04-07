@@ -10,9 +10,6 @@ from typing import List, Dict
 # Add . to path so that the interpreter can find the devices modules.
 sys.path.append(os.path.abspath("."))
 
-# Import configuration information- this tells the run_manager which devices correspond to which builder species and which data_paths. 
-from src.config import rm_builder_key, rm_background_data_paths_key, rm_raw_data_paths_key
-
 #####################
 # RUN MANAGER CLASS #
 #####################
@@ -20,7 +17,7 @@ from src.config import rm_builder_key, rm_background_data_paths_key, rm_raw_data
 class RunManager:
     """Manages the run during data collection."""
 
-    def __init__(self, devices:List[str], shots:List[int], plots:bool=False):
+    def __init__(self, devices:List[str], shots:List[int], rm_builder_key, rm_RAW_data_paths_key, rm_BKG_data_paths_key, plots:bool=False):
         """
         
         Parameters
@@ -29,6 +26,9 @@ class RunManager:
                 List of names of devices which we want to gather diagnostic information from.
             shots : List[int]
                 List of shots that we are interested in collecting data for.
+            rm_builder_key Dict[str, str]
+            rm_raw_data_paths_key Dict[str, str]
+            rm_background_data_paths_key Dict[str, str]
             plots : bool
                 Boolean determining whether we are interested in plotting/visualizing data during analysis.
         
@@ -52,8 +52,8 @@ class RunManager:
         # Remember that the paths_dictionary is the dictionary containing the paths to all data for a specific device across all shots.
 
         self.builder_key = rm_builder_key
-        self.raw_data_paths_key = rm_raw_data_paths_key
-        self.background_data_paths_key = rm_background_data_paths_key
+        self.raw_data_paths_key = rm_RAW_data_paths_key
+        self.background_data_paths_key = rm_BKG_data_paths_key
 
     
     def run(self):
