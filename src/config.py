@@ -1,6 +1,7 @@
 ########################
 # CONFIGURATION SCRIPT #
 ########################
+# everything ugly is in one place...
 
 # MODULE IMPORTS
 import pandas as pd

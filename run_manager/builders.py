@@ -20,24 +20,27 @@ class Builder():
     a certain species of device at certain shot numbers. Each device has a separate constructor to account for the fact that we want
     differene names."""
 
-    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str], background_paths_dict:Dict[str, str]):
+    def __init__(self, shots:List[int], device_name:str, RAW_data_paths_dict:Dict[int, str], BKG_paths_dict:Dict[str, str]):
         """
         Parameters
         ----------
             shots : List[int]
                 List of all the shot numbers that we are interested in collecting data from.
+            
             device_name : str
                 Name of the device itself.
-            data_paths_dict : Dict[int, str]
-                Dictionary containing paths to all data, indexed (key'd) by shot number.
-            background_paths_dict : Dict[str, str]
+            
+            RAW_data_paths_dict : Dict[int, str]
+                Dictionary containing paths to all data (NOT BACKGROUND SUBTRACTED), indexed (key'd) by shot number.
+            
+            BKG_paths_dict : Dict[str, str]
                 Paths to different background images (e.g. darkfield, etc.), where the key is the name of the background as a string.
         
         """
         self.shots = shots
         self.device_name = device_name
-        self.data_paths_dict = data_paths_dict
-        self.background_paths_dict = background_paths_dict
+        self.RAW_data_paths_dict = RAW_data_paths_dict
+        self.BKG_paths_dict = BKG_paths_dict
 
         self.Devices = {}
 
@@ -59,12 +62,12 @@ class Builder():
         for shot in self.shots:
             # MAKE SURE DATA FOR THE RELEVANT SHOT ACTUALLY EXISTS FOR THE OBJECT 
             try:
-                data_path = self.data_paths_dict[shot]
+                RAW_data_path = self.RAW_data_paths_dict[shot]
             except:
                 KeyError(f"Error: specified shot number {shot} for {self.device_name}, but no data exists for this shot.")
 
             # ADD DEVICE OBJECT TO DEVICES DICTIONARY, WHERE THE KEY IS GIVEN BY THE SHOT NUMBER
-            self.Devices[shot] = self._build(raw_data_path=data_path, shot_no=shot)
+            self.Devices[shot] = self._build(raw_data_path=RAW_data_path, shot_no=shot)
 
         # RETURN DEVICES DICTIONARY, WHICH IS OF FORM {SHOT NO : DEVICE OBJECT}
         return self.Devices
@@ -76,24 +79,27 @@ class Builder():
 class ProbeBuilder(Builder):
     """Class responsible for building Faraday or Bdot Probe device objects for the desired shot numbers at run time."""
 
-    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str], background_paths_dict:Dict[str, str]):
+    def __init__(self, shots:List[int], device_name:str, RAW_data_paths_dict:Dict[int, str], BKG_paths_dict:Dict[str, str]):
         """
         Parameters
         ----------
             shots : List[int]
                 List of the shots that we are interested in Probe data for.
+            
             device_name : str
                 Name of the device as a string. There are both Bdot Probes and Faraday Probes on the experiment,
                 which we will need to differentiate between.
-            data_paths_dict : Dict[int, str]
-                Dictionary of form {SHOT_NO : PATH} containing paths to all E field oscilloscope data for each shot.
-            background_paths_dict : Dict[str, str]
-                Paths to different background images (e.g. darkfield, etc.), where the key is the name of the background as a string.
+            
+            RAW_data_paths_dict : Dict[int, str]
+                Dictionary of form {SHOT_NO : PATH} containing paths to all raw (not background-subtracted) E field oscilloscope data for each shot.
+            
+            BKG_paths_dict : Dict[str, str]
+                Paths to different background data (e.g. darkfield, etc.), where the key is the name of the background as a string.
         
         """
         
         # INITIALIZE PARENT BUILDER CLASS
-        super().__init__(shots=shots, device_name=device_name, data_paths_dict=data_paths_dict, background_paths_dict=background_paths_dict)
+        super().__init__(shots=shots, device_name=device_name, data_paths_dict=RAW_data_paths_dict, background_paths_dict=BKG_paths_dict)
 
         # OVERRIDE PARENT BUILDER CLASS' _build() METHOD
         self._build = self._build_probe
@@ -108,6 +114,7 @@ class ProbeBuilder(Builder):
         ----------
             raw_data_path : str
                 The path where the relevant (RAW) data (for the specified shot!) of the Electric Field is stored.
+            
             shot_no : int
                 The shot number for which we want to build the probe.
 
@@ -129,7 +136,7 @@ class ProbeBuilder(Builder):
         outputs = []
 
         # INTIALIZE EFIELD OUTPUT   
-        efield = eField(device_name=device_name_with_shot, raw_data_path=raw_data_path, background_paths_dict=self.background_paths_dict)
+        efield = eField(device_name=device_name_with_shot, raw_data_path=raw_data_path, background_paths_dict=self.BKG_paths_dict)
         outputs.append(efield)
 
         Probe = Device(
@@ -151,20 +158,27 @@ class ProbeBuilder(Builder):
 class CamBuilder(Builder):
     """Builder class for cameras, which produce image outputs."""
     
-    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str], background_paths_dict:Dict[str, str]):
+    def __init__(self, shots:List[int], device_name:str, RAW_data_paths_dict:Dict[int, str], BKG_paths_dict:Dict[str, str]):
         """
         Parameters
         ----------
             shots : List[int]
+                List of the shots that we are interested in Probe data for.
+            
             device_name : str
-            data_paths_dict : Dict[int, str]
-            background_paths_dict : Dict[str, str]
-                Paths to different background images (e.g. darkfield, etc.), where the key is the name of the background as a string.
+                Name of the device as a string. There are both Bdot Probes and Faraday Probes on the experiment,
+                which we will need to differentiate between.
+            
+            RAW_data_paths_dict : Dict[int, str]
+                Dictionary of form {SHOT_NO : PATH} containing paths to all raw image data (NOT background-subtracted) for each shot.
+            
+            BKG_paths_dict : Dict[str, str]
+                Paths to different background data (e.g. darkfield, etc.), where the key is the name of the background as a string.
         
         """
 
         # INITIALIZE PARENT BUILDER CLASS
-        super().__init__(shots = shots, device_name=device_name, data_paths_dict=data_paths_dict, background_paths_dict=background_paths_dict)
+        super().__init__(shots = shots, device_name=device_name, data_paths_dict=RAW_data_paths_dict, background_paths_dict=BKG_paths_dict)
 
         # OVERRIDE EMPTY ._build() METHOD FROM PARENT BUILDER CLASS
         self._build = self._build_camera
@@ -180,6 +194,7 @@ class CamBuilder(Builder):
         ----------
             raw_data_path : str
                 Path to where the raw image data for the shot is stored.
+            
             shot_no : int
                 The shot number for which we want to build the camera.
 
@@ -204,7 +219,7 @@ class CamBuilder(Builder):
             device_name=device_name_with_shot,
             output_name=f"Image",
             raw_data_path=raw_data_path,
-            background_paths_dict=self.background_paths_dict
+            background_paths_dict=self.BKG_paths_dict
         )
         # APPEND IMAGE OUTPUT TO THE DEVICE OBJECT'S OUTPUTS LIST
         outputs.append(image_out)

@@ -5,7 +5,10 @@
 # MODULE IMPORTS
 import sys
 import os
-from typing import List, Dict
+from typing import List, Dict, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from builders import Builder
 
 # Add . to path so that the interpreter can find the devices modules.
 sys.path.append(os.path.abspath("."))
@@ -17,18 +20,32 @@ sys.path.append(os.path.abspath("."))
 class RunManager:
     """Manages the run during data collection."""
 
-    def __init__(self, devices:List[str], shots:List[int], rm_builder_key, rm_RAW_data_paths_key, rm_BKG_data_paths_key, plots:bool=False):
+    def __init__(self, devices:List[str], 
+                 shots:List[int], 
+                 rm_builder_key:Dict[str, Builder], 
+                 rm_RAW_data_paths_key:Dict[str, Dict[int, str]], 
+                 rm_BKG_data_paths_key:Dict[str, Dict[int, str]], 
+                 plots:bool=False):
         """
         
         Parameters
         ----------
             devices : List[str]
                 List of names of devices which we want to gather diagnostic information from.
+            
             shots : List[int]
                 List of shots that we are interested in collecting data for.
-            rm_builder_key Dict[str, str]
-            rm_raw_data_paths_key Dict[str, str]
-            rm_background_data_paths_key Dict[str, str]
+            
+            rm_builder_key : Dict[Builder, str]
+                Dictionary that tells our run manager what builder species to use for each device, format {Device Name : Builder Species}. 
+                This is the dictionary that encodes information such as "HRM3 is a camera, and needs a CameraBuilder", or "the Faraday Probe is 
+                a type of field probe, and needs a ProbeBuilder".
+            
+            rm_raw_data_paths_key : Dict[str, Dict[int, str]]
+                Dictionary that tells us where the raw data for each shot is 
+            
+            rm_background_data_paths_key : Dict[str, Dict[int, str]]
+            
             plots : bool
                 Boolean determining whether we are interested in plotting/visualizing data during analysis.
         

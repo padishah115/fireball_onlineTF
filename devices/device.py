@@ -15,6 +15,7 @@ class Device:
     ----------
         name : str
             The name of the device.
+        
         device_outputs : list[Output]
             List of all diagnostics outputs from the device.
 
@@ -22,6 +23,7 @@ class Device:
     -------
         get_outputs()
             Prints a list of all the outputs associated with the device.
+        
         call_analysis()
             Iterates through all outputs assigned to the device, and calls the .analyze() methods
             on each of those outputs.
@@ -34,8 +36,10 @@ class Device:
         ----------
             device_name : str
                 The name of the diagnostic device.
+            
             shot_no : int
                 The shot number for which we have built the device.
+            
             outputs : List[Outputs]
                 List of outputs produced by the device.
 

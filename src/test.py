@@ -3,11 +3,20 @@ import sys
 
 sys.path.append(".")
 
-import input.pathfinder as pf
+def function(a, b):
+    """
+    Parameters
+    ----------
+        a : int
+        
+        b : int
+    """
+
+    return a+b
 
 def main():
     
-    myPathfinder = pf.PathFinder()
+    function(a, )
 
 
 if __name__ == "__main__":

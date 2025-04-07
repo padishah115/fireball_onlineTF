@@ -13,12 +13,19 @@ import numpy as np
 class PathFinder:
     """Class responsible for scraping .csv files which contain information about the storage location of data for all equipment across all shots."""
 
-    def __init__(self, timestamp_csv_path, device_name, shot_key):
+    def __init__(self, timestamp_csv_path:str, device_name:str, shot_key:str):
         """
         Parameters
         ----------
             timestamp_path : str
                 Path to the .csv file containing information about where all data has been stored for each shot.
+            
+            device_name : str
+                Name of device whose data we are interested in. The PathFinder class' mission is to produce a dictionary containing paths to all shot data for all shots
+                for this device.
+            
+            shot_key : str
+                The spelling/format of the header denoting shot number in the .csv-> i.e. is is "shot Number", "Shot Number", or "shOt nUmBeR" etc.
         """
 
         # OBJECT'S CSV PATH. I'VE SHORTENED THIS FOR CLARITY, AND BY THIS POINT THERE
