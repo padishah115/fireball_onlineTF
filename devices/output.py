@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import pandas as pd
 
+from typing import List, Dict
+
 ################
 # PARENT CLASS #
 ################
@@ -19,7 +21,7 @@ import pandas as pd
 
 class Output:
 
-    def __init__(self, device_name:str, output_name:str, data_path:str):
+    def __init__(self, device_name:str, output_name:str, raw_data_path:str, background_paths_dict:Dict[str, str]=None):
         """
         Parameters 
         ----------
@@ -29,22 +31,41 @@ class Output:
                 The name of the parent device from which the output is being read (e.g. PROBE1)
             output_name : str
                 The name of the output itself (e.g. TEMPERATURE1)
-            data_path : str
-                Path to where the relevant data for the output was dumped during beamtime.
+            raw_data_path : str
+                Path to where the relevant RAW data for the output was dumped during beamtime.
+            background_paths_dict : Dict[str, str]
+                Paths to different background images (e.g. darkfield, etc.), where the key is the name of the background as a string.
             
         """
         
         self.device_name = device_name
         self.output_name = output_name
-        self.data_path = data_path
+        self.raw_data_path = raw_data_path
+        self.background_paths_dict = background_paths_dict
         
 
     def __repr__(self):
         return f"{self.output_name} (Output) from {self.device_name}"
 
     def analyze(self):
-        """Empty placeholder function defining the method by which data is analyzed from a certain device_name's output."""
-        raise NotImplementedError(f"Error: no analyze() method produced for {self}")
+        """Call analysis on the image, first getting the RAW data (no background subtraction), followed by the corrected data (with various types of background subtraction)."""
+        self.raw()
+
+        if not self.background_paths_dict == None: #Check to see whether we were actually passed any background images.
+            self.corrected()
+    
+    def raw(self):
+        """Empty placeholder function which plots the raw data without background subtraction."""
+        raise NotImplementedError(f"Error: no raw() method provided for {self}")
+    
+    def corrected(self):
+        """Iterates over all the supplied species of background, and performs relevant background subtraction."""
+        for bkg_name, bkg_path in self.background_paths_dict.items():
+            self._background_subtracted(bkg_name=bkg_name, bkg_path=bkg_path)
+
+    def _background_subtracted(self,):
+        """Empty placeholder function for background subtraction."""
+        raise NotImplementedError(f"Error: no background_subtracted() method provided for {self}")
 
 
 #########
@@ -58,7 +79,7 @@ class Output:
 class Image(Output):
     """Class for outputs that take the form of images."""
 
-    def __init__(self, device_name:str, output_name:str, data_path:str, lognorm=True):
+    def __init__(self, device_name:str, output_name:str, raw_data_path:str, background_paths_dict:Dict[str, str]=None, lognorm=True):
         """
             device_name : str
                 The name of the parent device that the image output is being passed to. Note
@@ -66,18 +87,24 @@ class Image(Output):
                 specify the camera name.
             output_name : str
                 The name of the image output- what exactly are we looking at?
-            data_path : str
+            raw_data_path : str
                 Path to the raw image data.
+            background_paths_dict : Dict[str, str]
+                Paths to different background images (e.g. darkfield, etc.), where the key is the name of the background as a string.
             lognorm : bool
                 Determines whether we want to use logarithmic normalisation when depicting the image data.
         
         """
 
         # INITIALIZE BASE CLASS
-        super().__init__(device_name, output_name, data_path)
+        super().__init__(device_name, output_name, raw_data_path, background_paths_dict)
 
-        # OVERRIDE BASE CLASS ANALYZE METHOD
-        self.analyze = self.plot_image
+        # INITIALIZE RAW IMAGE DATA, CONVERTING FROM .CSV TO NUMPY ARRAY
+        self.raw_image_array = np.genfromtxt(self.raw_data_path, delimiter=',')
+        
+        # FIND MIN AND MAX PIXEL VALUES FOR NORMALIZATION
+        self.raw_pmax = np.nanmax(self.raw_image_array) # RAW pixel intensity maximum
+        self.raw_pmin = np.nanmin(self.raw_image_array) # RAW pixel intensity minimum
 
         # BOOLEAN DETERMINING WHETHER THE IMAGES ARE PLOTTED WITH LOGARITHMIC NORMALIZATION
         self.lognorm = lognorm
@@ -86,26 +113,50 @@ class Image(Output):
         """Representation dunder method."""
         return super().__repr__() # MAINTAIN SAME __repr__ AS BASE CLASS
     
-    def plot_image(self):
-        """Plots image data."""
-        
-        # CONVERT IMAGE FROM .CSV FORMAT TO NUMPY ARRAY
-        image_array = np.genfromtxt(self.data_path, delimiter=',')
-        pmax = np.nanmax(image_array) # pixel intensity maximum
-        pmin = np.nanmin(image_array) # pixel intensity minimum
-
+    def raw(self):
+        """Plots raw data without any background subtraction."""
         # Plot the bitmap of the captured image.
-        plt.title(f"Image Capture from {self.device_name}")
+        plt.title(f"Raw Image Capture from {self.device_name}\n (No Background Subtraction)")
         
         # Check whether we are using logarithmic normalization, and plot image appropriately.
         if self.lognorm:
-            print(f'pmax: {pmax}, pmin: {pmin}')
-            normalization = LogNorm(vmin=pmin, vmax=pmax)
-            plt.imshow(image_array, norm=normalization)
+            print(f'pmax: {self.raw_pmax}, pmin: {self.raw_pmin}')
+            normalization = LogNorm(vmin=self.raw_pmin, vmax=self.raw_pmax)
+            plt.imshow(self.raw_image_array, norm=normalization)
         else:
-            plt.imshow(image_array)
+            plt.imshow(self.raw_image_array)
         
         plt.show()
+
+
+    def _background_subtracted(self, bkg_name, bkg_path):
+        """"""
+        
+        # LOAD THE BACKGROUND IMAGE FROM .CSV AND SUBTRACT FROM RAW IMAGE.
+        background_array = np.genfromtxt(bkg_path, delimiter=',')
+
+        if self.raw_image_array.shape == background_array.shape:
+            corrected_image = np.subtract(self.raw_image_array, background_array)
+            
+            #Produce new pixel minima and maxima from the corrected image.
+            corr_pmax = np.nanmax(corrected_image)
+            corr_pmin = np.nanmin(corrected_image)
+
+            # Plot the bitmap of the captured image.
+            plt.title(f"Image Capture from {self.device_name}\n ({bkg_name}-Subtracted)")
+            
+            # Check whether we are using logarithmic normalization, and plot image appropriately.
+            if self.lognorm:
+                print(f'pmax: {corr_pmax}, pmin: {corr_pmin}')
+                normalization = LogNorm(vmin=corr_pmin, vmax=corr_pmax)
+                plt.imshow(corrected_image, norm=normalization)
+            else:
+                plt.imshow(corrected_image)
+            
+            plt.show()
+
+        else:
+            raise ValueError(f"Warning: for {self.device_name}, {bkg_name} background image and raw image do not have matching dimensions.")
 
 
 ##################
@@ -120,11 +171,12 @@ class eField(Output):
     def __init__(self, 
                  device_name:str, 
                  output_name:str="E Field", 
-                 data_path:str="", 
-                 t_units:str="s", 
-                 e_units:str="V", 
-                 t_key:str='Time', 
-                 e_key:str='Ampl',
+                 raw_data_path:str="", 
+                 background_paths_dict:Dict[str, str]=None,
+                 time_units:str="s", 
+                 voltage_units:str="V", 
+                 time_key:str='Time', 
+                 voltage_key:str='Ampl',
                  skiprows:int = 4,
                  ):
         """
@@ -135,54 +187,70 @@ class eField(Output):
                 The name of the parent device from which the output is being read (e.g. PROBE1)
             output_name : str
                 The name of the output itself (e.g. E Field)
-            data_path : str
-                The path to the location containing data for the electric field.
-            t_units : str
+            raw_data_path : str
+                The path to the location containing RAW data for the electric field.
+            background_paths_dict : Dict[str, str]
+                Paths to different background images (e.g. darkfield, etc.), where the key is the name of the background as a string.
+            time_units : str
                 Units in which time is measured by the device_name.
-            e_units : str
+            voltage_units : str
                 Units in which the electric field is measured.
-            t_key : str
+            time_key : str
                 The key used to label time information in the .csv. Default is 'Time'.
-            e_key : str
+            voltage_key : str
                 The key used to label electric field information in the .csv. Default is 'Ampl'.
             skiprows : int
                 Due to the ugly nature of the LECROY oscilloscope outputs, we have to skip over some of the initial lines.
         """
 
         # CALL INIT FUNCTION ON OUTPUT BASE CLASS
-        super().__init__(device_name=device_name, output_name=output_name, data_path=data_path)
+        super().__init__(device_name=device_name, output_name=output_name, raw_data_path=raw_data_path, background_paths_dict=background_paths_dict)
         
         # SPECIFY UNITS IN WHICH TIME AND ELECTRIC FIELD ARE MEASURED BY THE device_name
-        self.t_units = t_units
-        self.e_units = e_units
+        self.time_units = time_units
+        self.voltage_units = voltage_units
         
         # SPECIFY THE KEYS USED FOR TIME AND ELECTRIC FIELD DATA IN THE .CSV FILE
-        self.t_key = t_key
-        self.e_key = e_key
+        self.time_key = time_key
+        self.voltage_key = voltage_key
 
         # HOW MANY ROWS IN THE .CSV DO WE NEED TO SKIP IN ORDER TO ACCOMMODATE THE WEIRD LECROY OUTPUT
         self.skiprows = skiprows
 
-        # OVERRIDE ANALYZE FUNCTION WITH PLOT TRACE FUNCTION
-        self.analyze = self.plot_trace
+        self.raw_scope_data = pd.read_csv(self.raw_data_path, skiprows=self.skiprows)
+        self.time = self.raw_scope_data[self.time_key] # time data from .csv
+        self.raw_voltage = self.raw_scope_data[self.voltage_key] # electric field 
+
 
     def __repr__(self):
         """Representation dunder method."""
         return super().__repr__() #MAINTAIN SAME REPRESENTATION AS OUTPUT BASE CLASS
     
-    def plot_trace(self):
-        """Plots the trace from an oscilloscope.
+    def raw(self):
+        """Plots the trace from an oscilloscope, without any background corrections.
         """
 
-        if not self.data_path.endswith('.csv'):
-            raise ValueError(f"Error: expected .csv file for eField data for {self}, but got {self.data_path}")
-
-        scope_data = pd.read_csv(self.data_path, skiprows=self.skiprows)
-        t = scope_data[self.t_key]
-        v = scope_data[self.e_key]
+        if not self.raw_data_path.endswith('.csv'):
+            raise ValueError(f"Error: expected .csv file for eField data for {self}, but got {self.raw_data_path}")
 
         plt.title(f'Electric Field from {self.device_name}')
-        plt.ylabel(f'Electric Field / {self.e_units}')
-        plt.xlabel(f'Time / {self.t_units}')
-        plt.plot(t, v)
+        plt.ylabel(f'Electric Field / {self.voltage_units}')
+        plt.xlabel(f'Time / {self.time_units}')
+        plt.plot(self.time, self.raw_voltage)
         plt.show()
+
+    def _background_subtracted(self, bkg_name, bkg_path):
+
+        # LOAD BACKGROUND SCOPE TRACE AND RECOVER VOLTAGE DATA
+        bkg_scope_data = pd.read_csv(bkg_path, skiprows=self.skiprows)
+        bkg_voltage = bkg_scope_data[self.voltage_key]
+
+        # PERFORM BACKGROUND SUBTRACTION
+        corrected_voltage = np.subtract(self.raw_voltage, bkg_voltage)
+
+        plt.title(f'Electric Field from {self.device_name}\n ({bkg_name}-SUBTRACTED)')
+        plt.ylabel(f'Electric Field / {self.voltage_units}')
+        plt.xlabel(f'Time / {self.time_units}')
+        plt.plot(self.time, corrected_voltage)
+        plt.show()
+

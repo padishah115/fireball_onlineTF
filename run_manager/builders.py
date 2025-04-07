@@ -20,7 +20,7 @@ class Builder():
     a certain species of device at certain shot numbers. Each device has a separate constructor to account for the fact that we want
     differene names."""
 
-    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str]):
+    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str], background_paths_dict:Dict[str, str]):
         """
         Parameters
         ----------
@@ -30,15 +30,18 @@ class Builder():
                 Name of the device itself.
             data_paths_dict : Dict[int, str]
                 Dictionary containing paths to all data, indexed (key'd) by shot number.
+            background_paths_dict : Dict[str, str]
+                Paths to different background images (e.g. darkfield, etc.), where the key is the name of the background as a string.
         
         """
         self.shots = shots
         self.device_name = device_name
         self.data_paths_dict = data_paths_dict
+        self.background_paths_dict = background_paths_dict
 
         self.Devices = {}
 
-    def _build(self, data_path, shot_no)->Device:
+    def _build(self, raw_data_path, shot_no)->Device:
         """Placeholder _build function to be overriden in derivative classes."""
         raise NotImplementedError(f"Error: no _build() method supplied fo r")
 
@@ -61,7 +64,7 @@ class Builder():
                 KeyError(f"Error: specified shot number {shot} for {self.device_name}, but no data exists for this shot.")
 
             # ADD DEVICE OBJECT TO DEVICES DICTIONARY, WHERE THE KEY IS GIVEN BY THE SHOT NUMBER
-            self.Devices[shot] = self._build(data_path=data_path, shot_no=shot)
+            self.Devices[shot] = self._build(raw_data_path=data_path, shot_no=shot)
 
         # RETURN DEVICES DICTIONARY, WHICH IS OF FORM {SHOT NO : DEVICE OBJECT}
         return self.Devices
@@ -73,7 +76,7 @@ class Builder():
 class ProbeBuilder(Builder):
     """Class responsible for building Faraday or Bdot Probe device objects for the desired shot numbers at run time."""
 
-    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str]):
+    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str], background_paths_dict:Dict[str, str]):
         """
         Parameters
         ----------
@@ -84,11 +87,13 @@ class ProbeBuilder(Builder):
                 which we will need to differentiate between.
             data_paths_dict : Dict[int, str]
                 Dictionary of form {SHOT_NO : PATH} containing paths to all E field oscilloscope data for each shot.
+            background_paths_dict : Dict[str, str]
+                Paths to different background images (e.g. darkfield, etc.), where the key is the name of the background as a string.
         
         """
         
         # INITIALIZE PARENT BUILDER CLASS
-        super().__init__(shots=shots, device_name=device_name, data_paths_dict=data_paths_dict)
+        super().__init__(shots=shots, device_name=device_name, data_paths_dict=data_paths_dict, background_paths_dict=background_paths_dict)
 
         # OVERRIDE PARENT BUILDER CLASS' _build() METHOD
         self._build = self._build_probe
@@ -96,13 +101,13 @@ class ProbeBuilder(Builder):
         self.Probes = {}
 
 
-    def _build_probe(self, data_path:str, shot_no:int)->Device:
+    def _build_probe(self, raw_data_path:str, shot_no:int)->Device:
         """Builds a single Probe at a specified shot number.
     
         Parameters
         ----------
-            data_path : str
-                The path where the relevant data (for the specified shot!) of the Electric Field is stored.
+            raw_data_path : str
+                The path where the relevant (RAW) data (for the specified shot!) of the Electric Field is stored.
             shot_no : int
                 The shot number for which we want to build the probe.
 
@@ -124,13 +129,13 @@ class ProbeBuilder(Builder):
         outputs = []
 
         # INTIALIZE EFIELD OUTPUT   
-        efield = eField(device_name=device_name_with_shot, data_path=data_path)
+        efield = eField(device_name=device_name_with_shot, raw_data_path=raw_data_path, background_paths_dict=self.background_paths_dict)
         outputs.append(efield)
 
         Probe = Device(
             device_name=device_name_with_shot,
             shot_no=shot_no,
-            outputs=outputs
+            outputs=outputs,
         )
 
         return Probe
@@ -146,18 +151,20 @@ class ProbeBuilder(Builder):
 class CamBuilder(Builder):
     """Builder class for cameras, which produce image outputs."""
     
-    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str]):
+    def __init__(self, shots:List[int], device_name:str, data_paths_dict:Dict[int, str], background_paths_dict:Dict[str, str]):
         """
         Parameters
         ----------
             shots : List[int]
             device_name : str
-            image_data_paths : Dict[int, str]
+            data_paths_dict : Dict[int, str]
+            background_paths_dict : Dict[str, str]
+                Paths to different background images (e.g. darkfield, etc.), where the key is the name of the background as a string.
         
         """
 
         # INITIALIZE PARENT BUILDER CLASS
-        super().__init__(shots = shots, device_name=device_name, data_paths_dict=data_paths_dict)
+        super().__init__(shots = shots, device_name=device_name, data_paths_dict=data_paths_dict, background_paths_dict=background_paths_dict)
 
         # OVERRIDE EMPTY ._build() METHOD FROM PARENT BUILDER CLASS
         self._build = self._build_camera
@@ -166,13 +173,13 @@ class CamBuilder(Builder):
         self.Cameras = {}
 
 
-    def _build_camera(self, data_path:str, shot_no:int)->Device:
+    def _build_camera(self, raw_data_path:str, shot_no:int)->Device:
         """Builds a single camera object at the specified shot number.
         
         Parameters
         ----------
-            image_data_path : str
-                Path to where the image data for the shot is stored.
+            raw_data_path : str
+                Path to where the raw image data for the shot is stored.
             shot_no : int
                 The shot number for which we want to build the camera.
 
@@ -196,7 +203,8 @@ class CamBuilder(Builder):
         image_out = Image(
             device_name=device_name_with_shot,
             output_name=f"Image",
-            data_path=data_path
+            raw_data_path=raw_data_path,
+            background_paths_dict=self.background_paths_dict
         )
         # APPEND IMAGE OUTPUT TO THE DEVICE OBJECT'S OUTPUTS LIST
         outputs.append(image_out)

@@ -10,15 +10,8 @@ from typing import List, Dict
 # Add . to path so that the interpreter can find the devices modules.
 sys.path.append(os.path.abspath("."))
 
-#Import device and output classes for device object construction
-from devices.device import Device
-from devices.output import *
-
-#Import builder classes that construct multiple instances of an object for different shots
-from run_manager.builders import *
-
-#Import information from configuration file, paths.py, containing the location of all paths to all data.
-from run_manager.paths import *
+# Import configuration information- this tells the run_manager which devices correspond to which builder species and which data_paths. 
+from input.run_manager_config import *
 
 #####################
 # RUN MANAGER CLASS #
@@ -58,17 +51,9 @@ class RunManager:
         # the appropriate paths_dictionary.
         # Remember that the paths_dictionary is the dictionary containing the paths to all data for a specific device across all shots.
 
-        # BUILDER DICTIONARY: 
-        self.builder_key : Dict[str, Builder]= {
-            "faraday probe" : ProbeBuilder,
-            "hrm3" : CamBuilder
-        }
-
-        # DICTIONARY OF PATHS DICTIONARIES (dictionary squared)
-        self.paths_key : Dict[str, Dict[int, str]] = {
-            "faraday probe" : FP1_efield_data_paths,
-            "hrm3" : HRM3_image_data_paths
-        }
+        self.builder_key = builder_key
+        self.raw_data_paths_key = raw_data_paths_key
+        self.background_data_paths_key = background_data_paths_key
 
     
     def run(self):
@@ -86,10 +71,13 @@ class RunManager:
             device_builder = self.builder_key[device.lower()]
 
             # GET THE DATA PATHS DICTIONARY FOR THE DEVICE- this is the dictionary of the form {SHOT NO : /path/to/device/data/for/shot_no}
-            data_paths_dict = self.paths_key[device.lower()]
+            data_paths_dict = self.raw_data_paths_key[device.lower()]
+
+            # GET THE DICTIONARY INDEXING THE DIFFERENT TYPES OF BACKGROUND IMAGE FOR THE DEVICE
+            background_paths_dict = self.background_data_paths_key[device.lower()]
 
             # CONSTRUCT INSTANCE OF THE DEVICE BUILDER CLASS, e.g. builder_instance = CamBuilder(shots=...)
-            builder_instance = device_builder(shots=self.shots, device_name=device_name, data_paths_dict=data_paths_dict)
+            builder_instance = device_builder(shots=self.shots, device_name=device_name, data_paths_dict=data_paths_dict, background_paths_dict=background_paths_dict)
             
             #  RECEIVE DICTIONARY OF THE DEVICE OBJECTS FOR ALL SPECIFIED SHOTS, FORM {SHOT NO : DEVICE}
             devices_objs = builder_instance.build_devices() #THIS COULD BE A DICTIONARY OF PROBES AT DIFFERENT SHOTS, OR OF HRM3 CAMS AT DIFFERENT SHOTS

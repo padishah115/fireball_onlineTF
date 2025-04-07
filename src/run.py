@@ -27,6 +27,7 @@ def main():
     #ARE WE INTERESTED IN SEEING ANY VISUALISATION OF THE DATA?
     plots=True
 
+    # INITIALIZE THE RUN MANAGER
     myManager=RunManager(
         devices=myDevices,
         shots=myShots,

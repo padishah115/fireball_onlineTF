@@ -37,6 +37,7 @@ class Device:
             shot_no : int
                 The shot number for which we have built the device.
             outputs : List[Outputs]
+                List of outputs produced by the device.
 
         """
         
@@ -68,6 +69,7 @@ class Device:
         for output in self.outputs:
             print(f"Calling analysis for {output} ...")
             output.analyze() # CALL .analyze() METHOD ON ALL OUTPUTS
+
 
 
 
