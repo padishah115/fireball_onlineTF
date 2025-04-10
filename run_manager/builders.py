@@ -99,7 +99,7 @@ class ProbeBuilder(Builder):
         """
         
         # INITIALIZE PARENT BUILDER CLASS
-        super().__init__(shots=shots, device_name=device_name, data_paths_dict=RAW_data_paths_dict, background_paths_dict=BKG_paths_dict)
+        super().__init__(shots=shots, device_name=device_name, RAW_data_paths_dict=RAW_data_paths_dict, BKG_paths_dict=BKG_paths_dict)
 
         # OVERRIDE PARENT BUILDER CLASS' _build() METHOD
         self._build = self._build_probe
@@ -178,7 +178,7 @@ class CamBuilder(Builder):
         """
 
         # INITIALIZE PARENT BUILDER CLASS
-        super().__init__(shots = shots, device_name=device_name, data_paths_dict=RAW_data_paths_dict, background_paths_dict=BKG_paths_dict)
+        super().__init__(shots = shots, device_name=device_name, RAW_data_paths_dict=RAW_data_paths_dict, BKG_paths_dict=BKG_paths_dict)
 
         # OVERRIDE EMPTY ._build() METHOD FROM PARENT BUILDER CLASS
         self._build = self._build_camera

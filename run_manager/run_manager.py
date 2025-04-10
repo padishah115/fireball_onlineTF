@@ -7,8 +7,8 @@ import sys
 import os
 from typing import List, Dict, TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from builders import Builder
+
+from run_manager.builders import Builder
 
 # Add . to path so that the interpreter can find the devices modules.
 sys.path.append(os.path.abspath("."))
@@ -88,13 +88,16 @@ class RunManager:
             device_builder = self.builder_key[device.lower()]
 
             # GET THE DATA PATHS DICTIONARY FOR THE DEVICE- this is the dictionary of the form {SHOT NO : /path/to/device/data/for/shot_no}
-            data_paths_dict = self.raw_data_paths_key[device.lower()]
+            RAW_data_paths_dict = self.raw_data_paths_key[device.lower()]
 
             # GET THE DICTIONARY INDEXING THE DIFFERENT TYPES OF BACKGROUND IMAGE FOR THE DEVICE
-            background_paths_dict = self.background_data_paths_key[device.lower()]
+            BKG_paths_dict = self.background_data_paths_key[device.lower()]
 
             # CONSTRUCT INSTANCE OF THE DEVICE BUILDER CLASS, e.g. builder_instance = CamBuilder(shots=...)
-            builder_instance = device_builder(shots=self.shots, device_name=device_name, data_paths_dict=data_paths_dict, background_paths_dict=background_paths_dict)
+            builder_instance = device_builder(shots=self.shots, 
+                                              device_name=device_name, 
+                                              RAW_data_paths_dict=RAW_data_paths_dict, 
+                                              BKG_paths_dict=BKG_paths_dict)
             
             #  RECEIVE DICTIONARY OF THE DEVICE OBJECTS FOR ALL SPECIFIED SHOTS, FORM {SHOT NO : DEVICE}
             devices_objs = builder_instance.build_devices() #THIS COULD BE A DICTIONARY OF PROBES AT DIFFERENT SHOTS, OR OF HRM3 CAMS AT DIFFERENT SHOTS
