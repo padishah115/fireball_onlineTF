@@ -15,65 +15,103 @@ sys.path.append(os.path.abspath("."))
 from run_manager.builders import * 
 from pathfinder.pathfinder import PathFinder
 
-def get_config():
-    #####################################################
-    # SHOT LOG .CSVs (must be hardcoded, unfortunately) #
-    #####################################################
+#WHICH DEVICES ARE WE INTERESTED IN ANALYZING DATA FROM?
+myDevices = [
+        "Faraday Probe", 
+        "HRM3"
+    ]
 
-    shot_key = "shot number"
+#WHICH SHOTS ARE WE INTERESTED IN GATHERING DATA FROM?
+myShots = [1, 2, 3]
 
-    #CAMERA SHOT LOG .CSV
-    faradayprobe_timestamp_csv_path = './example_data/bogus_HRMT64_timestamps_faradayprobefiles.csv'
-    camera_timestamp_csv_path = './example_data/bogus_HRMT64_timestamps_camerafiles.csv'
+master_timestamps_path_dict = {
+    "FARADAY PROBE" : {
+        "RAW_csv_path" : './example_data/bogus_HRMT64_timestamps_faradayprobefiles.csv',
+        "BKG_csv_path" : './example_data/bogus_HRMT64_timestamps_fpbackgrounds.csv'
+    },
 
-    ######################################
-    # DATA PATH DICTIONARY CONFIGURATION #
-    ######################################
-    #  This is where, for each device, we use Pascal's .csvs to create dictionaries for each device of form
-    # {SHOT_NO : /path/to/device/data/for/shot} - these are the DATA_PATHS_DICT variables.
-
-    # FARADAY PROBE 1
-    FP_pathfinder = PathFinder(timestamp_csv_path=faradayprobe_timestamp_csv_path, device_name="Faraday Probe", shot_key=shot_key)
-    FP_RAW_data_paths_dict = FP_pathfinder.get_data_paths_dict() #will be 100s of entries long
-    FP_BKG_data_paths_dict = {
-        "DARKFIELD":"./example_data/C1--XX_SCOPE2--00081.csv",
-        "BEAM ON, PLASMA OFF":"./example_data/C1--XX_SCOPE2--00081.csv",
-    } #will be 100s of entries long
-
-    # HRM3 CAMERA
-    HRM3_pathfinder = PathFinder(timestamp_csv_path=camera_timestamp_csv_path, device_name="HRM3", shot_key=shot_key)
-    HRM3_RAW_data_paths_dict = HRM3_pathfinder.get_data_paths_dict()
-    HRM3_BKG_data_paths_dict = {
-        "DARKFIELD":"./example_data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv", # darkfield image
-        "BEAM ON, PLASMA OFF":"./example_data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv"
-    } #will be 100s of entries long
-
-
-    #################################
-    # RUNMANAGER (RM) CONFIGURATION #
-    #################################
-    # These dictionaries tell the run_manager which devices correspond to which builder species and which data_paths. 
-
-    rm_builder_key : Dict[str, Builder]= {
-        "faraday probe" : ProbeBuilder,
-        "hrm3" : CamBuilder,
-        "hrm4" : CamBuilder,
-        "hrm5" : CamBuilder,
-        "hrm6" : CamBuilder
+    "HRM3" : {
+        "RAW_csv_path" : './example_data/bogus_HRMT64_timestamps_camerafiles.csv',
+        "BKG_csv_path" :'./example_data/bogus_HRMT64_timestamps_cambackgrounds.csv'
     }
-
-    rm_RAW_data_paths_key : Dict[str, Dict[int, str]] = {
-        "faraday probe" : FP_RAW_data_paths_dict,
-        "hrm3" : HRM3_RAW_data_paths_dict
-    }
-
-    rm_BKG_data_paths_key : Dict[str, Dict[int, str]] = {
-        "faraday probe" : FP_BKG_data_paths_dict,
-        "hrm3" : HRM3_BKG_data_paths_dict
-    }
+}
 
 
-    return rm_builder_key, rm_RAW_data_paths_key, rm_BKG_data_paths_key
+#What is the name of the column indexing shot numbers in the .csv files?
+shot_key = "shot number"
+
+######################################
+# DATA PATH DICTIONARY CONFIGURATION #
+######################################
+
+master_path_dict = {device_name.upper() : {} for device_name in myDevices}
+print("Master path dictionary: ", master_path_dict)
+
+for device_name in myDevices:
+
+    device_name = device_name.upper()
+
+    RAW_csv_path = master_timestamps_path_dict[device_name]["RAW_csv_path"]
+    BKG_csv_path = master_timestamps_path_dict[device_name]["BKG_csv_path"]
+
+    pathfinder = PathFinder(
+        RAW_timestamp_csv_path=RAW_csv_path,
+        BKG_timestamp_csv_path=BKG_csv_path,
+        device_name=device_name,
+        shot_key=shot_key
+    )
+
+    master_path_dict[device_name]["RAW_data_path"] = pathfinder.get_RAW_data_paths_dict()
+    master_path_dict[device_name]["BKG_data_path"] = pathfinder.get_BKG_data_paths_dict()
+
+# ###################
+# # FARADAY PROBE 1 #
+# ###################
+# FP_pathfinder = PathFinder(RAW_timestamp_csv_path=RAW_fp_timestamp_csv_path, 
+#                            BKG_timestamp_csv_path=BKG_fp_timestamp_csv_path,
+#                            device_name="Faraday Probe", 
+#                            shot_key=shot_key)
+
+# FP_RAW_data_paths_dict = FP_pathfinder.get_RAW_data_paths_dict() #will be 100s of entries long
+# FP_BKG_data_paths_dict = FP_pathfinder.get_BKG_data_paths_dict() #will be 100s of entries long
+
+# ###############
+# # HRM3 CAMERA #
+# ###############
+# HRM3_pathfinder = PathFinder(RAW_timestamp_csv_path=RAW_cam_timestamp_csv_path, 
+#                              BKG_timestamp_csv_path=BKG_cam_timestamp_csv_path,
+#                              device_name="HRM3", 
+#                              shot_key=shot_key)
+
+# HRM3_RAW_data_paths_dict = HRM3_pathfinder.get_RAW_data_paths_dict()
+# HRM3_BKG_data_paths_dict = HRM3_pathfinder.get_BKG_data_paths_dict()
+
+
+#################################
+# RUNMANAGER (RM) CONFIGURATION #
+#################################
+# These dictionaries tell the run_manager which devices correspond to which builder species and which data_paths. 
+
+rm_builder_key : Dict[str, Builder]= {
+    "FARADAY PROBE" : ProbeBuilder,
+    "HRM3" : CamBuilder,
+}
+
+rm_RAW_data_paths_key : Dict[str, Dict[int, str]] = {
+    "FARADAY PROBE" : master_path_dict["FARADAY PROBE"]["RAW_data_path"],
+    "HRM3" : master_path_dict["HRM3"]["RAW_data_path"]
+}
+
+rm_BKG_data_paths_key : Dict[str, Dict[int, str]] = {
+    "FARADAY PROBE" : master_path_dict["FARADAY PROBE"]["BKG_data_path"],
+    "HRM3" : master_path_dict["HRM3"]["BKG_data_path"]
+}
+
+print("Builder key: ", rm_builder_key)
+print("Raw data paths", rm_RAW_data_paths_key)
+print("Background paths", rm_BKG_data_paths_key)
+
+
 
 
 

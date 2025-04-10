@@ -100,12 +100,12 @@ class Image(Output):
         super().__init__(device_name, output_name, raw_data_path, background_paths_dict)
 
         # INITIALIZE RAW IMAGE DATA, CONVERTING FROM .CSV TO NUMPY ARRAY
-        self.raw_image_array = np.genfromtxt(self.raw_data_path, delimiter=',')
+        self.raw_image_array = np.nan_to_num(np.genfromtxt(self.raw_data_path, delimiter=','), nan=0)
         
         # FIND MIN AND MAX PIXEL VALUES FOR NORMALIZATION
         self.raw_pmax = np.nanmax(self.raw_image_array) # RAW pixel intensity maximum
         self.raw_pmin = np.nanmin(self.raw_image_array) # RAW pixel intensity minimum
-
+        
         # BOOLEAN DETERMINING WHETHER THE IMAGES ARE PLOTTED WITH LOGARITHMIC NORMALIZATION
         self.lognorm = lognorm
 
@@ -121,7 +121,7 @@ class Image(Output):
         # Check whether we are using logarithmic normalization, and plot image appropriately.
         if self.lognorm:
             print(f'pmax: {self.raw_pmax}, pmin: {self.raw_pmin}')
-            normalization = LogNorm(vmin=self.raw_pmin, vmax=self.raw_pmax)
+            normalization = LogNorm()
             plt.imshow(self.raw_image_array, norm=normalization)
         else:
             plt.imshow(self.raw_image_array)
@@ -129,11 +129,20 @@ class Image(Output):
         plt.show()
 
 
-    def _background_subtracted(self, bkg_name, bkg_path):
-        """"""
+    def _background_subtracted(self, bkg_name:str, bkg_path:str):
+        """Subtracts the background image from the raw image.
+        
+        Parameters
+        ----------
+            bkg_name : str
+                The name of the type of background that is being subtracted (i.e. "BEAM OFF", "DARKFIELD", etc.)
+
+            bkg_path : str
+                Path to the specified background image data.
+        """
         
         # LOAD THE BACKGROUND IMAGE FROM .CSV AND SUBTRACT FROM RAW IMAGE.
-        background_array = np.genfromtxt(bkg_path, delimiter=',')
+        background_array = np.nan_to_num(np.genfromtxt(bkg_path, delimiter=','), nan=0.0)
 
         if self.raw_image_array.shape == background_array.shape:
             corrected_image = np.subtract(self.raw_image_array, background_array)
@@ -148,7 +157,7 @@ class Image(Output):
             # Check whether we are using logarithmic normalization, and plot image appropriately.
             if self.lognorm:
                 print(f'pmax: {corr_pmax}, pmin: {corr_pmin}')
-                normalization = LogNorm(vmin=corr_pmin, vmax=corr_pmax)
+                normalization = LogNorm()
                 plt.imshow(corrected_image, norm=normalization)
             else:
                 plt.imshow(corrected_image)

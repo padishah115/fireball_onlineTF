@@ -85,13 +85,13 @@ class RunManager:
             device_name = device.upper()
 
             # CREATE ALIAS "device_builder" FOR THE SPECIFIC DEVICE BUILDER CLASS- this could be CamBuilder or ProbeBuilder, etc.
-            device_builder = self.builder_key[device.lower()]
+            device_builder = self.builder_key[device_name]
 
             # GET THE DATA PATHS DICTIONARY FOR THE DEVICE- this is the dictionary of the form {SHOT NO : /path/to/device/data/for/shot_no}
-            RAW_data_paths_dict = self.raw_data_paths_key[device.lower()]
+            RAW_data_paths_dict = self.raw_data_paths_key[device_name]
 
             # GET THE DICTIONARY INDEXING THE DIFFERENT TYPES OF BACKGROUND IMAGE FOR THE DEVICE
-            BKG_paths_dict = self.background_data_paths_key[device.lower()]
+            BKG_paths_dict = self.background_data_paths_key[device_name]
 
             # CONSTRUCT INSTANCE OF THE DEVICE BUILDER CLASS, e.g. builder_instance = CamBuilder(shots=...)
             builder_instance = device_builder(shots=self.shots, 
