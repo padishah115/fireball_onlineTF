@@ -7,7 +7,7 @@ import sys
 import os
 from typing import List, Dict, TYPE_CHECKING
 
-
+from pathfinder.pathfinder import PathFinder
 from run_manager.builders import Builder
 
 # Add . to path so that the interpreter can find the devices modules.
@@ -23,8 +23,6 @@ class RunManager:
     def __init__(self, devices:List[str], 
                  shots:List[int], 
                  rm_builder_key:Dict[str, Builder], 
-                 rm_RAW_data_paths_key:Dict[str, Dict[int, str]], 
-                 rm_BKG_data_paths_key:Dict[str, Dict[int, str]], 
                  plots:bool=False):
         """
         
@@ -52,7 +50,7 @@ class RunManager:
         """
 
         # INITIALIZE LIST OF DEVICES WE WANT TO SCRAPE DATA FROM
-        self.devices = devices
+        self.devices = [device.upper() for device in devices]
 
         # INITIALIZE LIST OF SHOTS FOR WHICH WE ARE INTERESTED IN DATA FROM THESE DEVICES
         self.shots = shots
@@ -60,17 +58,57 @@ class RunManager:
         # PLOT BOOLEAN- DO WE WANT TO ACTUALLY VISUALIZE THE DATA?
         self.plots = plots
 
-        #  The following might be a bit difficult to understand at first, so take a look at the self.run() function of the RunManager class below,
-        # and then come back here to get a better feel for why we need these dictionaries. Broadly, these dictionaries allow us to significantly
-        # clean up the self.run() function by allowing us to mostly ignore which specific device is being called as the self.run() function
-        # iterates through the self.devices list. Therefore, we don't have to specify whether we need CamBuilder or Probebuilder etc., as these
-        # dictionaries below will take a look at the device name at the beginning of self.run(), and then provide us with the appropriate Builder OR 
-        # the appropriate paths_dictionary.
-        # Remember that the paths_dictionary is the dictionary containing the paths to all data for a specific device across all shots.
-
+        # Conversion between device name and builder class (i.e. HRM3 and HRM4 both require CamBuilder, Faraday Probe requires ProbeBuilder)
         self.builder_key = rm_builder_key
-        self.raw_data_paths_key = rm_RAW_data_paths_key
-        self.background_data_paths_key = rm_BKG_data_paths_key
+
+    
+    def configure(self, master_timestamps_path_dict, shot_key):
+        """
+        Configures the runmanager to have appropriate dictionaries for the background data paths and raw data paths for each device.
+
+        Parameters
+        ----------
+            master_timestamps_path_dict : Dict
+                Dictionary of dictionaries, where the "key" is the device name, and the value is a dictionary containing paths to the
+                timestamps .csvs for the raw and background image data.
+
+            shot_key : str 
+                Name of the column header (in correct case/spelling) which denotes the shot number in each .csv
+
+        """
+
+        ######################################
+        # DATA PATH DICTIONARY CONFIGURATION #
+        ######################################
+
+        master_path_dict = {device_name : {} for device_name in self.devices}
+        print("Master path dictionary: ", master_path_dict)
+
+        for device_name in self.devices:
+
+            device_name = device_name
+
+            RAW_csv_path = master_timestamps_path_dict[device_name]["RAW_csv_path"]
+            BKG_csv_path = master_timestamps_path_dict[device_name]["BKG_csv_path"]
+
+            pathfinder = PathFinder(
+                RAW_timestamp_csv_path=RAW_csv_path,
+                BKG_timestamp_csv_path=BKG_csv_path,
+                device_name=device_name,
+                shot_key=shot_key
+            )
+
+            master_path_dict[device_name]["RAW_data_path"] = pathfinder.get_RAW_data_paths_dict()
+            master_path_dict[device_name]["BKG_data_path"] = pathfinder.get_BKG_data_paths_dict()
+
+        self.RAW_data_paths_key : Dict[str, Dict[int, str]] = {
+            device_name : master_path_dict[device_name]["RAW_data_path"] for device_name in self.devices
+        }
+
+        self.BKG_data_paths_key : Dict[str, Dict[int, str]] = {
+            device_name : master_path_dict[device_name]["BKG_data_path"] for device_name in self.devices
+        }
+ 
 
     
     def run(self):
@@ -88,10 +126,10 @@ class RunManager:
             device_builder = self.builder_key[device_name]
 
             # GET THE DATA PATHS DICTIONARY FOR THE DEVICE- this is the dictionary of the form {SHOT NO : /path/to/device/data/for/shot_no}
-            RAW_data_paths_dict = self.raw_data_paths_key[device_name]
+            RAW_data_paths_dict = self.RAW_data_paths_key[device_name]
 
             # GET THE DICTIONARY INDEXING THE DIFFERENT TYPES OF BACKGROUND IMAGE FOR THE DEVICE
-            BKG_paths_dict = self.background_data_paths_key[device_name]
+            BKG_paths_dict = self.BKG_data_paths_key[device_name]
 
             # CONSTRUCT INSTANCE OF THE DEVICE BUILDER CLASS, e.g. builder_instance = CamBuilder(shots=...)
             builder_instance = device_builder(shots=self.shots, 
