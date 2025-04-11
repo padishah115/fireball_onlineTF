@@ -1,20 +1,24 @@
 {
-    "myDevices" : ["Faraday Probe", "HRM3"],
+    "DEVICES" : ["Faraday Probe", "HRM3"],
 
-    "myShots" : [1, 2, 3],
+    "SHOTS" : [1, 2, 3],
 
-    "shot key" : "shot number",
+    "BACKGROUND CORRECTIONS" : ["Darkfield subtraction"],
 
-    "master_timestamps_path_dict" : {
+    "OPERATIONS" : [],
+
+    "SHOT KEY" : "shot number",
+
+    "MASTER_CSV_DICT" : {
         
         "FARADAY PROBE" : {
-            "RAW_csv_path" : "./example_data/bogus_HRMT64_timestamps_faradayprobefiles.csv",
-            "BKG_csv_path" : "./example_data/bogus_HRMT64_timestamps_fpbackgrounds.csv"
+            "RAW_CSV_PATH" : "./example_data/bogus_HRMT64_timestamps_faradayprobefiles.csv",
+            "BKG_CSV_PATH" : "./example_data/bogus_HRMT64_timestamps_fpbackgrounds.csv"
         },
 
         "HRM3" : {
-            "RAW_csv_path" : "./example_data/bogus_HRMT64_timestamps_camerafiles.csv",
-            "BKG_csv_path" :"./example_data/bogus_HRMT64_timestamps_cambackgrounds.csv"
+            "RAW_CSV_PATH" : "./example_data/bogus_HRMT64_timestamps_camerafiles.csv",
+            "BKG_CSV_PATH" :"./example_data/bogus_HRMT64_timestamps_cambackgrounds.csv"
         }
     }
 

@@ -42,28 +42,67 @@ class Output:
         self.output_name = output_name
         self.raw_data_path = raw_data_path
         self.background_paths_dict = background_paths_dict
+
+        self.raw_data = {}
+        self.bkg_data = {}
         
 
     def __repr__(self):
         return f"{self.output_name} (Output) from {self.device_name}"
 
-    def analyze(self):
-        """Call analysis on the image, first getting the RAW data (no background subtraction), followed by the corrected data (with various types of background subtraction)."""
-        self.raw()
+    def analyze(self, background_corrections, plots):
+        """Call analysis on the image, first getting the RAW data (no background subtraction), followed by the corrected data (with various types of background subtraction).
+        
+        Parameters
+        ----------
+            background_corrections : List[str]
+                List of the different type of background corrections we want to do.
+            plots : bool
+                Plotting boolean determining whether data is plotted "on-the-fly" while analysis is being performed.
 
-        if not self.background_paths_dict == None: #Check to see whether we were actually passed any background images.
-            self.corrected()
-    
-    def raw(self):
+        Returns
+        -------
+            self.raw_data : Dict
+            self.bkg_data : Dict
+        """
+        
+        # UPDATE THE RAW AND CORRECTED DATA DICTIONARIES
+        self.raw(plots=plots) 
+        self.corrected(background_corrections=background_corrections, plots=plots)
+        
+        return self.raw_data, self.bkg_data
+
+    def raw(self, plots):
         """Empty placeholder function which plots the raw data without background subtraction."""
         raise NotImplementedError(f"Error: no raw() method provided for {self}")
     
-    def corrected(self):
-        """Iterates over all the supplied species of background, and performs relevant background subtraction."""
-        for bkg_name, bkg_path in self.background_paths_dict.items():
-            self._background_subtracted(bkg_name=bkg_name, bkg_path=bkg_path)
+    def corrected(self, background_corrections, plots):
+        """Iterates over all the supplied species of background, and performs relevant background subtraction.
+        
+        Parameters
+        ----------
+            background_corrections : List[str]
+                List of the different types of background corrections which we want to perform.
+            plots : bool
+                Plotting boolean determining whether data is plotted "on-the-fly" while analysis is being performed.
+        """
 
-    def _background_subtracted(self,):
+        #Data dictionary
+        bkg_corrected = {}
+
+        if not self.background_paths_dict == None: #Check to see whether we were actually passed any background images.
+            for background_path_key in self.background_paths_dict.keys():
+                if background_path_key in background_corrections:
+                    bkg_name = background_path_key
+                    bkg_path = self.background_paths_dict
+                    self.bkg_data[bkg_name] = self._background_subtracted(bkg_name=bkg_name, bkg_path=bkg_path, plots=plots)
+
+        
+        # for bkg_name, bkg_path in self.background_paths_dict.items():
+        #     self._background_subtracted(bkg_name=bkg_name, bkg_path=bkg_path)
+        #     bkg_subtracted
+
+    def _background_subtracted(self, bkg_name, bkg_path, plots):
         """Empty placeholder function for background subtraction."""
         raise NotImplementedError(f"Error: no background_subtracted() method provided for {self}")
 
@@ -113,23 +152,39 @@ class Image(Output):
         """Representation dunder method."""
         return super().__repr__() # MAINTAIN SAME __repr__ AS BASE CLASS
     
-    def raw(self):
-        """Plots raw data without any background subtraction."""
-        # Plot the bitmap of the captured image.
-        plt.title(f"Raw Image Capture from {self.device_name}\n (No Background Subtraction)")
+    def raw(self, plots):
+        """Returns raw data without any background subtraction.
         
-        # Check whether we are using logarithmic normalization, and plot image appropriately.
-        if self.lognorm:
-            print(f'pmax: {self.raw_pmax}, pmin: {self.raw_pmin}')
-            normalization = LogNorm()
-            plt.imshow(self.raw_image_array, norm=normalization)
-        else:
-            plt.imshow(self.raw_image_array)
-        
-        plt.show()
+        Parameters
+        ----------
+            plots : bool
+                Boolean governing whether we want the raw data to be plotted.
+
+        Returns
+        -------
+            raw : Dict
+        """
+    
+        if plots:
+            # Plot the bitmap of the captured image.
+            plt.title(f"Raw Image Capture from {self.device_name}\n (No Background Subtraction)")
+            
+            # Check whether we are using logarithmic normalization, and plot image appropriately.
+            if self.lognorm:
+                print(f'pmax: {self.raw_pmax}, pmin: {self.raw_pmin}')
+                normalization = LogNorm()
+                plt.imshow(self.raw_image_array, norm=normalization)
+            else:
+                plt.imshow(self.raw_image_array)
+            
+            plt.show()
+
+        self.raw_data = {
+            "RAW_IMAGE" : self.raw_image_array
+        }
 
 
-    def _background_subtracted(self, bkg_name:str, bkg_path:str):
+    def _background_subtracted(self, bkg_name:str, bkg_path:str, plots:bool):
         """Subtracts the background image from the raw image.
         
         Parameters
@@ -139,6 +194,12 @@ class Image(Output):
 
             bkg_path : str
                 Path to the specified background image data.
+
+            plots : bool
+                Boolean determining whether we want to plot the background-subtracted images "on-the-fly" as analysis is being performed.
+
+        Returns
+        -------
         """
         
         # LOAD THE BACKGROUND IMAGE FROM .CSV AND SUBTRACT FROM RAW IMAGE.
@@ -151,21 +212,26 @@ class Image(Output):
             corr_pmax = np.nanmax(corrected_image)
             corr_pmin = np.nanmin(corrected_image)
 
-            # Plot the bitmap of the captured image.
-            plt.title(f"Image Capture from {self.device_name}\n ({bkg_name}-Subtracted)")
-            
-            # Check whether we are using logarithmic normalization, and plot image appropriately.
-            if self.lognorm:
-                print(f'pmax: {corr_pmax}, pmin: {corr_pmin}')
-                normalization = LogNorm()
-                plt.imshow(corrected_image, norm=normalization)
-            else:
-                plt.imshow(corrected_image)
-            
-            plt.show()
+            if plots:
+                # Plot the bitmap of the captured image.
+                plt.title(f"Image Capture from {self.device_name}\n ({bkg_name}-Subtracted)")
+                
+                # Check whether we are using logarithmic normalization, and plot image appropriately.
+                if self.lognorm:
+                    print(f'pmax: {corr_pmax}, pmin: {corr_pmin}')
+                    normalization = LogNorm()
+                    plt.imshow(corrected_image, norm=normalization)
+                else:
+                    plt.imshow(corrected_image)
+                
+                plt.show()
+
+            return corrected_image
 
         else:
-            raise ValueError(f"Warning: for {self.device_name}, {bkg_name} background image and raw image do not have matching dimensions.")
+            print(f"Warning: for {self.device_name}, {bkg_name} background image and raw image do not have matching dimensions. Correction NOT performed.")
+            return None
+        
 
 
 ##################
@@ -230,25 +296,47 @@ class eField(Output):
         self.time = self.raw_scope_data[self.time_key] # time data from .csv
         self.raw_voltage = self.raw_scope_data[self.voltage_key] # electric field 
 
+        #INITIALIZE DATA DICTIONARIES
+        self.raw_data = {
+            f"TIME/{self.time_units}" : self.time
+        }
+        self.bkg_data = {
+            f"TIME/{self.time_units}" : self.time
+        }
+
 
     def __repr__(self):
         """Representation dunder method."""
         return super().__repr__() #MAINTAIN SAME REPRESENTATION AS OUTPUT BASE CLASS
     
-    def raw(self):
-        """Plots the trace from an oscilloscope, without any background corrections.
+    def raw(self, plots:bool):
+        """Returns the trace from an oscilloscope, without any background corrections.
+
+        Parameters
+        ----------
+            plots : bool
+                Boolean determining whether we want the raw oscilloscope trace to be plotted "on-the-fly" as analysis is performed.
+
+        Returns
+        -------
+            raw : Dict[str, array]
+                Raw data dictionary containing both the time and voltage information
         """
 
         if not self.raw_data_path.endswith('.csv'):
             raise ValueError(f"Error: expected .csv file for eField data for {self}, but got {self.raw_data_path}")
 
-        plt.title(f'Electric Field from {self.device_name}')
-        plt.ylabel(f'Electric Field / {self.voltage_units}')
-        plt.xlabel(f'Time / {self.time_units}')
-        plt.plot(self.time, self.raw_voltage)
-        plt.show()
+        if plots:
+            plt.title(f'Oscilloscope trace from {self.device_name}')
+            plt.ylabel(f'Voltage / {self.voltage_units}')
+            plt.xlabel(f'Time / {self.time_units}')
+            plt.plot(self.time, self.raw_voltage)
+            plt.show()
 
-    def _background_subtracted(self, bkg_name, bkg_path):
+        self.raw_data[f"VOLTAGE/{self.voltage_units}"] = self.voltage_units
+
+
+    def _background_subtracted(self, bkg_name:str, bkg_path:str, plots:bool):
 
         # LOAD BACKGROUND SCOPE TRACE AND RECOVER VOLTAGE DATA
         bkg_scope_data = pd.read_csv(bkg_path, skiprows=self.skiprows)
@@ -257,9 +345,14 @@ class eField(Output):
         # PERFORM BACKGROUND SUBTRACTION
         corrected_voltage = np.subtract(self.raw_voltage, bkg_voltage)
 
-        plt.title(f'Electric Field from {self.device_name}\n ({bkg_name}-SUBTRACTED)')
-        plt.ylabel(f'Electric Field / {self.voltage_units}')
-        plt.xlabel(f'Time / {self.time_units}')
-        plt.plot(self.time, corrected_voltage)
-        plt.show()
+        if plots:
+            plt.title(f'Electric Field from {self.device_name}\n ({bkg_name}-SUBTRACTED)')
+            plt.ylabel(f'Electric Field / {self.voltage_units}')
+            plt.xlabel(f'Time / {self.time_units}')
+            plt.plot(self.time, corrected_voltage)
+            plt.show()
+        
+        return corrected_voltage
+
+        
 

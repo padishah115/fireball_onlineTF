@@ -30,7 +30,7 @@ class Device:
     
     """
 
-    def __init__(self, device_name:str, shot_no:int, outputs:List[Output]):
+    def __init__(self, device_name:str, shot_no:int, output:Output):
         """
         Parameters
         ----------
@@ -40,8 +40,8 @@ class Device:
             shot_no : int
                 The shot number for which we have built the device.
             
-            outputs : List[Outputs]
-                List of outputs produced by the device.
+            output : Outputs
+                Output produced by the device.
 
         """
         
@@ -55,24 +55,42 @@ class Device:
         self.shot_no = shot_no
         
         # OUTPUTS FOR THE SHOT
-        self.outputs = outputs
+        self.output = output
 
 
     def __repr__(self):
         return f"{self.device_name} (Device Object)"
 
-    def get_outputs(self):
-        """Returns list of outputs from the device for the shot."""
+    def get_output(self):
+        """Returns output from the device for the shot."""
 
-        print(f"Outputs from {self.device_name} (SHOT {self.shot_no}):", self.outputs)
+        print(f"Outputs from {self.device_name} (SHOT {self.shot_no}):", self.output)
 
-    def call_analysis(self):
-        """Calls all relevant analysis on the device outputs."""
+    def call_data(self, background_corrections, plots):
+        """Calls all relevant analysis on the device outputs.
+        
+        Parameters
+        ----------
+            background_corrections : List[str]
+                List of the type of background corrections we would like to perform on the data.
+            plots : bool
+                Boolean governing whether or not we want the data to be plotted "on-the-fly" as analysis is performed.
+
+        Returns 
+        -------
+            data : Dict
+                Raw and background-corrected data from the devices
+        """
+
+        data = {}
 
         # Loop through all of the device's outputs and call their analyze functions one-by-one
-        for output in self.outputs:
-            print(f"Calling analysis for {output} ...")
-            output.analyze() # CALL .analyze() METHOD ON ALL OUTPUTS
+        print(f"Calling analysis for {self.output} ...")
+        raw_data, bkg_data = self.output.analyze(background_corrections=background_corrections, plots=plots) # CALL .analyze() METHOD ON ALL OUTPUTS
+        data[f"RAW"] = raw_data
+        data[f"BKG_CORRECTED"] = bkg_data
+
+        return data
 
 
 

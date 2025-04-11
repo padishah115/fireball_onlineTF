@@ -132,17 +132,14 @@ class ProbeBuilder(Builder):
         # the self.device_name from the builder class will tell us (e.g.) whether it's HRM3 or HRM4, but WON'T tell us what shot
         # we are looking at.
 
-        # INITIALIZE EMPTY OUTPUTS LIST- WE WILL LATER APPEND OUTPUTS TO THIS FOR EACH OBJECT 
-        outputs = []
-
         # INTIALIZE EFIELD OUTPUT   
         efield = eField(device_name=device_name_with_shot, raw_data_path=raw_data_path, background_paths_dict=self.BKG_paths_dict)
-        outputs.append(efield)
+        output = efield
 
         Probe = Device(
             device_name=device_name_with_shot,
             shot_no=shot_no,
-            outputs=outputs,
+            output=output,
         )
 
         return Probe
@@ -211,9 +208,6 @@ class CamBuilder(Builder):
         # the self.device_name from the builder class will tell us (e.g.) whether it's HRM3 or HRM4, but WON'T tell us what shot
         # we are looking at.
         
-        # INITIALIZE EMPTY OUTPUTS LIST FOR EACH CAMERA OBJECT
-        outputs = []
-        
         # IMAGE OUTPUT
         image_out = Image(
             device_name=device_name_with_shot,
@@ -221,14 +215,14 @@ class CamBuilder(Builder):
             raw_data_path=raw_data_path,
             background_paths_dict=self.BKG_paths_dict
         )
-        # APPEND IMAGE OUTPUT TO THE DEVICE OBJECT'S OUTPUTS LIST
-        outputs.append(image_out)
+        
+        output = image_out
 
         # CREATE THE DEVICE OBJECT USING THE OUTPUT LIST CONSTRUCTED ABOVE
         camera = Device(
             device_name=device_name_with_shot,
             shot_no=shot_no,
-            outputs=outputs,
+            output=output,
         )
 
         return camera

@@ -31,16 +31,20 @@ def main(json_path:str="./src/input.json"):
         config = json.load(json_file)
         
         #LIST OF DEVICES THAT WE WANT DATA FROM
-        myDevices : List[str] = config["myDevices"]
+        myDevices : List[str] = config["DEVICES"]
         
         # DICTIONARY CONTAINING PATHS TO MASTER.CSV FOR 
-        master_timestamps_path_dict : Dict = config["master_timestamps_path_dict"]
+        master_csv_dict : Dict = config["MASTER_CSV_DICT"]
 
         # HOW ARE THE SHOT COLUMNS LABELLED IN THE .CSV FILES
-        shot_key : str = config["shot key"]
+        shot_key : str = config["SHOT KEY"]
 
         # WHICH SHOTS DO WE WANT TO GET DATA FOR
-        myShots : List[str] = config["myShots"]
+        myShots : List[int] = config["SHOTS"]
+
+        # WHICH OPERATIONS DO WE WANT TO PERFORM ON THE DATA
+        myBackgroundCorrections : List[str] = config["BACKGROUND CORRECTIONS"] #specify types of background subtraction
+        myOperations : List[str] = config["OPERATIONS"] #specify types of operation (e.g. averaging)
 
 
     # FORMAT IN ALL CAPS TO PREVENT KEY ERRORS
@@ -52,16 +56,18 @@ def main(json_path:str="./src/input.json"):
 
     # INITIALIZE THE RUN MANAGER USING CONFIGURATION GIVEN ABOVE
     myManager=RunManager(
-        devices=myDevices,
-        shots=myShots,
-        rm_builder_key=builder_key,
-        plots=plots
+        devices=myDevices, #devices that we will gather data from
+        shots=myShots, #shots that we're interested in
+        rm_builder_key=builder_key, #class registry telling the runmanager which builder class is needed for each device
+        background_corrections=myBackgroundCorrections,
+        operations=myOperations, #operations which we want to perform on the data
+        plots=plots #want to plot the data
     )
     
     # Configure the runmanager
     myManager.configure(
-        master_timestamps_path_dict=master_timestamps_path_dict,
-        shot_key=shot_key
+        master_csv_dict=master_csv_dict, #dictionary containing paths to each device's .csv containing paths to raw and background-corrected data for each shot
+        shot_key=shot_key #column title for shot numbers in the .csv data that will be parsed.
     )
     
     #######
