@@ -11,8 +11,8 @@ import json
 sys.path.append(os.path.abspath("."))
 
 #Imports from run_manger
-from run_manager.run_manager import RunManager
-from run_manager.builders import *
+from utils.run_manager import RunManager
+from utils.builders import *
 
 def main(json_path:str="./src/input.json"):
 

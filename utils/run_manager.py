@@ -7,8 +7,8 @@ import sys
 import os
 from typing import List, Dict, TYPE_CHECKING
 
-from pathfinder.pathfinder import PathFinder
-from run_manager.builders import Builder
+from utils.pathfinder import PathFinder
+from utils.builders import Builder
 
 # Add . to path so that the interpreter can find the devices modules.
 sys.path.append(os.path.abspath("."))
@@ -95,7 +95,8 @@ class RunManager:
                 RAW_timestamp_csv_path=RAW_csv_path,
                 BKG_timestamp_csv_path=BKG_csv_path,
                 device_name=device_name,
-                shot_key=shot_key
+                shot_key=shot_key,
+                desired_shots=self.shots
             )
 
             master_path_dict[device_name]["RAW_data_path"] = pathfinder.get_RAW_data_paths_dict()

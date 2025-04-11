@@ -14,7 +14,7 @@ from typing import List, Dict
 class PathFinder:
     """Class responsible for scraping .csv files which contain information about the storage location of data for all equipment across all shots."""
 
-    def __init__(self, RAW_timestamp_csv_path:str, BKG_timestamp_csv_path:str, device_name:str, shot_key:str):
+    def __init__(self, RAW_timestamp_csv_path:str, BKG_timestamp_csv_path:str, device_name:str, shot_key:str, desired_shots:List[int]):
         """
         Parameters
         ----------
@@ -31,6 +31,9 @@ class PathFinder:
             shot_key : str
                 The spelling/format of the header denoting shot number in the .csv-> i.e. is is "shot Number", "Shot Number", or "shOt nUmBeR" etc.
 
+            desired_shots : List[str]
+                List of the shots who we are actually interested in.
+
         """
 
         # OBJECT'S CSV PATH. I'VE SHORTENED THIS FOR CLARITY, AND BY THIS POINT THERE
@@ -45,8 +48,9 @@ class PathFinder:
         self.raw_df = pd.read_csv(self.raw_csv_path, delimiter=",")
         self.background_df = pd.read_csv(self.bkg_csv_path, delimiter=",")
 
-        #Initialise shot key
-        self.shot_key = shot_key
+        #Initialise shot key and desired_shots
+        self.desired_shots = desired_shots # list of the shots which we want the pathfinder to look for (saves execution time)
+        self.shot_key = shot_key # label of the shots column in the .csv files
 
         # EMPTY DATA PATHS MATRIX WHICH WE WILL BUILD UP BY USING THE .CSV FILE
         self.RAW_data_paths_dict = {}
@@ -61,11 +65,15 @@ class PathFinder:
         # ITERATE OVER ALL SHOTS LISTED IN THE .CSV AND GET PATHS TO THE DEVICE'S DATA FROM THAT SHOT
         # IF BOTH (A) THE SHOT HAPPENED AND (B) DATA FOR THE DEVICE WAS LOGGED DURING THE SHOT
         for i, shot in enumerate(shot_numbers):
-            shot_data_path = self.raw_df[self.device_name][i]
 
-            #WAS DATA ACTUALLY TAKEN FOR THE SHOT?
-            if not shot == np.nan and not shot_data_path == np.nan:
-                self.RAW_data_paths_dict[shot] = str(shot_data_path).replace(" ", "") # CONVERT THE LOCATION TO A STRING, stripping whitespaces
+            # check to see whether the shot is in our "desired_shots" list
+            if shot in self.desired_shots:
+
+                shot_data_path = self.raw_df[self.device_name][i]
+
+                #WAS DATA ACTUALLY TAKEN FOR THE SHOT?
+                if not shot == np.nan and not shot_data_path == np.nan:
+                    self.RAW_data_paths_dict[shot] = str(shot_data_path).replace(" ", "") # CONVERT THE LOCATION TO A STRING, stripping whitespaces
 
     def get_RAW_data_paths_dict(self)->Dict:
         """Get the data paths dictionary containing data locations for the device across all shots.
