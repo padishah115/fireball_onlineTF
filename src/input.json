@@ -3,7 +3,7 @@
 
     "SHOTS" : [1, 2, 3],
 
-    "BACKGROUND CORRECTIONS" : ["Darkfield subtraction"],
+    "BACKGROUND CORRECTIONS" : ["DARKFIELD", "BEAM ON PLASMA OFF"],
 
     "OPERATIONS" : [],
 

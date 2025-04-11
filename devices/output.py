@@ -87,14 +87,11 @@ class Output:
                 Plotting boolean determining whether data is plotted "on-the-fly" while analysis is being performed.
         """
 
-        #Data dictionary
-        bkg_corrected = {}
-
         if not self.background_paths_dict == None: #Check to see whether we were actually passed any background images.
             for background_path_key in self.background_paths_dict.keys():
                 if background_path_key in background_corrections:
                     bkg_name = background_path_key
-                    bkg_path = self.background_paths_dict
+                    bkg_path = self.background_paths_dict[bkg_name]
                     self.bkg_data[bkg_name] = self._background_subtracted(bkg_name=bkg_name, bkg_path=bkg_path, plots=plots)
 
         
@@ -339,6 +336,7 @@ class eField(Output):
     def _background_subtracted(self, bkg_name:str, bkg_path:str, plots:bool):
 
         # LOAD BACKGROUND SCOPE TRACE AND RECOVER VOLTAGE DATA
+        print(f"BACKGROUND PATH : {bkg_path}")
         bkg_scope_data = pd.read_csv(bkg_path, skiprows=self.skiprows)
         bkg_voltage = bkg_scope_data[self.voltage_key]
 
