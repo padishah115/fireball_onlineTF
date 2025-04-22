@@ -18,7 +18,7 @@ from devices.output import *
 class Builder():
     """Parent class for all runtime builders. At runtime, each builder is responsible for initialising a dictionary of 
     a certain species of device at certain shot numbers. Each device has a separate constructor to account for the fact that we want
-    differene names."""
+    different names."""
 
     def __init__(self, shots:List[int], device_name:str, RAW_data_paths_dict:Dict[int, str], BKG_paths_dict:Dict[str, str]):
         """
