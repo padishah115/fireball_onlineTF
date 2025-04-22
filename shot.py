@@ -1,6 +1,7 @@
 # MODULE IMPORTS
 import numpy as np
 import pandas as pd
+from typing import List, Dict
 
 #####################
 # SHOT PARENT CLASS #
@@ -98,17 +99,43 @@ class VoltShot(Shot):
         super().__init__(device_name, shot_key, shot_data_path)
 
     
-    def raw(self):
+    def raw(self, time_key="Ampl", volt_key="Time", skiprows:int=4)->Dict[str:List[float]]:
         """Generates time and voltage data from .csv file of oscilloscope data.
+
+        Parameters
+        ----------
+            time_key : str
+                The name of the .csv header, correctly formatted, for the column containing
+                time data from the 'scope.
+            volt_key : str
+                The name of the .csv header, correctly formatted, for the column containing
+                voltage data from the 'scope.
+            skiprows : int = 4
+                Number of header rows that must be skipped over due to the nature of the 
+                LECROY oscilloscope logging.
         
         Returns
         -------
             scope_dict : Dict
+                Dictionary encoding oscilloscope data, of form {"VOLTAGE":[], "TIME" : []}
         """
 
         # OPEN THE .CSV CONTAINING VOLTAGE AND TIME INFORMATION FROM THE
         # OSCILLOSCOPE
-        v_and_t_csv = pd.read_csv(self.shot_data_path)
-
+        v_and_t_csv = pd.read_csv(self.shot_data_path, skiprows=skiprows)
         
+        # SCRAPE FROM THE APPROPRIATE COLUMNS OF THE .CSV FILE
+        time = v_and_t_csv[time_key]
+        voltage = v_and_t_csv[volt_key]
+
+        # DICTIONARY CONTAINING TIME AND VOLTAGE DATA FOR THE 'SCOPE
+        scope_dict = {
+            "VOLTAGE" : voltage,
+            "TIME" : time
+        }
+
+        return scope_dict
+
+
+
 
