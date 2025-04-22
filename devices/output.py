@@ -197,6 +197,8 @@ class Image(Output):
 
         Returns
         -------
+            corrected_image : np.ndarray
+                The background-subtracted image in numpy array format
         """
         
         # LOAD THE BACKGROUND IMAGE FROM .CSV AND SUBTRACT FROM RAW IMAGE.

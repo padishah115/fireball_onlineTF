@@ -17,7 +17,7 @@ from utils.builders import *
 def main(json_path:str="./src/input.json"):
 
     #################
-    # CONFIGURATION test #
+    # CONFIGURATION #
     #################
 
     # TELLS RUNMANAGER WHICH BUILDER CLASS TO USE FOR EACH DEVICE

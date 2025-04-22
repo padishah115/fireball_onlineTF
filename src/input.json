@@ -1,5 +1,5 @@
 {
-    "DEVICES" : ["Faraday Probe", "HRM3"],
+    "DEVICES" : ["HRM3"],
 
     "SHOTS" : [1, 2, 3],
 
