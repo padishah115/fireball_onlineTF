@@ -47,8 +47,11 @@ class Device:
         self.shot_data_path_dict = shot_data_path_dict
         
         # INVENTORY OF SHOT OBJECTS FOR THE DEVICE
-        self.shots = []
+        self.shots : List[Shot] = []
         self.make_shot_list()
+
+        # INVENTORY OF OPERATIONS (HARDCODED FOR NOW, THOUGH I'M NOT HAPPY ABOUT THIS)
+        self.operations_dict : Dict[str, function] = {}
 
 
     def __repr__(self):
@@ -66,6 +69,26 @@ class Device:
     def make_shot_list()->List:
         """Create and return a list of shot objects for the device."""
         raise NotImplementedError("Error: no method for creating shot dictionary has been specified.")
+    
+    def run_operation(self, operation):
+        """Takes the name of a specified operation as a parameter, finds the associated
+        function, and calls the function.
+        
+        Parameters
+        ----------
+            operation : str
+                The name of the operation, passed as a string
+        """
+
+        # CHECK THAT THE SPECIFIED OPERATION EXISTS FOR THE DEVICE IN ITS OPERATIONS DICTIONARY
+        try:
+            operation_function = self.operations_dict[operation]
+        except:
+            KeyError(f"Error: no operation matching input '{operation} for {self.device_name}'")
+        
+        # CALL THE RELEVANT OPERATION 
+        operation_function()
+
         
     
 ##################
@@ -82,8 +105,13 @@ class Camera(Device):
             -Lineouts can be produced with MEAN and ERROR over 5 shots, say.
     """
 
-    def __init__(self, device_name, shots):
-        super().__init__(device_name, shots)
+    def __init__(self, device_name, shot_data_path_dict):
+        super().__init__(device_name, shot_data_path_dict)
+
+        self.operations_dict["DUMMY"] = self.dummy
+
+    def dummy(self):
+        print("Hello, dummy!")
 
     def make_shot_list(self):
         """Creates a list of shot objects and stores this list in the device."""
@@ -100,23 +128,18 @@ class Camera(Device):
             
             #add shot object to the device's shot list
             self.shots.append(shot_obj)
-        
+
     
-    def get_lineout(img:np.ndarray, axis)->np.ndarray:
-        """Performs integration along one axis of the image, thus producing image lineouts.
-        
-        Parameters
-        ----------
-            img : np.ndarray
-                The image for which we want to perform the integration along some axis.
-            axis : int
-                The axis along which we want to perform integration.
+    def get_lineout(self)->np.ndarray:
+        """Performs integration along one axis of the image.
 
         Returns
         -------
             lineout : np.array
-                Reduced-dimensionality image which has been lineout-integrated
+                Reduced-dimensionality image which has been integrated along x
         """
+
+        
 
     def get_avg_img(imgs:List[np.ndarray])->np.ndarray:
         """Takes a list of images as argument and returns some averaged image.
