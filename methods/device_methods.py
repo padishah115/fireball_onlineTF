@@ -58,3 +58,21 @@ def load_scope_times(path:str, time_key = "Time", skiprows = 4):
     return times
 
 
+#High-level functions for plotting
+def plot_one_thing():
+    pass
+
+def average_some_things_and_plot():
+    pass
+
+def subtract_two_things_which_may_or_may_not_be_averaged_and_plot():
+    pass
+
+def lineout_one_thing_and_plot():
+    pass
+
+def fourier_transform_some_thing():
+    pass
+
+def fit_some_gaussian_to_some_image_corrected_or_not_and_plot():
+    pass
