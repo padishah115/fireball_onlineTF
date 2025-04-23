@@ -78,7 +78,7 @@ class ImageShot(Shot):
                 The raw image array generated for the camera
         """
         
-        if not self.shot_data_path.endswith('.npy'):
+        if not self.shot_data_path.endswith('.csv'):
             raise ValueError(f"Warning: expected .csv file for \
                              shot {self.shot_key} on {self.device_name}, but \
                              didn't get one.")
@@ -99,7 +99,7 @@ class VoltShot(Shot):
         super().__init__(device_name, shot_key, shot_data_path)
 
     
-    def raw(self, time_key="Ampl", volt_key="Time", skiprows:int=4)->Dict[str:List[float]]:
+    def raw(self, time_key="Ampl", volt_key="Time", skiprows:int=4)->Dict[str, List[float]]:
         """Generates time and voltage data from .csv file of oscilloscope data.
 
         Parameters

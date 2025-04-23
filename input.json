@@ -1,0 +1,6 @@
+{
+    "DEVICE": "CAM3",
+    "SHOTS": [1],
+    "OPERATION": "DUMMY",
+    "BKG REMOVAL": "TRUE"
+}
