@@ -1,14 +1,10 @@
 import numpy as np
 import pandas as pd
 from typing import List, Tuple
+from scipy.fft import fft, fft2
 
-def load_digicam_image(path:str)->np.ndarray:
-    """Loads image object from .csv given by DigiCam"""
-    #Remove top row and first column, as this is coordinate data
-    img = np.genfromtxt(path, delimiter=',', skiprows=1)
-    img = np.delete(img, 0, axis=1)
-    return img
-
+# COMMON TO EVERYTHING
+#class Data:
 def bkg_subtraction(raw_arr:np.ndarray, bkg_arr:np.ndarray)->np.ndarray:
     """Subtracts some background array from some raw data array."""
     corrected_array = np.subtract(raw_arr, bkg_arr)
@@ -36,7 +32,23 @@ def arrays_stats(arrays:List[np.ndarray])->Tuple[np.ndarray,np.ndarray]:
 
     return mean_arr, std_arr
 
+def FFT(array):
+    fft_dict = {
+        1:fft,
+        2:fft2
+    }
+    return fft_dict[len(array.shape)](array)
 
+#class Image(Data):
+def load_digicam_image(path:str)->np.ndarray:
+    """Loads image object from .csv given by DigiCam"""
+    #Remove top row and first column, as this is coordinate data
+    img = np.genfromtxt(path, delimiter=',', skiprows=1)
+    img = np.delete(img, 0, axis=1)
+    return img
+
+
+#class Probe(Data):
 def load_scope_voltages(path:str, volt_key="Ampl", skiprows=4):
     voltages = pd.read_csv(path, skiprows=skiprows)[volt_key]
     return voltages
