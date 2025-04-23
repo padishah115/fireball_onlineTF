@@ -43,7 +43,7 @@ def FFT(array):
 def load_digicam_image(path:str)->np.ndarray:
     """Loads image object from .csv given by DigiCam"""
     #Remove top row and first column, as this is coordinate data
-    img = np.genfromtxt(path, delimiter=',', skiprows=1)
+    img = np.loadtxt(path, delimiter=',', skiprows=1)
     img = np.delete(img, 0, axis=1)
     return img
 
@@ -59,7 +59,7 @@ def load_scope_times(path:str, time_key = "Time", skiprows = 4):
 
 
 #High-level functions for plotting
-def plot_one_thing():
+def plot_img(img:np.ndarray):
     pass
 
 def average_some_things_and_plot():
@@ -68,10 +68,10 @@ def average_some_things_and_plot():
 def subtract_two_things_which_may_or_may_not_be_averaged_and_plot():
     pass
 
-def lineout_one_thing_and_plot():
+def lineout_one_thing_could_be_anything_and_plot():
     pass
 
-def fourier_transform_some_thing():
+def fourier_transform_one_thing():
     pass
 
 def fit_some_gaussian_to_some_image_corrected_or_not_and_plot():
