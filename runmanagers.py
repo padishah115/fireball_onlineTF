@@ -1,7 +1,7 @@
 from typing import List, Dict
 import numpy as np
 
-from methods.device_methods import *
+from device_methods import *
 
 # IMAGE MANAGER
 

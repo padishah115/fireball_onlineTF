@@ -65,6 +65,7 @@ def load_scope_times(path:str, time_key = "Time", skiprows = 4):
 # TO BE MOVED INTO OPERATIONS MANAGER #
 #######################################
 
+#Steal code from my demos notebooks.
 #High-level functions for plotting- to be moved into 
 def plot_img(img:np.ndarray):
     pass
