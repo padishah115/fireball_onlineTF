@@ -3,6 +3,10 @@ import pandas as pd
 from typing import List, Tuple
 from scipy.fft import fft, fft2
 
+##############################
+# TO BE MOVED TO RUN MANAGER #
+##############################
+
 # COMMON TO EVERYTHING
 #class Data:
 def bkg_subtraction(raw_arr:np.ndarray, bkg_arr:np.ndarray)->np.ndarray:
@@ -57,8 +61,11 @@ def load_scope_times(path:str, time_key = "Time", skiprows = 4):
     times = pd.read_csv(path, skiprows=skiprows)[time_key]
     return times
 
+#######################################
+# TO BE MOVED INTO OPERATIONS MANAGER #
+#######################################
 
-#High-level functions for plotting
+#High-level functions for plotting- to be moved into 
 def plot_img(img:np.ndarray):
     pass
 
