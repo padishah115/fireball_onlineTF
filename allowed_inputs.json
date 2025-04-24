@@ -1,0 +1,17 @@
+{
+    "DEVICE_NAME": "any",
+    "DEVICE_TYPE": ["CAMERA", "PROBE"],
+
+    "EXP_SHOT_NOS": "any",
+    "BKG_SHOT_NOS": "any",
+
+    "BKG_NAME":"any",
+    "BACKGROUND_STATUS":["RAW", "SUBTRACT", "SHOW"],
+
+    "OPERATIONS": {
+        "LINEOUT": [true, false],
+        "LINEOUT AXIS": [0, 1],
+        "LINEOUT_FT_INTERP": "any",
+        "PLOT": [true, false]
+    }
+}
