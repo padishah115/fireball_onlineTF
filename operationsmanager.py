@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import List, Dict
-from scipy.fft import fft
+from scipy.fft import fft, fftfreq
 from stats import arrays_stats
 
 class OperationsManager:
@@ -47,8 +47,9 @@ class OperationsManager:
             pixels_1D = np.arange(0, self.shot_data.shape[0], 1)
         
         lineout = np.sum(self.shot_data, axis=axis)
-        lineout_fft_y = fft(lineout)
-        lineout_fft_x = fft(pixels_1D)
+        lineout_fft_y = np.abs(fft(lineout))
+        freqs = fftfreq(len(lineout), d=1)
+        #lineout_fft_x = fft(pixels_1D)
 
 
         fig, axs = plt.subplots(nrows=1, ncols=2)
@@ -58,7 +59,7 @@ class OperationsManager:
         axs[0].set_title("Real Domain")
         
         #fourier-space plot
-        axs[1].plot(lineout_fft_x, lineout_fft_y)
+        axs[1].plot(freqs, lineout_fft_y)
         axs[1].set_title(f"Fourier Domain \n {ft_interp}")
         
         fig.suptitle(f"Axis {axis} Lineout from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
@@ -103,8 +104,9 @@ class ProbeManager(OperationsManager):
         time = self.shot_data["TIMES"]
         voltages = self.shot_data["VOLTAGES"]
 
-        fft_time = fft(time)
-        fft_voltages = fft(voltages)
+        #fft_time = fftfreq(time)
+        fft_time = fftfreq(len(voltages), d=1)
+        fft_voltages = np.abs(fft(voltages))
 
         fig, axs = plt.subplots(nrows=1, ncols=2)
 
@@ -128,7 +130,7 @@ class ProbeManager(OperationsManager):
         voltage_stack = shot_data_list[0]["VOLTAGES"]
 
         for data in shot_data_list[1:]:
-            voltage_stack = np.stack([voltage_stack, data["VOLTAGES"]], dim=0)
+            voltage_stack = np.stack([voltage_stack, data["VOLTAGES"]], axis=0)
 
         voltage_sum = np.sum(voltage_stack, axis=0)
         voltage_avg = np.multiply(voltage_sum, 1/len(shot_data_list))
