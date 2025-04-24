@@ -74,9 +74,9 @@ class StartupManager:
         #########
         # IMAGE #
         #########
-        if self.device_type == "IMAGE":
+        if self.device_type == "CAMERA":
             #IF IMAGE, THEN HAVE TO DEAL WITH 2D DATA
-            raw_data_dict = self.IMAGE_load_shots(shot_nos=self.exp_shot_nos, data_paths_dict=self.data_paths_dict)
+            exp_data_dict = self.IMAGE_load_shots(shot_nos=self.exp_shot_nos, data_paths_dict=self.data_paths_dict)
             bkg_data_dict = self.IMAGE_load_shots(self.bkg_shot_nos, self.data_paths_dict)
             #Take average of background data to produce single background
             bkg_images = [bkg_data_dict[shot] for shot in bkg_data_dict.keys()]
@@ -102,23 +102,19 @@ class StartupManager:
         
         # RAISE ERROR IF USER SPECIFIES AN ERRONEOUS DEVICE_TYPE
         else:
-            raise ValueError(f"Warning: device type '{self.device_type}' not valid- device_type must be either\
-                             'IMAGE' or 'PROBE'.")
+            raise ValueError(f"Warning: device type '{self.device_type}' not valid- device_type must be either \"CAMERA\" or \"PROBE\".")
         
 
         ##########################
         # BACKGROUND SUBTRACTION #
         ##########################
-        # Subtract mean background image from the experimental shot data to produce dictionary of
-        # corrected shot data
-        
         # DICTIONARY OF FORM {EXP_SHOT_NO : BACKGROUND_CORRECTED_DATA}
         corrected_data_dict = {}
         for shot_no in self.exp_shot_nos:
             corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no], bkg_arr=averaged_bkg)
             corrected_data_dict[shot_no] = corrected_data
 
-        return raw_data_dict, bkg_data_dict, corrected_data_dict
+        return exp_data_dict, bkg_data_dict, corrected_data_dict
     
     
     def bkg_subtraction(self, raw_arr:np.ndarray, bkg_arr:np.ndarray)->np.ndarray:

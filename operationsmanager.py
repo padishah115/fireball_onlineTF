@@ -51,11 +51,11 @@ class OperationsManager:
 
         #real-space plot
         axs[0].plot(pixels_1D, lineout)
-        axs[0].title("Real Domain")
+        axs[0].set_title("Real Domain")
         
         #fourier-space plot
         axs[1].plot(lineout_fft_x, lineout_fft_y)
-        axs[1].title(f"Fourier Domain \n {ft_interp}")
+        axs[1].set_title(f"Fourier Domain \n {ft_interp}")
         
         fig.suptitle(f"Axis {axis} Lineout from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         plt.show()
