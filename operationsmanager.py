@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import List
-from scipy.fft import fft, fft2
+from typing import List, Dict
+from scipy.fft import fft
 
 class OperationsManager:
     """Class responsible for performing more advanced analysis and arithmetic on the shot data, including

@@ -1,8 +1,14 @@
 {
-    "DEVICE NAME": "",
-    "DEVICE TYPE": "",
-    "RAW SHOT NOS": [],
-    "BKG SHOT NOS": [],
-    "BKG NAME": "",
-    "OPERATIONS": []
+    "DEVICE_NAME": "CAM3",
+    "DEVICE_TYPE": "IMAGE",
+    "EXP_SHOT_NOS": [2, 3],
+    "BKG_SHOT_NOS": [1, 4],
+    "BKG_NAME": "DARKFIELD",
+    "BACKGROUND_STATUS": "SUBTRACT",
+    "OPERATIONS": {
+        "LINEOUT": true,
+        "LINEOUT_AXIS" : 1,
+        "LINEOUT_FT_INTERP": "Frequency Spectrum of Data",
+        "PLOT": true
+    }
 }
