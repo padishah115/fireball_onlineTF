@@ -67,6 +67,6 @@ class RunManager:
             if self.input["OPERATIONS"]["PLOT"]:
                 operations_manager.plot()
         
-        if self.input["AVERAGE_SHOTS"]:
-             shot_data = [array for array in data_dict.values()]
-             operations_manager.average_shots(shot_data)
+        if operations["AVERAGE_SHOTS"]:
+             shot_data_list = [data for data in data_dict.values()]
+             operations_manager.average_shots(shot_data_list, shot_nos)

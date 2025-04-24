@@ -6,7 +6,7 @@
     "BKG_SHOT_NOS": [1, 4],
     
     "BKG_NAME": "DARKFIELD",
-    "BACKGROUND_STATUS": "SHOW",
+    "BACKGROUND_STATUS": "SUBTRACT",
     
     "OPERATIONS": {
         "LINEOUT": true,

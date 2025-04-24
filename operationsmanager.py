@@ -36,7 +36,7 @@ class OperationsManager:
     def plot(self):
         raise NotImplementedError(f"Warning: no plotting method implemented for {self}")
     
-    def average_shots(self, arrays):
+    def average_shots(self, data_list):
         raise NotImplementedError(f"Warning: no averaging method implemented for {self}")
 
     def lineouts(self, axis:int, ft_interp:str):
@@ -77,7 +77,7 @@ class ImageManager(OperationsManager):
         plt.title(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         plt.show()
 
-    def average_shots(self, data_list:List[np.ndarray]):
+    def average_shots(self, data_list:List[np.ndarray], shot_nos:List[int]):
         
         array_stack = data_list[0]
 
@@ -89,7 +89,7 @@ class ImageManager(OperationsManager):
         mean_arr = np.multiply(sum_arr, 1/len(data_list))
 
         plt.imshow(mean_arr)
-        plt.title(f"Averaged Image over TKTK Shots")
+        plt.title(f"Averaged Image Over Shots {shot_nos}")
         plt.show()
         
 
@@ -122,6 +122,17 @@ class ProbeManager(OperationsManager):
         fig.suptitle(f"Oscilloscope Trace from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         plt.show()
 
-    def average_shots(self, data_list):
+    def average_shots(self, shot_data_list, shot_nos):
         
-        pass
+        times = shot_data_list[0]["TIMES"]
+        voltage_stack = shot_data_list[0]["VOLTAGES"]
+
+        for data in shot_data_list[1:]:
+            voltage_stack = np.stack([voltage_stack, data["VOLTAGES"]], dim=0)
+
+        voltage_sum = np.sum(voltage_stack, axis=0)
+        voltage_avg = np.multiply(voltage_sum, 1/len(shot_data_list))
+
+        plt.plot(times, voltage_avg)
+        plt.title(f"Oscilloscope Averaged Over Shots {shot_nos}")
+        plt.show()
