@@ -6,7 +6,6 @@ sys.path.append(".")
 from run_manager import RunManager
 
 def main(json_path="./input.json"):
-
     
     with open(json_path) as jsfile:
         input = json.load(jsfile)

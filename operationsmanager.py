@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import List, Dict
 from scipy.fft import fft
+from stats import arrays_stats
 
 class OperationsManager:
     """Class responsible for performing more advanced analysis and arithmetic on the shot data, including
@@ -34,6 +35,9 @@ class OperationsManager:
 
     def plot(self):
         raise NotImplementedError(f"Warning: no plotting method implemented for {self}")
+    
+    def average_shots(self, arrays):
+        raise NotImplementedError(f"Warning: no averaging method implemented for {self}")
 
     def lineouts(self, axis:int, ft_interp:str):
         """Computes the lineout of the data, and plots."""
@@ -73,6 +77,22 @@ class ImageManager(OperationsManager):
         plt.title(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         plt.show()
 
+    def average_shots(self, data_list:List[np.ndarray]):
+        
+        array_stack = data_list[0]
+
+        for array in data_list[1:]:
+            array_stack = np.stack([array_stack, array], axis=0)
+        
+        sum_arr = np.sum(array_stack, axis=0)
+
+        mean_arr = np.multiply(sum_arr, 1/len(data_list))
+
+        plt.imshow(mean_arr)
+        plt.title(f"Averaged Image over TKTK Shots")
+        plt.show()
+        
+
 # PROBE MANAGER
 
 class ProbeManager(OperationsManager):
@@ -82,8 +102,26 @@ class ProbeManager(OperationsManager):
     def plot(self):
         time = self.shot_data["TIMES"]
         voltages = self.shot_data["VOLTAGES"]
-        plt.plot(time, voltages)
-        plt.ylabel("Voltage")
-        plt.xlabel("Time")
-        plt.title(f"Oscilloscope Trace from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+
+        fft_time = fft(time)
+        fft_voltages = fft(voltages)
+
+        fig, axs = plt.subplots(nrows=1, ncols=2)
+
+
+        axs[0].plot(time, voltages)
+        axs[0].set_ylabel("Voltage")
+        axs[0].set_xlabel("Time")
+        axs[0].set_title("Real Domain")
+
+        axs[1].plot(fft_time, fft_voltages)
+        axs[1].set_ylabel("Amplitude")
+        axs[1].set_xlabel("Frequency")
+        axs[1].set_title("Fourier Domain")
+
+        fig.suptitle(f"Oscilloscope Trace from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         plt.show()
+
+    def average_shots(self, data_list):
+        
+        pass

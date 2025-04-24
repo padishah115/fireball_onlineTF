@@ -60,10 +60,13 @@ class RunManager:
                 label=LABEL,
                 shot_data=data_dict[shot_no]) 
             if operations["LINEOUT"]:
-                operations_manager.lineouts(axis=operations["LINEOUT_AXIS"], ft_interp=operations["LINEOUT_FT_INTERP"])
+                if self.input["DEVICE_TYPE"] == "CAMERA":
+                    operations_manager.lineouts(axis=operations["LINEOUT_AXIS"], ft_interp=operations["LINEOUT_FT_INTERP"])
+                else:
+                    raise NotImplementedError("Warning: no lineout method provided for probes!")
             if self.input["OPERATIONS"]["PLOT"]:
                 operations_manager.plot()
         
-        # if input["AVERAGE_SHOTS"]:
-        #     shot_data = [array for array in data_dict.values()]
-        #     operations_manager.average_shots(shot_data)
+        if self.input["AVERAGE_SHOTS"]:
+             shot_data = [array for array in data_dict.values()]
+             operations_manager.average_shots(shot_data)

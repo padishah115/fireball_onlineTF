@@ -12,6 +12,7 @@
         "LINEOUT": [true, false],
         "LINEOUT AXIS": [0, 1],
         "LINEOUT_FT_INTERP": "any",
-        "PLOT": [true, false]
+        "PLOT": [true, false],
+        "AVERAGE_SHOTS":[true, false]
     }
 }
