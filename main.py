@@ -2,10 +2,11 @@
 import os
 import sys
 import json
+from typing import Dict
 sys.path.append(".")
 
 from startupmanager import StartupManager
-from operationsmanager import OperationsManager
+from operationsmanager import *
 
 def main():
 
@@ -21,8 +22,15 @@ def main():
     exp_shot_nos = [2, 3] #shots who we are interested in
     bkg_shot_nos = [1, 4] #background(s) to subtract. can be one or several over which we average.
     bkg_name = "DARKFIELD"
+    subtract_background = True
 
-    operations = [] #list of operations which we would like to perform in order to pass to OpManager.
+     #list of operations which we would like to perform in order to pass to OpManager.
+    operations = {
+        "LINEOUT" : 1
+    }
+    lineout_interpretation = "Frequency Spectrum of Data"
+    axis = operations["LINEOUT"]#axis for lineout calculations
+
 
     # SOMEHOW BUILD THE DATA PATHS DICT
     # FOR NOW HARDCODED
@@ -44,36 +52,36 @@ def main():
                                      bkg_shot_nos=bkg_shot_nos, 
                                      data_paths_dict=data_paths_dict)
     
+    #NOTE- the form of these variables will be determined by whether the data
+    # came from a probe or an image.
     raw_data_dict, averaged_bkg, corrected_data_dict = startup_manager.load()
 
     ##############################
     # OPERATION MANAGER MATERIAL #
     ##############################
+    manager_key : Dict[str, OperationsManager] = {
+        "IMAGE": ImageManager, 
+        "PROBE": ProbeManager
+    }
 
-    #SO BY THIS POINT WE HAVE:
-        # a dictionary of raw shot data: {SHOT NO : RAW DATA}
-        # a dictionary of corrected shot data: {SHOT NO : CORRECTED DATA}
-        # a single, averaged background datum which was used to make the corrected shot data
 
     for shot_no in exp_shot_nos:
-        operations_manager = OperationsManager(
+        if subtract_background:
+            LABEL = f"{shot_no}, {bkg_name} SUBTRACTED"
+            data_dict = corrected_data_dict
+        else:
+            LABEL = f"{shot_no}, Raw (no background correction)"
+            data_dict = raw_data_dict
+        operations_manager = manager_key[device_type](
             DEVICE_NAME=DEVICE_NAME,
             shot_no=shot_no,
-            label=f"{shot_no} with {bkg_name} correction",
-            shot_data=raw_data_dict[shot_no], 
-            operations=[]) 
-        #if "LINEOUTS" in operations:
-        pixels_1D, lineouts = operations_manager.lineouts(axis=1, plot=True) #want user-input to determine axis
-    #   operations_manager_lineouts = OperationsManager(lineouts, )
-    #if FFT in operations:
-    #   operations_manager
-    #if PLOT in operations:
-    #   operations_manager.plot()
-    #operations_manager = OperationsManager(shot_data=corrected_data_dict[shot], operations=[])
-    #operations_manager.run()
-
-
-    
+            label=LABEL,
+            shot_data=data_dict[shot_no]) 
+        if "LINEOUTS" in operations.keys():
+            operations_manager.lineouts(axis=axis, ft_interp=lineout_interpretation)
+        if "PLOT" in operations.keys():
+            operations_manager.plot()
+        
 
 
 if __name__ == "__main__":

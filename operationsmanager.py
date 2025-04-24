@@ -4,62 +4,86 @@ from typing import List
 from scipy.fft import fft, fft2
 
 class OperationsManager:
+    """Class responsible for performing more advanced analysis and arithmetic on the shot data, including
+    but not limited to fourier transforms and lineout calculations."""
 
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data:np.ndarray, operations:List[str]):
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data:np.ndarray):
         """
         Parameters
         ----------
-            DEVICE_NAME
-            shot_no
-            label
+            DEVICE_NAME : str
+                The name of the device (e.g. "Synchro" etc.), which is used only for producing labelled plotting
+                information.
+            shot_no : int
+                The shot number corresponding to the data on which the operations are being performed. This
+                is used again for clarity in the plot labels.
+            label : str
+                Additional information, provided by user, about the shot.
             shot_data : np.ndarray
                 The shot data, array form, on which we want to perform some specified
                 operations
-            operations : List[str]
-                List of operations which we would like to perform on the shot
         """
 
+        # INITIALIZE INFORMATION WHICH WE BE USEFUL FOR DISPLAYING THE DATA TO THE USER.
         self.DEVICE_NAME = DEVICE_NAME
         self.shot_no = shot_no
         self.label = label
+
+        # THE RAW DATA ITSELF IN NP.NDARRAY FORMAT
         self.shot_data = shot_data
-        self.operations = operations
 
-    def run(self):
-        
-        if "FFT" in self.operations:
-            self.fft(self.shot_data)
+    def plot(self):
+        raise NotImplementedError(f"Warning: no plotting method implemented for {self}")
 
-        if "PLOT" in self.operations:
-            self._plot(self.shot_data)
-
-        if "LINEOUTS" in self.operations:
-            self._line
-
-    def _plot(self, data):
-        pass
-
-    def lineouts(self, axis, plot=False):
-        """Computes the lineout of the data, and plots if required."""
+    def lineouts(self, axis:int, ft_interp:str):
+        """Computes the lineout of the data, and plots."""
         if axis + axis == axis:
             pixels_1D = np.arange(0, self.shot_data.shape[1], 1)
         else:
             pixels_1D = np.arange(0, self.shot_data.shape[0], 1)
         
         lineout = np.sum(self.shot_data, axis=axis)
+        lineout_fft_y = fft(lineout)
+        lineout_fft_x = fft(pixels_1D)
 
-        if plot:
-            plt.plot(pixels_1D, lineout)
-            plt.title(f"Axis {axis} Lineout from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
-            plt.show()
+
+        fig, axs = plt.subplots(nrows=1, ncols=2)
+
+        #real-space plot
+        axs[0].plot(pixels_1D, lineout)
+        axs[0].title("Real Domain")
         
-        return lineout, pixels_1D
+        #fourier-space plot
+        axs[1].plot(lineout_fft_x, lineout_fft_y)
+        axs[1].title(f"Fourier Domain \n {ft_interp}")
+        
+        fig.suptitle(f"Axis {axis} Lineout from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+        plt.show()
+        
     
-    def FFT(self):
-        
-        fft_dict = {
-            1:fft,
-            2:fft2
-        }
-        
-        return fft_dict[len(self.shot_data.shape)](self.shot_data)
+
+# IMAGE MANAGER
+
+class ImageManager(OperationsManager):
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data)
+
+    def plot(self):
+        plt.imshow(self.shot_data)
+        plt.title(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+        plt.show()
+
+# PROBE MANAGER
+
+class ProbeManager(OperationsManager):
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data)
+
+    def plot(self):
+        time = self.shot_data["TIMES"]
+        voltages = self.shot_data["VOLTAGES"]
+        plt.plot(time, voltages)
+        plt.ylabel("Voltage")
+        plt.xlabel("Time")
+        plt.title(f"Oscilloscope Trace from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+        plt.show()
