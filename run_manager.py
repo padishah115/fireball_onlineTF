@@ -91,8 +91,9 @@ class RunManager:
             if operations["PLOT"]:
                 operations_manager.plot()
 
-            if operations["CHROMOX_FIT"]:
-                operations_manager.chromox_fit()
+            if self.input["DEVICE_SPECIES"] == "DIGICAM":
+                if operations["CHROMOX_FIT"]:
+                    operations_manager.chromox_fit()
         
         # SHOT AVERAGING
         if operations["AVERAGE_SHOTS"]:
@@ -113,7 +114,8 @@ class RunManager:
             if operations["PLOT"]:
                 operations_manager.plot()
 
-            if operations["CHROMOX_FIT"]:
-                operations_manager.chromox_fit()
+            if self.input["DEVICE_SPECIES"] == "DIGICAM":
+                if operations["CHROMOX_FIT"]:
+                    operations_manager.chromox_fit()
             
         

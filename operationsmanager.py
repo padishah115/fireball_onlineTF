@@ -214,17 +214,44 @@ class AndorImageManager(ImageManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data)
 
-    def plot(self):
+    def plot_andor_image(self, step:int=200):
+        """Plots the image from the Andor camera attached to the synchrotron spectrometer,
+        which is already a fourier transform. This image is then summed along the pixel axis, producing
+        a 1D fourier transform, which is plotted alongside the raw image.
+        
+        Parameters
+        ----------
+            step : int = 200
+                Stepsize between ticks on the wavelength axis in order to ease readability after plotting.
+        """
+    
+        img = self.shot_data["DATA"]
+        pixels_y = self.shot_data["Y"]
 
-        image = self.shot_data["DATA"]
-        wavelength = self.shot_data["Y"]
-        pixels_x = self.shot_data["X"]
 
-        fig, ax = plt.subplots()
-        ax.imshow(image)
-        ax.set_y
-        ax.set_xlabel("Pixel no.")
-        ax.set_ylabel("Wavelength / nm")
+        y_tick_loc = np.arange(0, len(pixels_y), step=step)
+        pixels_y_rounded = [f"{pixel:.2f}" for pixel in pixels_y] 
+
+        fig, axs = plt.subplots(nrows=1, ncols=2)
+        
+        # PHYSICAL IMAGE
+        axs[0].imshow(img, aspect='auto')
+        axs[0].set_yticks(y_tick_loc)
+        axs[0].set_yticklabels(pixels_y_rounded[::step])
+        axs[0].set_xlabel("Pixel no.")
+        axs[0].set_ylabel("Wavelength / nm")
+
+        #INTEGRATED IMAGE
+        intensities = np.sum(img, axis=1)
+        axs[1].plot(np.arange(0, img.shape[0]), intensities)
+        axs[1].set_xticks(y_tick_loc)
+        axs[1].set_xticklabels(pixels_y_rounded[::step], rotation='vertical')
+        axs[1].set_yticks([])
+        axs[1].set_ylabel("Intensity")
+        axs[1].set_xlabel("Wavelength / nm")
+        
+        fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+        fig.tight_layout()
         plt.show()
 
 

@@ -182,7 +182,7 @@ class StartupManager:
     def _load_ORCA_image(self):
         pass
 
-    def _load_ANDOR_image(self, path:str)->np.ndarray:
+    def _load_ANDOR_image(path:str, skipfooter:int=41)->Tuple[np.ndarray, List, List]:
         """Loads an image produced by the ANDOR synchrotron spectroscopy camera from some specified
         path location.
         
@@ -190,9 +190,29 @@ class StartupManager:
         ----------
             path : str
                 The path to the image data.
+            skipfooter : int = 41
+                The number of rows at the bottom of the andor .asc file which we have to skip over
+
+        Returns
+        -------
+            img : np.ndarray
+            pixels_x : List
+            wavelengths (aka pixels_y) : List
         """
 
-        pass
+        image = np.genfromtxt(path, skip_footer=skipfooter)
+
+
+        #EXTRACT THE FIRST COLUMN, WHICH CONTAIN WAVELENGTHS IN NM- this is "pixels_y"
+        wavelengths = image[:, 0]
+
+        #Index the pixels from 0 to the length of the x axis
+        pixels_x = np.arange(0, len(image[0]))
+
+        # trim away the first column to remove wavelength data
+        image = image[:, 1:]
+
+        return image, pixels_x, wavelengths
 
     ##########
     # PROBES #
