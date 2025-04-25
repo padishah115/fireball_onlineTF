@@ -12,25 +12,12 @@ class StartupManager:
 
     def __init__(self, 
                  input:Dict,
-                 device_type:str, 
-                 exp_shot_nos:List[int], 
-                 bkg_shot_nos:List[int], 
                  data_paths_dict:Dict[int, str]):
         """
         Parameters
         ----------
             input : Dict
                 The Python dictionary which has been generated via loading the input.json file.
-            device_type : str
-                The type of device (either "IMAGE" or "PROBE") for which we are handling data. This allows
-                the runmanager to deal both with 2D arrays (images) and oscilloscope data.
-            exp_shot_nos : List[int]
-                List of integers denoting the "experimental" shot numbers which we are interested in. The name
-                "experimental" is meant to distinguish between these shots and the background shots.
-            bkg_shot_nos : List[int]
-                List of integers denoting the shot numbers corresponding to the "background" shot data. This allows 
-                the StartupManager to process the background differently from the experimental shot data (i.e. average)
-                it.
             data_paths_dict : Dict[int, str]
                 Dictionary of form {SHOT NO : /path/to/shot/data} keeping track of where the data for each shot number
                 is stored.
@@ -39,15 +26,15 @@ class StartupManager:
         # INITIALIZE INPUT DICTIONARY
         self.input = input
 
-        # INITIALIZE DEVICE TYPE SO THAT WE KNOW WHETHER WE ARE LOADING PROBE DATA OR IMAGE DATA.
-        self.device_type = device_type
+        # INITIALIZE DEVICE TYPE SO THAT WE KNOW WHETHER WE ARE LOADING _PROBE_ DATA OR _IMAGE_ DATA.
+        self.device_type = self.input["DEVICE_TYPE"]
 
         # LIST OF EXPERIMENTAL (I.E. NON-BACKGROUND) SHOTS WHOSE DATA WE ARE PROCESSING
-        self.exp_shot_nos = exp_shot_nos
+        self.exp_shot_nos = self.input["EXP_SHOT_NOS"]
 
         # LIST OF BACKGROUND SHOT NUMBERS - THESE ARE SHOTS OVER WHOM WE WANT TO TAKE AN AVERAGE
         # BEFORE SUBTRACTION
-        self.bkg_shot_nos = bkg_shot_nos
+        self.bkg_shot_nos = self.input["BKG_SHOT_NOS"]
         
         # DICTIONARY KEYED BY SHOT NUMBER, WITH VALUES CORRESPONDING TO THE PATHS TO THE DATA
         # FOR BOTH BACKGROUND AND EXPERIMENTAL SHOTS
@@ -163,7 +150,7 @@ class StartupManager:
     # this is where we HARDCODE all the lovely, idiosyncratic ways in which different cameras store
     # image data.
     
-    def _load_digicam_image(self, path:str)->np.ndarray:
+    def _load_digicam_image(self, path:str)->Tuple[np.ndarray, List, List]:
         """Loads image object from .csv given by DigiCam. Due to the way that the DigiCams store image data,
         the first column and first row have to be removed, as these contain coordinate information about the
         pixels.
@@ -186,16 +173,25 @@ class StartupManager:
         
         #Remove top row and first column, as this is coordinate data
         img = np.genfromtxt(path, delimiter=',')
-        x_pixels = img[0, 1:]
-        y_pixels = img[1:, 0]
+        x_coords = img[0, 1:]
+        y_coords = img[1:, 0]
         img = img[1:, 1:]
         
-        return img, x_pixels, y_pixels
+        return img, x_coords, y_coords
     
     def _load_ORCA_image(self):
         pass
 
-    def _load_ANDOR_image(self):
+    def _load_ANDOR_image(self, path:str)->np.ndarray:
+        """Loads an image produced by the ANDOR synchrotron spectroscopy camera from some specified
+        path location.
+        
+        Parameters
+        ----------
+            path : str
+                The path to the image data.
+        """
+
         pass
 
     ##########

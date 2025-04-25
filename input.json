@@ -1,7 +1,8 @@
 {
     "DEVICE_NAME": "CAM3",
     "DEVICE_TYPE": "CAMERA",
-    "CAMERA_TYPE": "DIGICAM",
+    
+    "DEVICE_SPECIES": "DIGICAM",
     
     "EXP_SHOT_NOS": [2, 3],
     "BKG_SHOT_NOS": [1, 4],

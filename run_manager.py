@@ -1,7 +1,7 @@
 from typing import Dict, Type
 
 from startupmanager import StartupManager
-from operationsmanager import OperationsManager, ImageManager, ProbeManager
+from operationsmanager import OperationsManager, AndorImageManager, DigicamImageManager, OrcaImageManager, ProbeManager
 
 class RunManager:
     """Class responsible for the first (and essentially highest) level of encapsulation during execution of the code.
@@ -31,10 +31,7 @@ class RunManager:
 
         # INTIALIZE THE STARTUP MANAGER, WHICH IS RESPONSIBLE FOR ESSENTIALLY CONVERTING THE
         # DATA_PATHS_DICTIONARY TO DATA_DICTIONARY
-        startup_manager = StartupManager(input=self.input,
-                                        device_type=self.input["DEVICE_TYPE"], 
-                                        exp_shot_nos=self.input["EXP_SHOT_NOS"], 
-                                        bkg_shot_nos=self.input["BKG_SHOT_NOS"], 
+        startup_manager = StartupManager(input=self.input, 
                                         data_paths_dict=self.data_paths_dict)
         
         # CALL THE RUNMANAGER.LOAD() METHOD, WHICH RETURNS
@@ -50,8 +47,8 @@ class RunManager:
         # HAVE THE PROGRAM SELECT THE APPROPRIATE SUBCLASS FOR US WITHOUT
         # HAVING TO LOOK UNDER-THE-HOOD
         manager_key : Dict[str, Type[OperationsManager]] = {
-            "CAMERA": ImageManager, 
-            "PROBE": ProbeManager
+            "CAMERA": {"DIGICAM": DigicamImageManager, "ANDOR": AndorImageManager, "ORCA": OrcaImageManager}, 
+            "PROBE": {"PROBE": ProbeManager}
         }
 
         # EXTRACT THE SUB-DICTIONARY FROM THE INPUT DICTIONARY, WHICH SPECIFIES THE TYPES
@@ -81,7 +78,7 @@ class RunManager:
                               \"BACKGROUND_STATUS\" in input.json file.")
 
         for shot_no in shot_nos:
-            operations_manager = manager_key[self.input["DEVICE_TYPE"]](
+            operations_manager = manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]](
                 DEVICE_NAME=self.input["DEVICE_NAME"],
                 shot_no=shot_no,
                 label=LABEL,
@@ -91,10 +88,10 @@ class RunManager:
                     operations_manager.lineouts(axis=operations["LINEOUT_AXIS"], ft_interp=operations["LINEOUT_FT_INTERP"])
                 else:
                     raise NotImplementedError("Warning: no lineout method provided for probes!")
-            if self.input["OPERATIONS"]["PLOT"]:
+            if operations["PLOT"]:
                 operations_manager.plot()
 
-            if self.input["OPERATIONS"]["CHROMOX_FIT"]:
+            if operations["CHROMOX_FIT"]:
                 operations_manager.chromox_fit()
         
         # SHOT AVERAGING
@@ -103,7 +100,7 @@ class RunManager:
              averaged_shot_data = operations_manager.average_shots(shot_data_list, shot_nos)
 
         for shot_no in shot_nos:
-            operations_manager = manager_key[self.input["DEVICE_TYPE"]](
+            operations_manager = manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]](
                 DEVICE_NAME=self.input["DEVICE_NAME"],
                 shot_no=f"Average Over {shot_data_list}",
                 label=LABEL,
@@ -113,10 +110,10 @@ class RunManager:
                     operations_manager.lineouts(axis=operations["LINEOUT_AXIS"], ft_interp=operations["LINEOUT_FT_INTERP"])
                 else:
                     raise NotImplementedError("Warning: no lineout method provided for probes!")
-            if self.input["OPERATIONS"]["PLOT"]:
+            if operations["PLOT"]:
                 operations_manager.plot()
 
-            if self.input["OPERATIONS"]["CHROMOX_FIT"]:
+            if operations["CHROMOX_FIT"]:
                 operations_manager.chromox_fit()
             
         
