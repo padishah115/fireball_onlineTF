@@ -259,8 +259,12 @@ class OrcaImageManager(ImageManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data)
 
-    def plot():
-        pass
+    def plot(self):
+        img = self.shot_data["DATA"]
+        space_mm_x = self.shot_data["X"]
+        time_ns_y = self.shot_data["Y"]
+
+        fig, axs = plt.su
 
 # PROBE MANAGER
 

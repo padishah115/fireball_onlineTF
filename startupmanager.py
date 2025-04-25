@@ -2,7 +2,6 @@ from typing import List, Dict, Tuple
 import numpy as np
 import pandas as pd
 
-from device_methods import *
 from stats import arrays_stats
 
 class StartupManager:
@@ -179,10 +178,23 @@ class StartupManager:
         
         return img, x_coords, y_coords
     
-    def _load_ORCA_image(self):
-        pass
+    def _load_ORCA_image(self, path:str):
+        """Loads image from ORCA camera, which images OTR. The x dimension
+        encodes spatial position in mm, whereas the y dimension gives time in ns."""
+        
+        img = np.genfromtxt(path)
 
-    def _load_ANDOR_image(path:str, skipfooter:int=41)->Tuple[np.ndarray, List, List]:
+        #x axis encodes information about space in mm
+        space_mm_x = img[0, 1:]
+
+        #y axis encodes information about time in ns
+        time_ns_y = img[1:, 0]
+        img = img[1:, 1:]
+
+        return img, space_mm_x, time_ns_y
+
+
+    def _load_ANDOR_image(self, path:str, skipfooter:int=41)->Tuple[np.ndarray, List, List]:
         """Loads an image produced by the ANDOR synchrotron spectroscopy camera from some specified
         path location.
         
