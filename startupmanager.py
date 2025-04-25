@@ -164,8 +164,10 @@ class StartupManager:
         """
         
         #Remove top row and first column, as this is coordinate data
-        img = np.loadtxt(path, delimiter=',', skiprows=1)
-        img = np.delete(img, 0, axis=1)
+        img = np.genfromtxt(path, delimiter=',')
+        x_pixels = img[0, 1:]
+        y_pixels = img[1:, 0]
+        img = img[1:, 1:]
         
         return img
     
