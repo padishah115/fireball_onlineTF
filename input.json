@@ -14,6 +14,7 @@
         "LINEOUT_AXIS" : 1,
         "LINEOUT_FT_INTERP": "Frequency Spectrum of Data",
         "PLOT": true,
-        "AVERAGE_SHOTS":true
+        "AVERAGE_SHOTS":true,
+        "CHROMOX_FIT":true
     }
 }

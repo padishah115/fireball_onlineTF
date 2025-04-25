@@ -1,5 +1,6 @@
 import numpy as np
-from typing import List, Tuple
+from typing import List, Tuple, Dict
+import matplotlib.pyplot as plt
 
 # STATISTICS 
 def arrays_stats(arrays:List[np.ndarray])->Tuple[np.ndarray,np.ndarray]:
@@ -33,3 +34,21 @@ def arrays_stats(arrays:List[np.ndarray])->Tuple[np.ndarray,np.ndarray]:
     std_arr = np.std(stack, axis=0)
 
     return mean_arr, std_arr
+
+
+def average_shots(self, data_list:List[Dict[str, np.ndarray]], shot_nos:List[int]):
+        
+        array_stack = data_list[0]["DATA"]
+
+        for dict in data_list[1:]:
+            array_stack = np.stack([array_stack, dict["DATA"]], axis=0)
+        
+        sum_arr = np.sum(array_stack, axis=0)
+
+        mean_arr = np.multiply(sum_arr, 1/len(data_list))
+
+        plt.imshow(mean_arr)
+        plt.title(f"Averaged Image Over Shots {shot_nos}")
+        plt.show()
+
+        return mean_arr

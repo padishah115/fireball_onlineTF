@@ -38,15 +38,18 @@ class OperationsManager:
     
     def average_shots(self, data_list):
         raise NotImplementedError(f"Warning: no averaging method implemented for {self}")
+    
+    def chromox_fit(self):
+        raise NotImplementedError(f"Warning: no chromox_fit method implemented for {self}")
 
     def lineouts(self, axis:int, ft_interp:str):
         """Computes the lineout of the data, and plots."""
         if axis + axis == axis:
-            pixels_1D = np.arange(0, self.shot_data.shape[1], 1)
+            pixels_1D = np.arange(0, self.shot_data["DATA"].shape[1], 1)
         else:
-            pixels_1D = np.arange(0, self.shot_data.shape[0], 1)
+            pixels_1D = np.arange(0, self.shot_data["DATA"].shape[0], 1)
         
-        lineout = np.sum(self.shot_data, axis=axis)
+        lineout = np.sum(self.shot_data["DATA"], axis=axis)
         lineout_fft_y = np.abs(fft(lineout))
         freqs = fftfreq(len(lineout), d=1)
         #lineout_fft_x = fft(pixels_1D)
@@ -74,24 +77,97 @@ class ImageManager(OperationsManager):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data)
 
     def plot(self):
-        plt.imshow(self.shot_data)
-        plt.title(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+
+        x = self.shot_data["X"]
+        y= self.shot_data["Y"]
+        extent = [x[0], x[-1], y[0], y[-1]]
+
+        fig, ax = plt.subplots()
+        im = ax.imshow(self.shot_data["DATA"], extent=extent)
+        ax.set_xlabel("x / mm")
+        ax.set_ylabel("y / mm")
+        ax.set_title("Chromox Image")
+        ax.set_title(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+        plt.show()
+        
+
+    def chromox_fit(self):
+        x = self.shot_data["X"]
+        y = self.shot_data["Y"]
+        image = self.shot_data["DATA"]
+        extent = [x[0], x[-1], y[0], y[-1]]
+
+        mu, sigma = self._get_moments(image, pixels_x=x, pixels_y=y)
+
+        y0 = mu + [0, sigma[1]]
+        y1 = mu - [0, sigma[1]]
+        x0 = mu + [sigma[0], 0]
+        x1 = mu - [sigma[0], 0]
+
+        fig, ax = plt.subplots()
+        im = ax.imshow(image, extent=extent, aspect="auto")
+        ax.set_xlabel("x / mm")
+        ax.set_ylabel("y / mm")
+        ax.set_title(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+        ax.scatter(mu[0], mu[1], label=f'mu=[{mu[0]:.2f}, {mu[1]:.2f}]', color='m')
+
+        ax.plot([x0[0], x1[0]], [x0[1], x1[1]], color='m', linestyle='--', label=f'sigma_x: {sigma[0]:.2f}')
+        ax.plot([y0[0], y1[0]], [y0[1], y1[1]], color='m', linestyle='--', label=f'sigma_y: {sigma[1]:.2f}')
+
+        plt.legend()
         plt.show()
 
-    def average_shots(self, data_list:List[np.ndarray], shot_nos:List[int]):
-        
-        array_stack = data_list[0]
+    
+    def _get_moments(self, img, pixels_x, pixels_y):
+            """Calculates the first and second moments"""
 
-        for array in data_list[1:]:
-            array_stack = np.stack([array_stack, array], axis=0)
-        
-        sum_arr = np.sum(array_stack, axis=0)
+            thresh = 0.2
+            max_intensity = np.max(img)
+            mu = [0, 0]
+            var = [0, 0]
 
-        mean_arr = np.multiply(sum_arr, 1/len(data_list))
+            total_counts = 0
+            
+            # FIRST MOMENT CALCULATION
+            for i in range(img.shape[1]):
+                for j in range(img.shape[0]):
+                    x = pixels_x[i]
+                    y = -1*pixels_y[j]
+                    coords = np.array([x, y])
 
-        plt.imshow(mean_arr)
-        plt.title(f"Averaged Image Over Shots {shot_nos}")
-        plt.show()
+                    if img[j, i]>thresh*max_intensity:
+                        val = img[j, i]
+                    else: 
+                        val = 0
+                    
+                    weighted_coord = np.multiply(val, coords)
+                    mu += weighted_coord
+                    total_counts+=val
+
+            mu = np.multiply(mu, 1/total_counts)
+
+            total_counts = 0
+            #SECOND MOMENT CALCULATION
+            for i in range(img.shape[1]):
+                for j in range(img.shape[0]):
+                    x = pixels_x[i]
+                    y = -1*pixels_y[j]
+                    coords = [x, y]
+
+                    if img[j, i]>thresh*max_intensity:
+                        val = img[j, i]
+                    else:
+                        val = 0
+                    
+                    squared_displacement = np.pow(np.subtract(mu, coords),2)
+                    var += np.multiply(squared_displacement, val)
+                    total_counts += val
+
+            var = np.multiply(var, 1/total_counts)
+            sigma = np.pow(var, 0.5)
+
+
+            return mu, sigma
         
 
 # PROBE MANAGER
@@ -101,8 +177,8 @@ class ProbeManager(OperationsManager):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data)
 
     def plot(self):
-        time = self.shot_data["TIMES"]
-        voltages = self.shot_data["VOLTAGES"]
+        time = self.shot_data["DATA"]["TIMES"]
+        voltages = self.shot_data["DATA"]["VOLTAGES"]
 
         #fft_time = fftfreq(time)
         fft_time = fftfreq(len(voltages), d=1)
@@ -126,8 +202,8 @@ class ProbeManager(OperationsManager):
 
     def average_shots(self, shot_data_list, shot_nos):
         
-        times = shot_data_list[0]["TIMES"]
-        voltage_stack = shot_data_list[0]["VOLTAGES"]
+        times = shot_data_list[0]["DATA"]["TIMES"]
+        voltage_stack = shot_data_list[0]["DATA"]["VOLTAGES"]
 
         for data in shot_data_list[1:]:
             voltage_stack = np.stack([voltage_stack, data["VOLTAGES"]], axis=0)

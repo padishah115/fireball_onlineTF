@@ -79,7 +79,7 @@ class StartupManager:
             exp_data_dict = self.IMAGE_load_shots(shot_nos=self.exp_shot_nos, data_paths_dict=self.data_paths_dict)
             bkg_data_dict = self.IMAGE_load_shots(self.bkg_shot_nos, self.data_paths_dict)
             #Take average of background data to produce single background
-            bkg_images = [bkg_data_dict[shot] for shot in bkg_data_dict.keys()]
+            bkg_images = [bkg_data_dict[shot]["DATA"] for shot in bkg_data_dict.keys()]
             averaged_bkg = arrays_stats(bkg_images)[0]
         
         #########
@@ -111,8 +111,11 @@ class StartupManager:
         # DICTIONARY OF FORM {EXP_SHOT_NO : BACKGROUND_CORRECTED_DATA}
         corrected_data_dict = {}
         for shot_no in self.exp_shot_nos:
-            corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no], bkg_arr=averaged_bkg)
-            corrected_data_dict[shot_no] = corrected_data
+            corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"], bkg_arr=averaged_bkg)
+            corrected_data_dict[shot_no] = {}
+            corrected_data_dict[shot_no]["DATA"] = corrected_data
+            corrected_data_dict[shot_no]["X"] = exp_data_dict[shot_no]["X"]
+            corrected_data_dict[shot_no]["Y"] = exp_data_dict[shot_no]["Y"]
 
         return exp_data_dict, bkg_data_dict, corrected_data_dict
     
@@ -161,6 +164,10 @@ class StartupManager:
             img : np.ndarray
                 The image as a numpy array after being loaded from the .csv, and after having its first column and
                 first row trimmed.
+            x_pixels : np.ndarray
+                The trimmed top row of the image data, which encodes the x coordinates in mm.
+            y_pixels : np.ndarray
+                The trimmed first column of the image data, which encodes the y coordinates in mm.
         """
         
         #Remove top row and first column, as this is coordinate data
@@ -169,7 +176,7 @@ class StartupManager:
         y_pixels = img[1:, 0]
         img = img[1:, 1:]
         
-        return img
+        return img, x_pixels, y_pixels
     
     def load_ORCA_image(self):
         pass
@@ -258,7 +265,8 @@ class StartupManager:
             # STORE THE DATA ITSELF FOR EACH SHOT IN THE IMAGE_DICT ARRAY
             # IMAGE DICT ARRAY HAS FORMAT {SHOT_NO : DATA (NP.NDARRAY)}
             # WARNING- WANT TO UPGRADE THIS TO ACCOUNT FOR DIFFERENT CAMERA TYPES
-            image_dict[shot_no] = self.load_digicam_image(data_path) 
+            image_dict[shot_no] = {}
+            image_dict[shot_no]["DATA"], image_dict[shot_no]["X"], image_dict[shot_no]["Y"] = self.load_digicam_image(data_path)
 
         return image_dict
 
@@ -295,10 +303,10 @@ class StartupManager:
             data_path = data_paths_dict[shot_no]
 
             #VOLTAGE DATA
-            scope_data_dict[shot_no]["VOLTAGES"] = self.load_scope_voltages(data_path)
+            scope_data_dict[shot_no]["DATA"]["VOLTAGES"] = self.load_scope_voltages(data_path)
             
             #TIME DATA
-            scope_data_dict[shot_no]["TIMES"] = self.load_scope_times(data_path)
+            scope_data_dict[shot_no]["DATA"]["TIMES"] = self.load_scope_times(data_path)
         
         #RETURN THE DICTIONARY OF DICTIONARIES OF FORM {SHOT NO : {"VOLTAGES":[VOLTAGE DATA], "TIMES":[TIME DATA]}}
         return scope_data_dict

@@ -2,6 +2,7 @@ from typing import Dict, Type
 
 from startupmanager import StartupManager
 from operationsmanager import OperationsManager, ImageManager, ProbeManager
+from stats import average_shots
 
 class RunManager:
 
@@ -66,7 +67,30 @@ class RunManager:
                     raise NotImplementedError("Warning: no lineout method provided for probes!")
             if self.input["OPERATIONS"]["PLOT"]:
                 operations_manager.plot()
+
+            if self.input["OPERATIONS"]["CHROMOX_FIT"]:
+                operations_manager.chromox_fit()
         
+        # SHOT AVERAGING
         if operations["AVERAGE_SHOTS"]:
              shot_data_list = [data for data in data_dict.values()]
-             operations_manager.average_shots(shot_data_list, shot_nos)
+             averaged_shot = average_shots(shot_data_list, shot_nos)
+
+        for shot_no in shot_nos:
+            operations_manager = manager_key[self.input["DEVICE_TYPE"]](
+                DEVICE_NAME=self.input["DEVICE_NAME"],
+                shot_no=f"Average Over {shot_data_list}",
+                label=LABEL,
+                shot_data=averaged_shot) 
+            if operations["LINEOUT"]:
+                if self.input["DEVICE_TYPE"] == "CAMERA":
+                    operations_manager.lineouts(axis=operations["LINEOUT_AXIS"], ft_interp=operations["LINEOUT_FT_INTERP"])
+                else:
+                    raise NotImplementedError("Warning: no lineout method provided for probes!")
+            if self.input["OPERATIONS"]["PLOT"]:
+                operations_manager.plot()
+
+            if self.input["OPERATIONS"]["CHROMOX_FIT"]:
+                operations_manager.chromox_fit()
+            
+        
