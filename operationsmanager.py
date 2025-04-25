@@ -259,12 +259,28 @@ class OrcaImageManager(ImageManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data)
 
-    def plot(self):
+    def plot(self, step:int=100):
+        
         img = self.shot_data["DATA"]
         space_mm_x = self.shot_data["X"]
         time_ns_y = self.shot_data["Y"]
+        time_ns_y_rounded = [f"{time:.2f}" for time in time_ns_y]
 
-        fig, axs = plt.su
+        fig, axs = plt.subplots()
+        x_ticks_pos = np.arange(0, len(space_mm_x), step=step)
+        y_ticks_pos = np.arange(0, len(time_ns_y), step=step)
+        x_ticks = space_mm_x[::step]
+        y_ticks = time_ns_y_rounded[::step]
+
+        axs.imshow(img)
+        axs.set_xlabel("Distance / mm")
+        axs.set_ylabel("Time / ns")
+        axs.set_yticks(y_ticks_pos)
+        axs.set_yticklabels(y_ticks)
+        axs.set_xticks(x_ticks_pos)
+        axs.set_xticklabels(x_ticks)
+        plt.show()
+
 
 # PROBE MANAGER
 
