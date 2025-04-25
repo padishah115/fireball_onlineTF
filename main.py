@@ -20,6 +20,7 @@ def main(json_path="./input.json"):
         4:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
     }
 
+    print("Starting run manager ... \n")
     run_manager = RunManager(
         input=input,
         data_paths_dict=data_paths_dict

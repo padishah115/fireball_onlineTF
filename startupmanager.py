@@ -71,11 +71,11 @@ class StartupManager:
             #IF IMAGE, THEN HAVE TO DEAL WITH 2D DATA
             exp_data_dict : Dict = self.IMAGE_load_shots(shot_nos=self.exp_shot_nos, 
                                                   data_paths_dict=self.data_paths_dict,
-                                                  camera_type=self.input["CAMERA_TYPE"])
+                                                  camera_type=self.input["DEVICE_SPECIES"])
             
             bkg_data_dict : Dict = self.IMAGE_load_shots(self.bkg_shot_nos, 
                                                   self.data_paths_dict,
-                                                  camera_type=self.input["CAMERA_TYPE"])
+                                                  camera_type=self.input["DEVICE_SPECIES"])
             
             #Take average of background data to produce single background
             bkg_images = [bkg_data_dict[shot]["DATA"] for shot in bkg_data_dict.keys()]

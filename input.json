@@ -11,7 +11,7 @@
     "BACKGROUND_STATUS": "RAW",
     
     "OPERATIONS": {
-        "LINEOUT": true,
+        "LINEOUT": false,
         "LINEOUT_AXIS" : 1,
         "LINEOUT_FT_INTERP": "Frequency Spectrum of Data",
         "PLOT": true,

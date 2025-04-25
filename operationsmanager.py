@@ -100,6 +100,8 @@ class ImageManager(OperationsManager):
         #PERFORM SUM AND THEN AVERAGE OVER SHOTS (I.E. OVER 0 AXIS)
         sum_arr = np.sum(array_stack, axis=0)
         mean_arr = np.multiply(sum_arr, 1/len(data_list))
+        pixels_x = None
+        pixels_y = None
 
         plt.imshow(mean_arr)
         plt.title(f"Averaged Image Over Shots {shot_nos}")
@@ -117,8 +119,9 @@ class DigicamImageManager(ImageManager):
 
 
     def plot(self):
+
         x = self.shot_data["X"]
-        y= self.shot_data["Y"]
+        y = self.shot_data["Y"]
         extent = [x[0], x[-1], y[0], y[-1]]
 
         fig, ax = plt.subplots()

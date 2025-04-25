@@ -1,4 +1,5 @@
 from typing import Dict, Type
+import numpy as np
 
 from startupmanager import StartupManager
 from operationsmanager import OperationsManager, AndorImageManager, DigicamImageManager, OrcaImageManager, ProbeManager
@@ -20,11 +21,25 @@ class RunManager:
 
         #INPUT DICTIONARY FROM .JSON FILE
         self.input = input
+        # EXTRACT THE SUB-DICTIONARY FROM THE INPUT DICTIONARY, WHICH SPECIFIES THE TYPES
+        # OF OPERATIONS WHICH WE WANT TO PERFORM.
+        self.operations = self.input["OPERATIONS"]
+
+        self.background_status = self.input["BACKGROUND_STATUS"]
 
         #DICTIONARY OF FORM {SHOT NO : /PATH/TO/DATA}
         self.data_paths_dict = data_paths_dict
+
+        # BELOW, ALLOWS US TO CALL ARBITRARY "OPERATIONS MANAGER", AND THEN
+        # HAVE THE PROGRAM SELECT THE APPROPRIATE SUBCLASS FOR US WITHOUT
+        # HAVING TO LOOK UNDER-THE-HOOD
+        self.manager_key : Dict[str, Type[OperationsManager]] = {
+            "CAMERA": {"DIGICAM": DigicamImageManager, "ANDOR": AndorImageManager, "ORCA": OrcaImageManager}, 
+            "PROBE": {"PROBE": ProbeManager}
+        }
     
     def run(self):
+
         #############################
         # RUN/LOAD MANAGER MATERIAL #
         #############################
@@ -42,80 +57,75 @@ class RunManager:
         ##############################
         # OPERATION MANAGER MATERIAL #
         ##############################
-        
-        # BELOW, ALLOWS US TO CALL ARBITRARY "OPERATIONS MANAGER", AND THEN
-        # HAVE THE PROGRAM SELECT THE APPROPRIATE SUBCLASS FOR US WITHOUT
-        # HAVING TO LOOK UNDER-THE-HOOD
-        manager_key : Dict[str, Type[OperationsManager]] = {
-            "CAMERA": {"DIGICAM": DigicamImageManager, "ANDOR": AndorImageManager, "ORCA": OrcaImageManager}, 
-            "PROBE": {"PROBE": ProbeManager}
+
+        #DICTIONARY THAT CAN HELP US CLEAN UP THE RUNMANAGER CODE
+        data_type_key : Dict[str, Dict] = {
+            "SUBTRACT":corrected_data_dict,
+            "RAW": raw_data_dict,
+            "SHOW": bkg_data_dict
         }
 
-        # EXTRACT THE SUB-DICTIONARY FROM THE INPUT DICTIONARY, WHICH SPECIFIES THE TYPES
-        # OF OPERATIONS WHICH WE WANT TO PERFORM.
-        operations = self.input["OPERATIONS"]
+
+        print("selecting appropriate data dictionary ... \n")
+        data_dict = data_type_key[self.input["BACKGROUND_STATUS"]]
+        shot_nos = self.input["BKG_SHOT_NOS"] if self.input["BACKGROUND_STATUS"] == "SHOW" else self.input["EXP_SHOT_NOS"]
 
         #SUBTRACT BACKGROUND
-        if self.input["BACKGROUND_STATUS"] == "SUBTRACT":
+        if self.background_status == "SUBTRACT":
             LABEL = f"{self.input['BKG_NAME']}-SUBTRACTED"
-            data_dict = corrected_data_dict
-            shot_nos = self.input["EXP_SHOT_NOS"]
         
         #PLOT RAW IMAGE ONLY (NO BACKGROUND SUBTRACTION)
-        elif self.input["BACKGROUND_STATUS"] == "RAW":
+        elif self.background_status == "RAW":
             LABEL = f"Raw (no background correction)"
-            data_dict = raw_data_dict
-            shot_nos = self.input["EXP_SHOT_NOS"]
         
         #SHOW BACKGROUND IMAGE ITSELF
-        elif self.input["BACKGROUND_STATUS"] == "SHOW":
+        elif self.background_status == "SHOW":
             LABEL = f"{self.input['BKG_NAME']} BACKGROUND"
-            data_dict = bkg_data_dict
-            shot_nos = self.input["BKG_SHOT_NOS"]
         
         else:
             raise ValueError(f"Warning: {self.input['BACKGROUND_STATUS']} is invalid input for\
                               \"BACKGROUND_STATUS\" in input.json file.")
 
+        # SINGLE-SHOT PROCESSING
         for shot_no in shot_nos:
-            operations_manager = manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]](
-                DEVICE_NAME=self.input["DEVICE_NAME"],
+            self._call_operations_manager(
                 shot_no=shot_no,
-                label=LABEL,
-                shot_data=data_dict[shot_no]) 
-            if operations["LINEOUT"]:
-                if self.input["DEVICE_TYPE"] == "CAMERA":
-                    operations_manager.lineouts(axis=operations["LINEOUT_AXIS"], ft_interp=operations["LINEOUT_FT_INTERP"])
-                else:
-                    raise NotImplementedError("Warning: no lineout method provided for probes!")
-            if operations["PLOT"]:
-                operations_manager.plot()
-
-            if self.input["DEVICE_SPECIES"] == "DIGICAM":
-                if operations["CHROMOX_FIT"]:
-                    operations_manager.chromox_fit()
+                shot_data=data_dict[shot_no],
+                LABEL=LABEL
+            )
         
         # SHOT AVERAGING
-        if operations["AVERAGE_SHOTS"]:
-             shot_data_list = [data for data in data_dict.values()]
-             averaged_shot_data = operations_manager.average_shots(shot_data_list, shot_nos)
+        if self.operations["AVERAGE_SHOTS"]:
+            averaged_shot_data = {}
+            shot_data_list = [data for data in data_dict.values()]
+            averaged_shot_data["DATA"] =\
+                self.manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]].average_shots(shot_data_list, shot_nos)
+            
+            averaged_shot_data["X"] = np.arange(0, averaged_shot_data["DATA"].shape[1])
+            averaged_shot_data["Y"] = np.arange(0, averaged_shot_data["DATA"].shape[0])
+            self._call_operations_manager(shot_no=f"Average over {shot_data_list}",
+                                          shot_data=averaged_shot_data,
+                                          LABEL=LABEL)
 
-        for shot_no in shot_nos:
-            operations_manager = manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]](
-                DEVICE_NAME=self.input["DEVICE_NAME"],
-                shot_no=f"Average Over {shot_data_list}",
-                label=LABEL,
-                shot_data=averaged_shot_data) 
-            if operations["LINEOUT"]:
-                if self.input["DEVICE_TYPE"] == "CAMERA":
-                    operations_manager.lineouts(axis=operations["LINEOUT_AXIS"], ft_interp=operations["LINEOUT_FT_INTERP"])
-                else:
-                    raise NotImplementedError("Warning: no lineout method provided for probes!")
-            if operations["PLOT"]:
-                operations_manager.plot()
 
-            if self.input["DEVICE_SPECIES"] == "DIGICAM":
-                if operations["CHROMOX_FIT"]:
-                    operations_manager.chromox_fit()
+    
+    def _call_operations_manager(self, shot_no, shot_data, LABEL):
+        
+        operations_manager = self.manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]](
+            DEVICE_NAME=self.input["DEVICE_NAME"],
+            shot_no=shot_no,
+            label=LABEL,
+            shot_data=shot_data) 
+        if self.operations["LINEOUT"]:
+            if self.input["DEVICE_TYPE"] == "CAMERA":
+                operations_manager.lineouts(axis=self.operations["LINEOUT_AXIS"], ft_interp=self.operations["LINEOUT_FT_INTERP"])
+            else:
+                raise NotImplementedError("Warning: no lineout method provided for probes!")
+        if self.operations["PLOT"]:
+            operations_manager.plot()
+
+        if self.input["DEVICE_SPECIES"] == "DIGICAM":
+            if self.operations["CHROMOX_FIT"]:
+                operations_manager.chromox_fit()
             
         
