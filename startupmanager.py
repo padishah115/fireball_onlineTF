@@ -11,6 +11,7 @@ class StartupManager:
     background-corrected shot data."""
 
     def __init__(self, 
+                 input:Dict,
                  device_type:str, 
                  exp_shot_nos:List[int], 
                  bkg_shot_nos:List[int], 
@@ -18,6 +19,8 @@ class StartupManager:
         """
         Parameters
         ----------
+            input : Dict
+                The Python dictionary which has been generated via loading the input.json file.
             device_type : str
                 The type of device (either "IMAGE" or "PROBE") for which we are handling data. This allows
                 the runmanager to deal both with 2D arrays (images) and oscilloscope data.
@@ -33,6 +36,9 @@ class StartupManager:
                 is stored.
         """
         
+        # INITIALIZE INPUT DICTIONARY
+        self.input = input
+
         # INITIALIZE DEVICE TYPE SO THAT WE KNOW WHETHER WE ARE LOADING PROBE DATA OR IMAGE DATA.
         self.device_type = device_type
 
@@ -75,11 +81,19 @@ class StartupManager:
         # IMAGE #
         #########
         if self.device_type == "CAMERA":
+
             #IF IMAGE, THEN HAVE TO DEAL WITH 2D DATA
-            exp_data_dict = self.IMAGE_load_shots(shot_nos=self.exp_shot_nos, data_paths_dict=self.data_paths_dict)
-            bkg_data_dict = self.IMAGE_load_shots(self.bkg_shot_nos, self.data_paths_dict)
+            exp_data_dict : Dict = self.IMAGE_load_shots(shot_nos=self.exp_shot_nos, 
+                                                  data_paths_dict=self.data_paths_dict,
+                                                  camera_type=self.input["CAMERA_TYPE"])
+            
+            bkg_data_dict : Dict = self.IMAGE_load_shots(self.bkg_shot_nos, 
+                                                  self.data_paths_dict,
+                                                  camera_type=self.input["CAMERA_TYPE"])
+            
             #Take average of background data to produce single background
             bkg_images = [bkg_data_dict[shot]["DATA"] for shot in bkg_data_dict.keys()]
+            
             averaged_bkg = arrays_stats(bkg_images)[0]
         
         #########
@@ -149,7 +163,7 @@ class StartupManager:
     # this is where we HARDCODE all the lovely, idiosyncratic ways in which different cameras store
     # image data.
     
-    def load_digicam_image(self, path:str)->np.ndarray:
+    def _load_digicam_image(self, path:str)->np.ndarray:
         """Loads image object from .csv given by DigiCam. Due to the way that the DigiCams store image data,
         the first column and first row have to be removed, as these contain coordinate information about the
         pixels.
@@ -178,17 +192,19 @@ class StartupManager:
         
         return img, x_pixels, y_pixels
     
-    def load_ORCA_image(self):
+    def _load_ORCA_image(self):
         pass
 
-    def load_ANDOR_image(self):
+    def _load_ANDOR_image(self):
         pass
 
     ##########
     # PROBES #
     ########## 
 
-    def load_scope_voltages(self, path:str, volt_key:str="Ampl", skiprows:int=4):
+    # MAY HAVE TO MODIFY THESE DEPENDING ON WHETHER WE ARE USING LECROY
+
+    def _load_scope_voltages(self, path:str, volt_key:str="Ampl", skiprows:int=4):
         """Loads voltage data from oscilloscope .csv at a specified path, in the form of an arraylike list.
         
         Parameters
@@ -209,7 +225,7 @@ class StartupManager:
         return voltages
 
     
-    def load_scope_times(self, path:str, time_key = "Time", skiprows = 4):
+    def _load_scope_times(self, path:str, time_key = "Time", skiprows = 4):
         """Loads time data from oscilloscope .csv at a specified path, in the form of an arraylike list.
         
         Parameters:
@@ -233,7 +249,7 @@ class StartupManager:
     
     # IMAGE MANAGER
 
-    def IMAGE_load_shots(self, shot_nos:List[int], data_paths_dict:Dict[int, str])->Dict[int, np.ndarray]:
+    def IMAGE_load_shots(self, shot_nos:List[int], data_paths_dict:Dict[int, str], camera_type:str)->Dict[int, np.ndarray]:
         """Loads multiple shots' images sequentially, using the data_paths_dict to dynamically select paths to
         different shot numbers' raw data files.
         
@@ -244,6 +260,8 @@ class StartupManager:
             data_paths_dict : Dict[int, str]
                 Dictionary of form {SHOT NO : /PATH/TO/DATA} from which we can dynamically adjust our 
                 search for the shot data for different shot numbers.
+            camera_type : str
+                The type of camera from which we are loading data.
         
         Returns
         -------
@@ -252,6 +270,15 @@ class StartupManager:
                 as one which converts the data_paths_dict to a data_dict where the dictionary values are now the data
                 itself rather than the paths to the data.
         """
+
+        # DICTIONARY ALLOWING US TO DYNAMICALLY SWAP IMAGE LOADING  
+        # METHODS DEPENDING ON THE CAMERA TYPE
+        image_loader_function_dict = {
+            "DIGICAM":self._load_digicam_image,
+            "ORCA":self._load_ORCA_image,
+            "ANDOR":self._load_ANDOR_image
+
+        }
         
         # INITIALIZE EMPTY DICTIONARY OF FORM {SHOT NO : DATA (NP.NDARRAY)}
         image_dict = {}
@@ -266,7 +293,8 @@ class StartupManager:
             # IMAGE DICT ARRAY HAS FORMAT {SHOT_NO : DATA (NP.NDARRAY)}
             # WARNING- WANT TO UPGRADE THIS TO ACCOUNT FOR DIFFERENT CAMERA TYPES
             image_dict[shot_no] = {}
-            image_dict[shot_no]["DATA"], image_dict[shot_no]["X"], image_dict[shot_no]["Y"] = self.load_digicam_image(data_path)
+            image_dict[shot_no]["DATA"], image_dict[shot_no]["X"], image_dict[shot_no]["Y"] = \
+                image_loader_function_dict[camera_type](data_path)
 
         return image_dict
 
@@ -303,10 +331,10 @@ class StartupManager:
             data_path = data_paths_dict[shot_no]
 
             #VOLTAGE DATA
-            scope_data_dict[shot_no]["DATA"]["VOLTAGES"] = self.load_scope_voltages(data_path)
+            scope_data_dict[shot_no]["DATA"]["VOLTAGES"] = self._load_scope_voltages(data_path)
             
             #TIME DATA
-            scope_data_dict[shot_no]["DATA"]["TIMES"] = self.load_scope_times(data_path)
+            scope_data_dict[shot_no]["DATA"]["TIMES"] = self._load_scope_times(data_path)
         
         #RETURN THE DICTIONARY OF DICTIONARIES OF FORM {SHOT NO : {"VOLTAGES":[VOLTAGE DATA], "TIMES":[TIME DATA]}}
         return scope_data_dict
