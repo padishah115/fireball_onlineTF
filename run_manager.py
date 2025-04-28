@@ -96,19 +96,19 @@ class RunManager:
         
         # SHOT AVERAGING
         if self.operations["AVERAGE_SHOTS"]:
-            print("Averaging shots ... \n")
 
+            # COPY X AND Y AXES FROM ONE OF THE CONSTITUENT SHOTS' DATA
+            # TO ENSURE CORRECT FORMATTING
             X = data_dict[shot_no]["X"]
             Y = data_dict[shot_no]["Y"]
 
-            self._run_shot_averaging(
-                data_dict=data_dict,
-                shot_nos=shot_nos,
-                X=X,
-                Y=Y, #one of the shot numbers to steal X, Y from
-                LABEL=LABEL
-            )
-
+            # PERFORM THE AVERAGING OPERATION OVER THE SHOTS, GETTING A DICTIONARY OF SHOT DATA
+            averaged_shot_data = self._get_shot_averaged_data(data_dict=data_dict, X=X, Y=Y)
+            
+            # CALL AN OPERATIONS MANAGER ON THE AVERAGED DATA.
+            self._call_operations_manager(shot_no=f"Average over {shot_nos}",
+                                            shot_data=averaged_shot_data,
+                                            LABEL=LABEL)
 
     
     def _call_operations_manager(self, shot_no, shot_data, LABEL):
@@ -152,27 +152,25 @@ class RunManager:
                 print("CHROMOX fit ... \n")
                 operations_manager.chromox_fit()
 
+        
     
-    def _run_shot_averaging(self, data_dict:Dict[int, Dict], shot_nos:List[int], X, Y, LABEL:str):
-        """Mini run function for shot averaging. We need to extract the raw array produced 
-        directly by averaging, and also initialize the X/Y axes properly using one of the constituent
-        pieces of shot data.
+    def _get_shot_averaged_data(self, data_dict:Dict, X:np.ndarray, Y:np.ndarray):
+        """Returns a dictionary of form {"DATA" : [], "X" : [], "Y" : []} for the averaged shot data.
         
         Parameters
         ----------
-            data_dict : Dict[int, Dict]
-                Dictionaries containing shot data, where the key is the shot number, and the 
-                values are a dictionary of form {"DATA": [], "X" : [], "Y": []}
-            shot_nos : List[int]
-                List of shot numbers over which the average is being performed.
+            data_dict : Dict
+                Dictionary of data over which the average is to be performed. The dictionary will
+                be of form {SHOT NO : {"DATA": [], "X":[], "Y":[]}}
             X : np.ndarray
-                X axis in proper format (i.e. NOT in pixels, but in mm etc.)
+                X axis array formatted in correct units.
             Y : np.ndarray
-                Y axis in proper format (i.e. NOT in pixels, but in mm etc.)
-            LABEL : str
-                Label for plot title telling us how the data was handled, e.g. what type of 
-                subtraction or background correction was applied.
+                Y axis array formatted in correct units.
 
+        Returns
+        -------
+            averaged_shot_data : Dict
+                Dictionary of form {"DATA":[], "X":[], "Y":[]} for the averaged shot data.
         """
 
         averaged_shot_data = {}
@@ -186,10 +184,6 @@ class RunManager:
         averaged_shot_data["X"] = X
         averaged_shot_data["Y"] = Y
 
-        print("Averaged shot data: ", averaged_shot_data)
-        print("Calling operations manager on the averaged shot data ...\n")
-        self._call_operations_manager(shot_no=f"Average over {shot_nos}",
-                                        shot_data=averaged_shot_data,
-                                        LABEL=LABEL)
+        return averaged_shot_data
             
         
