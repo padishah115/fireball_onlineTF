@@ -3,17 +3,36 @@
     "DEVICE_TYPE": ["CAMERA", "PROBE"],
     "DEVICE_SPECIES": [false, "DIGICAM", "ANDOR", "ORCA", "PROBE"],
 
-    "EXP_SHOT_NOS": "any",
-    "BKG_SHOT_NOS": "any",
+    "EXP_SHOT_NOS": "any integer",
+    "BKG_SHOT_NOS": ["any interger", "none"],
 
     "BKG_NAME":"any",
     "BACKGROUND_STATUS":["RAW", "SUBTRACT", "SHOW"],
 
     "OPERATIONS": {
-        "LINEOUT": [true, false],
-        "LINEOUT AXIS": [0, 1],
-        "LINEOUT_FT_INTERP": "any",
         "PLOT": [true, false],
         "AVERAGE_SHOTS":[true, false]
+    },
+    
+    
+    "DATA_PATH": "any",
+    "SHOTLOG_PATH" : "any",
+    
+    "DEVICE_FOLDERS" : {
+        "BDOT1": "any", 
+        "BDOT2": "any", 
+        "FARADAY PROBE": "any",
+        "HRM3" : "any",
+        "HRM4" : "any",
+        "HRM5" : "any",
+        "HRM6" : "any",
+        "ANDOR" : "",
+        "ORCA" : ""
+    },
+
+    "TEMPLATE_FNAMES" : {
+        "DIGICAM": "HRM{}.DigiCam_OD{}_{}_{}.csv",
+        "PROBE": "C{}_SCOPE{}_{}.csv"
     }
+
 }
