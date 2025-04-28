@@ -96,36 +96,66 @@ class RunManager:
         
         # SHOT AVERAGING
         if self.operations["AVERAGE_SHOTS"]:
+            print("Averaging shots ... \n")
+
             averaged_shot_data = {}
             shot_data_list = [data for data in data_dict.values()]
+
+            #GET THE AVERAGED DATA ITSELF
             averaged_shot_data["DATA"] =\
-                self.manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]].average_shots(shot_data_list, shot_nos)
+                self.manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]].average_shots(shot_data_list)
             
-            averaged_shot_data["X"] = np.arange(0, averaged_shot_data["DATA"].shape[1])
-            averaged_shot_data["Y"] = np.arange(0, averaged_shot_data["DATA"].shape[0])
-            self._call_operations_manager(shot_no=f"Average over {shot_data_list}",
+            # COPY X AND Y AXES FROM INDIVIDUAL SHOTS
+            averaged_shot_data["X"] = data_dict[shot_no]["X"]
+            averaged_shot_data["Y"] = data_dict[shot_no]["Y"]
+
+            print("Averaged shot data: ", averaged_shot_data)
+            print("Calling operations manager on the averaged shot data ...\n")
+            self._call_operations_manager(shot_no=f"Average over {shot_nos}",
                                           shot_data=averaged_shot_data,
                                           LABEL=LABEL)
 
 
     
     def _call_operations_manager(self, shot_no, shot_data, LABEL):
+        """Helper function to wrap up the operations manager clauses in the .run() method.
         
+        Parameters
+        ----------
+            shot_no : int
+                The shot number whose data we are processing
+            shot_data : np.ndarray
+                The shot data itself in processed form.
+            LABEL : str
+                Extra detail about the nature of processing which the data has undergone.
+        """
+        
+        # INITIALIZE THE CORRECT OPERATIONS MANAGER USING THE MANAGER_KEY DICTIONARY
         operations_manager = self.manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]](
             DEVICE_NAME=self.input["DEVICE_NAME"],
             shot_no=shot_no,
             label=LABEL,
             shot_data=shot_data) 
+        
+        # CHECK TO SEE WHICH OPERATIONS WE WANT TO GET THE OPERATIONS MANAGER TO PERFORM
+        # LINEOUTS
+        
         if self.operations["LINEOUT"]:
-            if self.input["DEVICE_TYPE"] == "CAMERA":
-                operations_manager.lineouts(axis=self.operations["LINEOUT_AXIS"], ft_interp=self.operations["LINEOUT_FT_INTERP"])
-            else:
-                raise NotImplementedError("Warning: no lineout method provided for probes!")
+                print("Lineout ... \n")
+                if self.input["DEVICE_TYPE"] == "CAMERA":
+                    operations_manager.lineouts(axis=self.operations["LINEOUT_AXIS"], ft_interp=self.operations["LINEOUT_FT_INTERP"])
+                else:
+                    raise NotImplementedError("Warning: no lineout method provided for probes!")
+        # PLOTTING
+        
         if self.operations["PLOT"]:
-            operations_manager.plot()
-
+            print("Plot .. \n")
+            #operations_manager.plot()
+        # CHROMOX FITTING, IF THE CAMERA IS IMAGING CHROMOX
+        
         if self.input["DEVICE_SPECIES"] == "DIGICAM":
             if self.operations["CHROMOX_FIT"]:
+                print("CHROMOX fit ... \n")
                 operations_manager.chromox_fit()
             
         

@@ -76,7 +76,7 @@ class ImageManager(OperationsManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data)
     
-    def average_shots(data_list:List[Dict[str, np.ndarray]], shot_nos:List[int]):
+    def average_shots(data_list:List[Dict[str, np.ndarray]]):
         """Performs statistical average (mean) over a supplied list of shots. Note
         that the data list of shots is now a list of dictionaries, which for images
         will look like {"DATA": []}, and for probes will look like {"DATA": {"X":[], "Y":[]}}.
@@ -85,8 +85,11 @@ class ImageManager(OperationsManager):
         ----------
             data_list : List[Dict[str, np.ndarray]]
                 List containing the data which we want to average over. 
-            shot_nos : List[int]
-                List of the shots over which the average has been performed.
+
+        Returns
+        -------
+            mean_arr : np.ndarray
+                The averaged array ALONE (no x or y data)
         
         """
         
@@ -100,12 +103,6 @@ class ImageManager(OperationsManager):
         #PERFORM SUM AND THEN AVERAGE OVER SHOTS (I.E. OVER 0 AXIS)
         sum_arr = np.sum(array_stack, axis=0)
         mean_arr = np.multiply(sum_arr, 1/len(data_list))
-        pixels_x = None
-        pixels_y = None
-
-        plt.imshow(mean_arr)
-        plt.title(f"Averaged Image Over Shots {shot_nos}")
-        plt.show()
 
         return mean_arr
     
@@ -165,8 +162,8 @@ class DigicamImageManager(ImageManager):
 
             thresh = 0.2
             max_intensity = np.max(img)
-            mu = [0, 0]
-            var = [0, 0]
+            mu = [0., 0.]
+            var = [0., 0.]
 
             total_counts = 0
             
