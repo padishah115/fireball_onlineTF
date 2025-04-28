@@ -3,7 +3,7 @@ import sys
 import json
 sys.path.append(".")
 
-from managers.run_manager import RunManager
+from utils.runmanager import RunManager
 
 def main(json_path="./input.json"):
     

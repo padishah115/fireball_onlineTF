@@ -1,8 +1,8 @@
 from typing import Dict, Type, List
 import numpy as np
 
-from managers.startupmanager import StartupManager
-from managers.operationsmanager import OperationsManager, AndorImageManager, DigicamImageManager, OrcaImageManager, ProbeManager
+from utils.loadmanager import LoadManager
+from utils.operationsmanager import OperationsManager, AndorImageManager, DigicamImageManager, OrcaImageManager, ProbeManager
 
 class RunManager:
     """Class responsible for the first (and essentially highest) level of encapsulation during execution of the code.
@@ -46,7 +46,7 @@ class RunManager:
 
         # INTIALIZE THE STARTUP MANAGER, WHICH IS RESPONSIBLE FOR ESSENTIALLY CONVERTING THE
         # DATA_PATHS_DICTIONARY TO DATA_DICTIONARY
-        startup_manager = StartupManager(input=self.input, 
+        startup_manager = LoadManager(input=self.input, 
                                         data_paths_dict=self.data_paths_dict)
         
         # CALL THE RUNMANAGER.LOAD() METHOD, WHICH RETURNS

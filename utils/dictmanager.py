@@ -6,6 +6,9 @@ from typing import Dict, List
 # FUNCTIONS WHICH CREATE DATA PATH DICTIONARIES FROM THE SHOT LOG #
 ###################################################################
 
+class DictManager:
+    pass
+
 def get_HRM_datapaths_dict(shot_nos:List[int], 
                            cam_no:int, 
                            gain:int,

@@ -4,7 +4,7 @@ import pandas as pd
 
 from stats.stats import arrays_stats
 
-class StartupManager:
+class LoadManager:
     """Class responsible for loading data for specified shots at runtime. This is responsible,
     in the main function, for producing dictionaries of experimental shot data, background shot data, and
     background-corrected shot data."""
