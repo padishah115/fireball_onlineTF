@@ -9,18 +9,39 @@ from typing import Dict, List
 class DictManager:
     """Class handling the creation of data path dictionaries from the shot log."""
     
-    def __init__(self, template_fnames, shotlog_path):
+    def __init__(self, 
+                 shot_nos:List[int],
+                 data_path:str, 
+                 device_folders:List[str], 
+                 template_fnames:Dict[str, str], 
+                 shotlog_path:str):
         """
         
         Parameters
         ----------
-        template_fname : str
-                The template filename for the data, whose blank spaces we will replace as appropriate.
+        shot_nos : List[int]
+            List of (integer) shot numbers whose data we are interested in.
+        data_path : str
+            Path to the master directory holding all of the data. Folders inside of this directory should look like "SCOPE 1",
+            "PLASMA_CAMS" etc.
+        device_folders : List[str]
+            List of the folder names, whose contents are data from various diagnostic devices.
+        template_fnames : Dict[str, str]
+            Dictionary of template filenames for the data, whose blank spaces we will replace as appropriate.
         shotlog_path : str
             Path to the shotlog _AS A .CSV_ !!!
                 
         """
         
+        # INITIALIZE SHOT NOS
+        self.shot_nos = shot_nos
+
+        # INITIALIZE THE PATH TO THE DATA DIRECTORY
+        self.data_path = data_path
+
+        # FOLDERS
+        self.device_folders = device_folders
+
         # Initiate the template filenames dictionary
         self.template_fnames = template_fnames
 
@@ -28,10 +49,57 @@ class DictManager:
         self.shotlog_path = shotlog_path
 
     def run(self):
-        pass
+
+        ##################
+        # ERROR HANDLING #
+        ##################
+
+        # Check to make sure that the parent data path actually exists.
+        if not os.path.exists(self.data_path):
+            raise NotImplementedError("Error: parent data_path doesn't exist.")
+
+        if not os.path.exists(self.shotlog_path):
+            raise NotImplementedError("Error: path to shot log not found.")
+
+        # Make sure all of the folders actually exist.
+        for folder in self.device_folders:
+            new_path = os.path.join(self.data_path, folder)
+            if not os.path.exists(new_path):
+                raise NotImplementedError(f"Path {new_path} to folder {folder} does not exist.\n")
+        
+        ############
+        # DIGICAMS #
+        ############
+        digicam3_paths_dict = self._get_HRM_datapaths_dict()
+        digicam4_paths_dict = self._get_HRM_datapaths_dict()
+        digicam5_paths_dict = self._get_HRM_datapaths_dict()
+        digicam6_paths_dict = self._get_HRM_datapaths_dict()
+       
+        ################
+        # SPECTROMETER #
+        ################
+        andor_paths_dict = self._get_ANDOR_datapaths_dict()
+
+        #################
+        # STREAK CAMERA #
+        #################
+        orca_paths_dict = self._get_ORCA_datapaths_dict()
+        
+        ###########################
+        # BDOT AND FARADAY PROBES #
+        ###########################
+        bd1_paths_dict = self._get_scope_datapaths_dict()
+        bd2_paths_dict = self._get_scope_datapaths_dict()
+        fp_paths_dict = self._get_scope_datapaths_dict()
+        
+        return digicam3_paths_dict, digicam4_paths_dict, digicam5_paths_dict, digicam6_paths_dict,\
+            andor_paths_dict, orca_paths_dict, bd1_paths_dict, bd2_paths_dict, fp_paths_dict
+
+    ###########
+    # CAMERAS #
+    ###########
 
     def _get_HRM_datapaths_dict(self,
-                            shot_nos:List[int], 
                             cam_no:int, 
                             gain:int,
                             parent_directory:str)->Dict[int, str]:
@@ -75,7 +143,7 @@ class DictManager:
 
         #Iterate through the dataframe looking for data corresponding to the specified shot numbers.
         for i, no in enumerate(df["Shot number"]):
-            if no in shot_nos:
+            if no in self.shot_nos:
                 timestamp = str(df["Global UNIX Timestamp (UTC timezone) of HiRadMat cycle"][i])
                 acq_cycle = str(df["Acquisition UNIX Timestamp of HiRadMat cycle (UTC timezone)"][i])
 
@@ -91,6 +159,15 @@ class DictManager:
         # Return the path dictionary
         return data_path_dict
 
+    def _get_ANDOR_datapaths_dict(self):
+        pass
+
+    def _get_ORCA_datapaths_dict(self):
+        pass
+
+    ##########
+    # PROBES #
+    ##########
 
     def _get_scope_datapaths_dict(self,
                                 shot_nos:List[int],

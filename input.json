@@ -16,5 +16,14 @@
         
         "AVERAGE_SHOTS":false
         
+    },
+
+    "DATA_PATH": "/eos/project/h/hiradmat/HRMT Experiments/2024/FIREBALL2/FB2_HRMT64_repository/HRMT64 data",
+    "SHOTLOG_PATH" : "./example_data/shotlog.csv",
+    "DEVICE_FOLDERS" : ["SCOPE1", "SCOPE2", "EP_Spectrometer_Cams", "PlasmaCell_Cams"],
+
+    "TEMPLATE_FNAMES" : {
+        "DIGICAM": "HRM{}.DigiCam_OD{}_{}_{}.csv",
+        "PROBE": "C{}_SCOPE{}_{}.csv"
     }
 }
