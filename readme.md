@@ -1,0 +1,1 @@
+Online data analysis scripts for the FIREBALL-III experiment at the HiRadMat, CERN. Primary author: Hayden Ramm (University of Oxford, correspondence: hayden.ramm@linacre.ox.ac.uk). Additional code by Bryn Lloyd (University of Oxford).
