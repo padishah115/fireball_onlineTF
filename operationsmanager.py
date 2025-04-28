@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 from typing import List, Dict
-from scipy.fft import fft, fftfreq
-from stats import arrays_stats
+from scipy.fft import rfft, rfftfreq
+#from stats import arrays_stats
 
 class OperationsManager:
     """Class responsible for performing more advanced analysis and arithmetic on the shot data, including
@@ -41,32 +42,6 @@ class OperationsManager:
     
     def chromox_fit(self):
         raise NotImplementedError(f"Warning: no chromox_fit method implemented for {self}")
-
-    def lineouts(self, axis:int, ft_interp:str):
-        """Computes the lineout of the data, and plots."""
-        if axis + axis == axis:
-            pixels_1D = np.arange(0, self.shot_data["DATA"].shape[1], 1)
-        else:
-            pixels_1D = np.arange(0, self.shot_data["DATA"].shape[0], 1)
-        
-        lineout = np.sum(self.shot_data["DATA"], axis=axis)
-        lineout_fft_y = np.abs(fft(lineout))
-        freqs = fftfreq(len(lineout), d=1)
-        #lineout_fft_x = fft(pixels_1D)
-
-
-        fig, axs = plt.subplots(nrows=1, ncols=2)
-
-        #real-space plot
-        axs[0].plot(pixels_1D, lineout)
-        axs[0].set_title("Real Domain")
-        
-        #fourier-space plot
-        axs[1].plot(freqs, lineout_fft_y)
-        axs[1].set_title(f"Fourier Domain \n {ft_interp}")
-        
-        fig.suptitle(f"Axis {axis} Lineout from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
-        plt.show()
         
     
 
@@ -116,45 +91,77 @@ class DigicamImageManager(ImageManager):
 
 
     def plot(self):
+        """Plotting method for the Chromox cameras. We will display the raw image with or without centroid fitting,
+        as well as lineouts across both axes."""
 
-        x = self.shot_data["X"]
-        y = self.shot_data["Y"]
-        extent = [x[0], x[-1], y[0], y[-1]]
-
-        fig, ax = plt.subplots()
-        im = ax.imshow(self.shot_data["DATA"], extent=extent)
-        ax.set_xlabel("x / mm")
-        ax.set_ylabel("y / mm")
-        ax.set_title("Chromox Image")
-        ax.set_title(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
-        plt.show()
-        
-
-    def chromox_fit(self):
-        x = self.shot_data["X"]
-        y = self.shot_data["Y"]
+        #INITIALIZE THE X AND Y AXES CORRECTLY.
+        X = self.shot_data["X"]
+        Y = self.shot_data["Y"]
         image = self.shot_data["DATA"]
-        extent = [x[0], x[-1], y[0], y[-1]]
+        extent = [X[0], X[-1], Y[0], Y[-1]]
+        
+        # GET LINEOUTS
+        lineout_x = np.sum(image, axis=0) # x lineout
+        lineout_y = np.sum(image, axis=1) # y lineout
 
-        mu, sigma = self._get_moments(image, pixels_x=x, pixels_y=y)
+        # GET MOMENTS OF THE IMAGE
+        mu, sigma = self._get_moments(image, pixels_x=X, pixels_y=Y)
+        
+        
+        #initialize figure
+        fig = plt.figure(figsize=(16,8))
 
+        gs = gridspec.GridSpec(nrows=2, ncols=2, wspace=0.3, hspace=0.3, 
+                               #width_ratios=[], 
+                               #height_ratios=[]
+                               )
+
+        #########
+        # IMAGE #
+        #########
+        #ax1 = fig.add_axes(rect=[0., 0.05, 0.5, 0.5])
+        ax1 = fig.add_subplot(gs[1,0])
+        ax1.imshow(image, extent=extent, aspect='auto')
+        ax1.set_xlabel("x / mm")
+        ax1.set_ylabel("y / mm")
+        
+        #PLOT CENTROID AS A DOT
+        ax1.scatter(mu[0], mu[1], label=f'mu=[{mu[0]:.2f}, {mu[1]:.2f}]', color='m')
+        
+        # PLOT STD LINES IN BOTH DIMENSIONS
         y0 = mu + [0, sigma[1]]
         y1 = mu - [0, sigma[1]]
         x0 = mu + [sigma[0], 0]
         x1 = mu - [sigma[0], 0]
+        ax1.plot([x0[0], x1[0]], [x0[1], x1[1]], color='m', linestyle='--', label=f'sigma_x: {sigma[0]:.2f}')
+        ax1.plot([y0[0], y1[0]], [y0[1], y1[1]], color='m', linestyle='--', label=f'sigma_y: {sigma[1]:.2f}')
+        ax1.legend()
+        
+        ##############
+        # X lineouts #
+        ##############
+        #ax2 = fig.add_axes(rect=[0., 0., 0.5, 0.08])
+        ax2 = fig.add_subplot(gs[0,0], sharex=ax1)
+        ax2.plot(X, lineout_x)
+        ax2.set_title("X Lineout")
+        ax2.set_ylabel("Intensity")
+        ax2.set_xlabel("x / mm")
+        
+        ##############
+        # Y lineouts #
+        ##############
+        #ax3 = fig.add_axes(rect=[0.52, 0.1, 0.08, 0.4])
+        ax3 = fig.add_subplot(gs[1,1], sharey=ax1)
+        ax3.plot(lineout_y[::-1], Y)
+        ax3.set_title("Y Lineout")
+        ax3.set_xlabel("Intensity")
+        ax3.set_ylabel("y / mm")
 
-        fig, ax = plt.subplots()
-        im = ax.imshow(image, extent=extent, aspect="auto")
-        ax.set_xlabel("x / mm")
-        ax.set_ylabel("y / mm")
-        ax.set_title(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
-        ax.scatter(mu[0], mu[1], label=f'mu=[{mu[0]:.2f}, {mu[1]:.2f}]', color='m')
-
-        ax.plot([x0[0], x1[0]], [x0[1], x1[1]], color='m', linestyle='--', label=f'sigma_x: {sigma[0]:.2f}')
-        ax.plot([y0[0], y1[0]], [y0[1], y1[1]], color='m', linestyle='--', label=f'sigma_y: {sigma[1]:.2f}')
-
-        plt.legend()
+        # SHOW THE FIGURE
+        fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+        fig.tight_layout()
         plt.show()
+        
 
     
     def _get_moments(self, img, pixels_x, pixels_y):
@@ -214,7 +221,7 @@ class AndorImageManager(ImageManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data)
 
-    def plot_andor_image(self, step:int=200):
+    def plot(self, step:int=200):
         """Plots the image from the Andor camera attached to the synchrotron spectrometer,
         which is already a fourier transform. This image is then summed along the pixel axis, producing
         a 1D fourier transform, which is plotted alongside the raw image.
@@ -232,7 +239,7 @@ class AndorImageManager(ImageManager):
         y_tick_loc = np.arange(0, len(pixels_y), step=step)
         pixels_y_rounded = [f"{pixel:.2f}" for pixel in pixels_y] 
 
-        fig, axs = plt.subplots(nrows=1, ncols=2)
+        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(16,8))
         
         # PHYSICAL IMAGE
         axs[0].imshow(img, aspect='auto')
@@ -243,12 +250,13 @@ class AndorImageManager(ImageManager):
 
         #INTEGRATED IMAGE
         intensities = np.sum(img, axis=1)
-        axs[1].plot(np.arange(0, img.shape[0]), intensities)
-        axs[1].set_xticks(y_tick_loc)
-        axs[1].set_xticklabels(pixels_y_rounded[::step], rotation='vertical')
-        axs[1].set_yticks([])
-        axs[1].set_ylabel("Intensity")
-        axs[1].set_xlabel("Wavelength / nm")
+        axs[1].plot(intensities, np.arange(0, img.shape[0]))
+        #axs[1].set_yticks(y_tick_loc)
+        #axs[1].set_yticklabels(pixels_y_rounded[::step], rotation='vertical')
+        #axs[1].set_yticks([])
+        axs[1].invert_yaxis()
+        axs[1].set_xlabel("Intensity")
+        axs[1].set_ylabel("Wavelength / nm")
         
         fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         fig.tight_layout()
@@ -261,24 +269,58 @@ class OrcaImageManager(ImageManager):
 
     def plot(self, step:int=100):
         
+        # INITIALIZE IMAGE AND AXES FROM DATA
         img = self.shot_data["DATA"]
         space_mm_x = self.shot_data["X"]
         time_ns_y = self.shot_data["Y"]
+        
+        # ROUND THE TIME VALUES FOR CLEANER PLOTTING
         time_ns_y_rounded = [f"{time:.2f}" for time in time_ns_y]
 
-        fig, axs = plt.subplots()
+        fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(16,8))
+        
         x_ticks_pos = np.arange(0, len(space_mm_x), step=step)
         y_ticks_pos = np.arange(0, len(time_ns_y), step=step)
         x_ticks = space_mm_x[::step]
         y_ticks = time_ns_y_rounded[::step]
 
-        axs.imshow(img)
-        axs.set_xlabel("Distance / mm")
-        axs.set_ylabel("Time / ns")
-        axs.set_yticks(y_ticks_pos)
-        axs.set_yticklabels(y_ticks)
-        axs.set_xticks(x_ticks_pos)
-        axs.set_xticklabels(x_ticks)
+        ######################
+        # PLOT THE RAW IMAGE #
+        ######################
+        axs[0].imshow(img, aspect='auto')
+        axs[0].set_xlabel("Distance / mm")
+        axs[0].set_ylabel("Time / ns")
+        axs[0].set_yticks(y_ticks_pos)
+        axs[0].set_yticklabels(y_ticks)
+        axs[0].set_xticks(x_ticks_pos)
+        axs[0].set_xticklabels(x_ticks, rotation=90)
+        axs[0].set_title("Raw Image")
+
+        ###########
+        # LINEOUT #
+        ###########
+        lineout_y = np.sum(img, axis=1)
+        axs[1].plot(lineout_y, time_ns_y)
+        axs[1].set_ylabel("Time / ns")
+        axs[1].set_xlabel("Summed intensity")
+        axs[1].set_title("Lineout (Sum Along Spatial Coords)")
+        axs[1].invert_yaxis()
+
+        ################################
+        # FOURIER TRANSFORM OF LINEOUT #
+        ################################ 
+        N = len(lineout_y)
+        dt = time_ns_y[1] - time_ns_y[0]
+        freq = rfftfreq(N, d=dt)
+        intensity = np.abs(rfft(lineout_y))
+        axs[2].plot(intensity, freq)
+        axs[2].set_ylabel("Freq / GHz")
+        axs[2].set_xlabel("Intensity")
+        axs[2].set_title("Fourier Transform of Lineout")
+        axs[2].invert_yaxis()
+        
+        fig.suptitle(f"Data from {self.DEVICE_NAME}, Shot No {self.shot_no}, \n{self.label}")
+        fig.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at the top (5%)
         plt.show()
 
 
@@ -292,21 +334,26 @@ class ProbeManager(OperationsManager):
         time = self.shot_data["DATA"]["TIMES"]
         voltages = self.shot_data["DATA"]["VOLTAGES"]
 
-        #fft_time = fftfreq(time)
-        fft_time = fftfreq(len(voltages), d=1)
-        fft_voltages = np.abs(fft(voltages))
+        #Calculate number of bin centres, and the time spacing of the 'scope
+        N = len(voltages)
+        dt = time[1]-time[0]
 
-        fig, axs = plt.subplots(nrows=1, ncols=2)
+        # FREQ AND INTENSITY
+        fft_time = rfftfreq(N, d=dt)
+        fft_voltages = np.abs(rfft(voltages))
 
+        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(16,9))
 
+        # REAL DOMAIN
         axs[0].plot(time, voltages)
-        axs[0].set_ylabel("Voltage")
-        axs[0].set_xlabel("Time")
+        axs[0].set_ylabel("Voltage / V")
+        axs[0].set_xlabel("Time / s")
         axs[0].set_title("Real Domain")
 
+        #FREQUENCY DOMAIN
         axs[1].plot(fft_time, fft_voltages)
         axs[1].set_ylabel("Amplitude")
-        axs[1].set_xlabel("Frequency")
+        axs[1].set_xlabel("Frequency / Hz")
         axs[1].set_title("Fourier Domain")
 
         fig.suptitle(f"Oscilloscope Trace from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")

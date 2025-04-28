@@ -81,6 +81,16 @@ class StartupManager:
             bkg_images = [bkg_data_dict[shot]["DATA"] for shot in bkg_data_dict.keys()]
             
             averaged_bkg = arrays_stats(bkg_images)[0]
+
+            corrected_data_dict = {}
+            for shot_no in self.exp_shot_nos:
+                corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"], bkg_arr=averaged_bkg)
+                corrected_data_dict[shot_no] = {}
+                corrected_data_dict[shot_no]["DATA"] = corrected_data
+                corrected_data_dict[shot_no]["X"] = exp_data_dict[shot_no]["X"]
+                corrected_data_dict[shot_no]["Y"] = exp_data_dict[shot_no]["Y"]
+
+            return exp_data_dict, bkg_data_dict, corrected_data_dict
         
         #########
         # PROBE #
@@ -96,9 +106,20 @@ class StartupManager:
             
             # PRODUCE LIST OF VOLTAGES FROM BACKGROUND OSCILLOSCOPE TRACES, AND THEN PASS TO 
             # ARRAYS_STATS METHOD TO PRODUCE BACKGROUND AVERAGE
-            bkg_voltages = [datum["VOLTAGES"] for datum in bkg_data_dict.values()]
+            bkg_voltages = [bkg_data_dict[shot]["DATA"]["VOLTAGES"] for shot in bkg_data_dict.keys()]
             #Take average of background data to produce single background
             averaged_bkg = arrays_stats(bkg_voltages)[0]
+
+            corrected_data_dict = {}
+            for shot_no in self.exp_shot_nos:
+                corrected_data_dict[shot_no] = {"DATA":{}}
+                
+                corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"]["VOLTAGES"], bkg_arr=averaged_bkg)
+                
+                corrected_data_dict[shot_no]["DATA"]["VOLTAGES"] = corrected_data
+                corrected_data_dict[shot_no]["DATA"]["TIMES"] = exp_data_dict[shot_no]["DATA"]["TIMES"]
+
+            return exp_data_dict, bkg_data_dict, corrected_data_dict
         
         # RAISE ERROR IF USER SPECIFIES AN ERRONEOUS DEVICE_TYPE
         else:
@@ -109,15 +130,15 @@ class StartupManager:
         # BACKGROUND SUBTRACTION #
         ##########################
         # DICTIONARY OF FORM {EXP_SHOT_NO : BACKGROUND_CORRECTED_DATA}
-        corrected_data_dict = {}
-        for shot_no in self.exp_shot_nos:
-            corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"], bkg_arr=averaged_bkg)
-            corrected_data_dict[shot_no] = {}
-            corrected_data_dict[shot_no]["DATA"] = corrected_data
-            corrected_data_dict[shot_no]["X"] = exp_data_dict[shot_no]["X"]
-            corrected_data_dict[shot_no]["Y"] = exp_data_dict[shot_no]["Y"]
+        # corrected_data_dict = {}
+        # for shot_no in self.exp_shot_nos:
+        #     corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"], bkg_arr=averaged_bkg)
+        #     corrected_data_dict[shot_no] = {}
+        #     corrected_data_dict[shot_no]["DATA"] = corrected_data
+        #     corrected_data_dict[shot_no]["X"] = exp_data_dict[shot_no]["X"]
+        #     corrected_data_dict[shot_no]["Y"] = exp_data_dict[shot_no]["Y"]
 
-        return exp_data_dict, bkg_data_dict, corrected_data_dict
+        # return exp_data_dict, bkg_data_dict, corrected_data_dict
     
     
     def bkg_subtraction(self, raw_arr:np.ndarray, bkg_arr:np.ndarray)->np.ndarray:
@@ -352,9 +373,12 @@ class StartupManager:
 
         # DICTIONARY WHICH WILL ULTIMATELY BE OF FORM {SHOT NO : {"VOLTAGES":[VOLTAGE DATA], "TIMES":[TIME DATA]}}
         scope_data_dict = {}
+        
 
         #ITERATE THROUGH SPECIFIED SHOT NUMBERS, AND APPEND DATA TO SCOPE_DATA_DICT
         for shot_no in shot_nos:
+            scope_data_dict[shot_no] = {"DATA":{"VOLTAGES": None, "TIMES": None}}
+
             # ACCESS PATH TO SHOT'S DATA USING DATA_PATH_DICT
             data_path = data_paths_dict[shot_no]
 

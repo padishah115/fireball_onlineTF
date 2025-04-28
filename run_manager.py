@@ -134,12 +134,6 @@ class RunManager:
         # CHECK TO SEE WHICH OPERATIONS WE WANT TO GET THE OPERATIONS MANAGER TO PERFORM
         # LINEOUTS
         
-        if self.operations["LINEOUT"]:
-                print("Lineout ... \n")
-                if self.input["DEVICE_TYPE"] == "CAMERA":
-                    operations_manager.lineouts(axis=self.operations["LINEOUT_AXIS"], ft_interp=self.operations["LINEOUT_FT_INTERP"])
-                else:
-                    raise NotImplementedError("Warning: no lineout method provided for probes!")
         # PLOTTING
         
         if self.operations["PLOT"]:
@@ -147,10 +141,6 @@ class RunManager:
             operations_manager.plot()
         # CHROMOX FITTING, IF THE CAMERA IS IMAGING CHROMOX
         
-        if self.input["DEVICE_SPECIES"] == "DIGICAM":
-            if self.operations["CHROMOX_FIT"]:
-                print("CHROMOX fit ... \n")
-                operations_manager.chromox_fit()
 
         
     
