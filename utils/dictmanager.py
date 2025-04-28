@@ -24,8 +24,9 @@ class DictManager:
         data_path : str
             Path to the master directory holding all of the data. Folders inside of this directory should look like "SCOPE 1",
             "PLASMA_CAMS" etc.
-        device_folders : List[str]
-            List of the folder names, whose contents are data from various diagnostic devices.
+        device_folders : Dict[str, str]
+            Dictionary of folder names, format {Device : Foldername}, where the folder is significant as it contains
+            the raw data files for each device in question.
         template_fnames : Dict[str, str]
             Dictionary of template filenames for the data, whose blank spaces we will replace as appropriate.
         shotlog_path : str
@@ -48,7 +49,7 @@ class DictManager:
         # Initialize the path to the shotlog
         self.shotlog_path = shotlog_path
 
-    def run(self):
+    def run(self)->Dict[Dict[str, str]]:
 
         ##################
         # ERROR HANDLING #
@@ -70,30 +71,74 @@ class DictManager:
         ############
         # DIGICAMS #
         ############
-        digicam3_paths_dict = self._get_HRM_datapaths_dict()
-        digicam4_paths_dict = self._get_HRM_datapaths_dict()
-        digicam5_paths_dict = self._get_HRM_datapaths_dict()
-        digicam6_paths_dict = self._get_HRM_datapaths_dict()
+        digicam3_paths_dict = self._get_HRM_datapaths_dict(
+            cam_no=3, 
+            gain=, 
+            parent_directory=os.path.join(self.data_path, self.device_folders["HRM3"]))
+        
+        digicam4_paths_dict = self._get_HRM_datapaths_dict(
+            cam_no=4,
+            gain=,
+            parent_directory=os.path.join(self.data_path, self.device_folders["HRM4"])
+        )
+        
+        digicam5_paths_dict = self._get_HRM_datapaths_dict(
+            cam_no=5,
+            gain=,
+            parent_directory=os.path.join(self.data_path, self.device_folders["HRM5"])
+        )
+        
+        digicam6_paths_dict = self._get_HRM_datapaths_dict(
+            cam_no=6,
+            gain=,
+            parent_directory=os.path.join(self.data_path, self.device_folders["HRM6"])
+        )
        
         ################
         # SPECTROMETER #
         ################
-        andor_paths_dict = self._get_ANDOR_datapaths_dict()
+        andor_paths_dict = self._get_ANDOR_datapaths_dict(
+            parent_dir=os.path.join(self.data_path, self.device_folders["ANDOR"])
+        )
 
         #################
         # STREAK CAMERA #
         #################
-        orca_paths_dict = self._get_ORCA_datapaths_dict()
+        orca_paths_dict = self._get_ORCA_datapaths_dict(
+            parent_dir=os.path.join(self.data_path, self.device_folders["ORCA"])
+        )
         
         ###########################
         # BDOT AND FARADAY PROBES #
         ###########################
-        bd1_paths_dict = self._get_scope_datapaths_dict()
-        bd2_paths_dict = self._get_scope_datapaths_dict()
-        fp_paths_dict = self._get_scope_datapaths_dict()
+        bdot1_paths_dict = self._get_scope_datapaths_dict(
+            scope_no=,
+            parent_dir=os.path.join(self.data_path, self.device_folders["BDOT1"])
+
+        )
+        bdot2_paths_dict = self._get_scope_datapaths_dict(
+            scope_no=,
+            parent_dir=os.path.join(self.data_path, self.device_folders["BDOT2"])
+        )
+        fp_paths_dict = self._get_scope_datapaths_dict(
+            scope_no=,
+            parent_dir=os.path.join(self.data_path, self.device_folders["FARADAY PROBE"])
+        )
+
+        # MASTER DICTIONARY
+        dict_of_dicts = {
+            "HRM3":digicam3_paths_dict,
+            "HRM4":digicam4_paths_dict,
+            "HRM5":digicam5_paths_dict,
+            "HRM6":digicam6_paths_dict,
+            "BDOT1":bdot1_paths_dict,
+            "BDOT2":bdot2_paths_dict,
+            "FARADAY PROBE":fp_paths_dict,
+            "ANDOR":andor_paths_dict,
+            "ORCA":orca_paths_dict,
+        } 
         
-        return digicam3_paths_dict, digicam4_paths_dict, digicam5_paths_dict, digicam6_paths_dict,\
-            andor_paths_dict, orca_paths_dict, bd1_paths_dict, bd2_paths_dict, fp_paths_dict
+        return dict_of_dicts
 
     ###########
     # CAMERAS #
@@ -159,10 +204,14 @@ class DictManager:
         # Return the path dictionary
         return data_path_dict
 
-    def _get_ANDOR_datapaths_dict(self):
+    def _get_ANDOR_datapaths_dict(self, 
+                                  parent_dir:str,
+                                  ):
         pass
 
-    def _get_ORCA_datapaths_dict(self):
+    def _get_ORCA_datapaths_dict(self,
+                                 parent_dir:str,
+                                 ):
         pass
 
     ##########
@@ -170,15 +219,12 @@ class DictManager:
     ##########
 
     def _get_scope_datapaths_dict(self,
-                                shot_nos:List[int],
                                 scope_no:str,
                                 parent_dir:str)->Dict[int, str]:
         """Creates a datapath dictionary for scopes, taking the scope number as input.
         
         Parameters
         ----------
-            shot_nos : List[int]
-                List of integer shot numbers whose data we are interested in.
             scope_no : int
                 The scope number- this replaces the X in CX_SCOPE_X.
             parent_directory : str
@@ -191,7 +237,7 @@ class DictManager:
                 for the specified shots.
         """
 
-        template_fname=self.template_fnames["PROBE"],
+        template_fname:str=self.template_fnames["PROBE"],
         shotlog_path:str=self.shotlog_path
 
         # Check that the shotlog path exists.
@@ -209,7 +255,7 @@ class DictManager:
 
         #Iterate through the dataframe looking for data corresponding to the specified shot numbers.
         for no in enumerate(df["Shot number"]):
-            if no in shot_nos:
+            if no in self.shot_nos:
                 acquisition_no = df["Scope1 Trace"]
 
                 # INITIALIZE THE FILE NAME FROM THE TEMPLATE

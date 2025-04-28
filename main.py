@@ -25,14 +25,14 @@ def main(json_path="./input.json"):
         )
     
     # LOAD ALL DATA PATH DICTIONARIES
-    digicam3_paths_dict, digicam4_paths_dict, digicam5_paths_dict, digicam6_paths_dict,\
-            andor_paths_dict, orca_paths_dict, bd1_paths_dict, bd2_paths_dict, fp_paths_dict = dict_manager.run()
+    # of form {"DEVICE NAME" : {SHOT NO : /path/to/data}}
+    dict_of_dicts = dict_manager.run()
 
     # START THE RUNMANAGER TO PERFORM DATA LOADING AND ARITHMETIC
     print("Starting run manager ... \n")
     run_manager = RunManager(
         input=input,
-        data_paths_dict=orca_paths_dict
+        data_paths_dict=dict_of_dicts["DEVICE_NAME"]
     )
 
     run_manager.run()

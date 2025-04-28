@@ -1,5 +1,5 @@
 {
-    "DEVICE_NAME": "STREAK CAMERA",
+    "DEVICE_NAME": "ORCA",
     "DEVICE_TYPE": "CAMERA",
     
     "DEVICE_SPECIES": "ORCA",
@@ -20,7 +20,17 @@
 
     "DATA_PATH": "/eos/project/h/hiradmat/HRMT Experiments/2024/FIREBALL2/FB2_HRMT64_repository/HRMT64 data",
     "SHOTLOG_PATH" : "./example_data/shotlog.csv",
-    "DEVICE_FOLDERS" : ["SCOPE1", "SCOPE2", "EP_Spectrometer_Cams", "PlasmaCell_Cams"],
+    "DEVICE_FOLDERS" : {
+        "BDOT1": "SCOPE1", 
+        "BDOT2": "SCOPE2", 
+        "FARADAY PROBE": "",
+        "HRM3" : "PlasmaCell_Cams",
+        "HRM4" : "PlasmaCell_Cams",
+        "HRM5" : "EP_Spectrometer_Cams",
+        "HRM6" : "EP_Spectrometer_Cams",
+        "ANDOR" : "",
+        "ORCA" : ""
+    },
 
     "TEMPLATE_FNAMES" : {
         "DIGICAM": "HRM{}.DigiCam_OD{}_{}_{}.csv",

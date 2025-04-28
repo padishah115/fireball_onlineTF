@@ -1,5 +1,5 @@
 {
-    "DEVICE_NAME": "any",
+    "DEVICE_NAME": ["HRM3/4/5/6", "ANDOR", "ORCA", "FARADAY PROBE", "BDOT1", "BDOT2"],
     "DEVICE_TYPE": ["CAMERA", "PROBE"],
     "DEVICE_SPECIES": [false, "DIGICAM", "ANDOR", "ORCA", "PROBE"],
 
