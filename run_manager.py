@@ -1,4 +1,4 @@
-from typing import Dict, Type
+from typing import Dict, Type, List
 import numpy as np
 
 from startupmanager import StartupManager
@@ -98,22 +98,16 @@ class RunManager:
         if self.operations["AVERAGE_SHOTS"]:
             print("Averaging shots ... \n")
 
-            averaged_shot_data = {}
-            shot_data_list = [data for data in data_dict.values()]
+            X = data_dict[shot_no]["X"]
+            Y = data_dict[shot_no]["Y"]
 
-            #GET THE AVERAGED DATA ITSELF
-            averaged_shot_data["DATA"] =\
-                self.manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]].average_shots(shot_data_list)
-            
-            # COPY X AND Y AXES FROM INDIVIDUAL SHOTS
-            averaged_shot_data["X"] = data_dict[shot_no]["X"]
-            averaged_shot_data["Y"] = data_dict[shot_no]["Y"]
-
-            print("Averaged shot data: ", averaged_shot_data)
-            print("Calling operations manager on the averaged shot data ...\n")
-            self._call_operations_manager(shot_no=f"Average over {shot_nos}",
-                                          shot_data=averaged_shot_data,
-                                          LABEL=LABEL)
+            self._run_shot_averaging(
+                data_dict=data_dict,
+                shot_nos=shot_nos,
+                X=X,
+                Y=Y, #one of the shot numbers to steal X, Y from
+                LABEL=LABEL
+            )
 
 
     
@@ -150,12 +144,52 @@ class RunManager:
         
         if self.operations["PLOT"]:
             print("Plot .. \n")
-            #operations_manager.plot()
+            operations_manager.plot()
         # CHROMOX FITTING, IF THE CAMERA IS IMAGING CHROMOX
         
         if self.input["DEVICE_SPECIES"] == "DIGICAM":
             if self.operations["CHROMOX_FIT"]:
                 print("CHROMOX fit ... \n")
                 operations_manager.chromox_fit()
+
+    
+    def _run_shot_averaging(self, data_dict:Dict[int, Dict], shot_nos:List[int], X, Y, LABEL:str):
+        """Mini run function for shot averaging. We need to extract the raw array produced 
+        directly by averaging, and also initialize the X/Y axes properly using one of the constituent
+        pieces of shot data.
+        
+        Parameters
+        ----------
+            data_dict : Dict[int, Dict]
+                Dictionaries containing shot data, where the key is the shot number, and the 
+                values are a dictionary of form {"DATA": [], "X" : [], "Y": []}
+            shot_nos : List[int]
+                List of shot numbers over which the average is being performed.
+            X : np.ndarray
+                X axis in proper format (i.e. NOT in pixels, but in mm etc.)
+            Y : np.ndarray
+                Y axis in proper format (i.e. NOT in pixels, but in mm etc.)
+            LABEL : str
+                Label for plot title telling us how the data was handled, e.g. what type of 
+                subtraction or background correction was applied.
+
+        """
+
+        averaged_shot_data = {}
+        shot_data_list = [data for data in data_dict.values()]
+
+        #GET THE AVERAGED DATA ITSELF
+        averaged_shot_data["DATA"] =\
+            self.manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]].average_shots(shot_data_list)
+        
+        # COPY X AND Y AXES FROM INDIVIDUAL SHOTS
+        averaged_shot_data["X"] = X
+        averaged_shot_data["Y"] = Y
+
+        print("Averaged shot data: ", averaged_shot_data)
+        print("Calling operations manager on the averaged shot data ...\n")
+        self._call_operations_manager(shot_no=f"Average over {shot_nos}",
+                                        shot_data=averaged_shot_data,
+                                        LABEL=LABEL)
             
         
