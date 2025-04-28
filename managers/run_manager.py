@@ -1,8 +1,8 @@
 from typing import Dict, Type, List
 import numpy as np
 
-from startupmanager import StartupManager
-from operationsmanager import OperationsManager, AndorImageManager, DigicamImageManager, OrcaImageManager, ProbeManager
+from managers.startupmanager import StartupManager
+from managers.operationsmanager import OperationsManager, AndorImageManager, DigicamImageManager, OrcaImageManager, ProbeManager
 
 class RunManager:
     """Class responsible for the first (and essentially highest) level of encapsulation during execution of the code.

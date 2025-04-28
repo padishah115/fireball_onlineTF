@@ -3,7 +3,7 @@ import sys
 import json
 sys.path.append(".")
 
-from run_manager import RunManager
+from managers.run_manager import RunManager
 
 def main(json_path="./input.json"):
     
@@ -40,7 +40,7 @@ def main(json_path="./input.json"):
 
     run_manager.run()
         
-
+    print("Run terminated successfully. \n")
 
 if __name__ == "__main__":
     main()

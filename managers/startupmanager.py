@@ -2,7 +2,7 @@ from typing import List, Dict, Tuple
 import numpy as np
 import pandas as pd
 
-from stats import arrays_stats
+from stats.stats import arrays_stats
 
 class StartupManager:
     """Class responsible for loading data for specified shots at runtime. This is responsible,
