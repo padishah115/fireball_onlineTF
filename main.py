@@ -65,7 +65,7 @@ def main(json_path="./input.json"):
 
     run_manager = RunManager(
         input=input,
-        data_paths_dict=orca_paths_dict
+        data_paths_dict=digicam3_paths_dict
     )
 
     run_manager.run()

@@ -38,6 +38,9 @@ class LoadManager:
         # DICTIONARY KEYED BY SHOT NUMBER, WITH VALUES CORRESPONDING TO THE PATHS TO THE DATA
         # FOR BOTH BACKGROUND AND EXPERIMENTAL SHOTS
         self.data_paths_dict = data_paths_dict
+
+        #SEE WHETHER WE WANT TO NORMALIZE THE DATA
+        self.norm = self.input["NORM_PLOT"]
         
 
     def load(self)->Tuple[Dict[int, np.ndarray], Dict[int, np.ndarray], Dict[int, np.ndarray]]:
@@ -91,8 +94,6 @@ class LoadManager:
             else:
                 bkg_data_dict = None
                 corrected_data_dict = None
-
-            return exp_data_dict, bkg_data_dict, corrected_data_dict
         
         #########
         # PROBE #
@@ -122,13 +123,15 @@ class LoadManager:
                 bkg_data_dict = None
                 corrected_data_dict = None
 
-            return exp_data_dict, bkg_data_dict, corrected_data_dict
-            
-        
+         
         # RAISE ERROR IF USER SPECIFIES AN ERRONEOUS DEVICE_TYPE
         else:
             raise ValueError(f"Warning: device type '{self.device_type}' not valid- device_type must be either \"CAMERA\" or \"PROBE\".")
         
+        # CHECK WHETHER WE WANT TO NORMALIZE THE DATA
+        
+
+        return exp_data_dict, bkg_data_dict, corrected_data_dict
     
     
     def bkg_subtraction(self, raw_arr:np.ndarray, bkg_arr:np.ndarray)->np.ndarray:
@@ -344,6 +347,8 @@ class LoadManager:
             image_dict[shot_no] = {}
             image_dict[shot_no]["DATA"], image_dict[shot_no]["X"], image_dict[shot_no]["Y"] = \
                 image_loader_function_dict[camera_type](data_path)
+            
+
 
         return image_dict
 

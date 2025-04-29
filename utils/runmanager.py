@@ -85,6 +85,7 @@ class RunManager:
         else:
             raise ValueError(f"Warning: {self.input['BACKGROUND_STATUS']} is invalid input for\
                               \"BACKGROUND_STATUS\" in input.json file.")
+        
 
         # SINGLE-SHOT PROCESSING
         for shot_no in shot_nos:
@@ -138,7 +139,7 @@ class RunManager:
         
         if self.operations["PLOT"]:
             print("Plot .. \n")
-            operations_manager.plot()
+            operations_manager.plot(norm=self.input["NORM_PLOT"])
         # CHROMOX FITTING, IF THE CAMERA IS IMAGING CHROMOX
         
 

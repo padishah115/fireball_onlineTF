@@ -9,8 +9,11 @@
     "BKG_NAME":"any",
     "BACKGROUND_STATUS":["RAW", "SUBTRACT", "SHOW"],
 
+    "NORM_PLOT": [true, false],
+
     "OPERATIONS": {
         "PLOT": [true, false],
+        
         "AVERAGE_SHOTS":[true, false]
     },
     

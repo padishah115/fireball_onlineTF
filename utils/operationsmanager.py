@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from scipy.fft import rfft, rfftfreq
 #from stats import arrays_stats
 
@@ -90,85 +90,157 @@ class DigicamImageManager(ImageManager):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data)
 
 
-    def plot(self):
+    def plot(self, norm:bool=False):
         """Plotting method for the Chromox cameras. We will display the raw image with or without centroid fitting,
-        as well as lineouts across both axes."""
+        as well as lineouts across both axes.
+        
+        Parameters
+        ----------
+            norm:bool
+                Whether or not we want to normalize the image to maximum pixel intensity.
+        """
 
         #INITIALIZE THE X AND Y AXES CORRECTLY.
         X = self.shot_data["X"]
         Y = self.shot_data["Y"]
         image = self.shot_data["DATA"]
+        
+        print(f"Normalise image: {norm}")
+        if norm:
+            image /= np.max(image)
+        
         extent = [X[0], X[-1], Y[0], Y[-1]]
         
         # GET LINEOUTS
         lineout_x = np.sum(image, axis=0) # x lineout
         lineout_y = np.sum(image, axis=1) # y lineout
 
+        # Get polar lineouts. These are dictionaries whose keys are the polar coordinates,
+        # and whose values are the sum over the other dimension. I.e. r_dict is of form
+        # {rval : intensity_summed_across_2pi}
+        r_dict, theta_dict = self._get_polar_lineouts()
+
+
         # GET MOMENTS OF THE IMAGE
-        mu, sigma = self._get_moments(image, pixels_x=X, pixels_y=Y)
+        mu, sigma = self._get_moments()
         
         
         #initialize figure
         fig = plt.figure(figsize=(16,8))
 
-        gs = gridspec.GridSpec(nrows=2, ncols=2, wspace=0.3, hspace=0.3, 
+        gs = gridspec.GridSpec(nrows=3, ncols=2, wspace=0.3, hspace=0.5, 
                                #width_ratios=[], 
                                #height_ratios=[]
                                )
+
+        ########
+        # DATA #
+        ########
+        ax_data = fig.add_subplot(gs[0,1])
+        ax_data.axis("off")
+        text = f'mu=[x̄={mu[0]:.2f}mm, ȳ={mu[1]:.2f}mm]. σ=[σ_x={sigma[0]:.2f}mm, σ_y={sigma[1]:.2f}mm]'
+        ax_data.text(x=0.05, y=0.95, s=text)
 
         #########
         # IMAGE #
         #########
         #ax1 = fig.add_axes(rect=[0., 0.05, 0.5, 0.5])
         ax1 = fig.add_subplot(gs[1,0])
-        ax1.imshow(image, extent=extent, aspect='auto')
+        im = ax1.imshow(image, extent=extent, aspect='auto')
+        
+        # Get position of ax1 for colorbar placement
+        bbox = ax1.get_position()
+        # Create colorbar axis above ax1
+        cbar_ax = fig.add_axes([
+            bbox.x0,          # left
+            bbox.y0 - 0.03,   # bottom (just below ax1)
+            bbox.width,       # same width as ax1
+            0.02              # height of colorbar
+        ])
+        cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal')
+        #cbar_label = "Rel. Pixel Intensity" if norm else "Abs. Pixel Intensity"
+        #cbar.set_label(cbar_label, labelpad=5)
+        
         ax1.set_xlabel("x / mm")
+        ax1.xaxis.tick_top()
+        ax1.xaxis.set_label_position("top")
         ax1.set_ylabel("y / mm")
         
         #PLOT CENTROID AS A DOT
-        ax1.scatter(mu[0], mu[1], label=f'mu=[{mu[0]:.2f}, {mu[1]:.2f}]', color='m')
+        #ax1.scatter(mu[0], mu[1], label=f'mu=[x̄={mu[0]:.2f}mm, ȳ={mu[1]:.2f}mm]', alpha=0)
         
         # PLOT STD LINES IN BOTH DIMENSIONS
-        y0 = mu + [0, sigma[1]]
-        y1 = mu - [0, sigma[1]]
-        x0 = mu + [sigma[0], 0]
-        x1 = mu - [sigma[0], 0]
-        ax1.plot([x0[0], x1[0]], [x0[1], x1[1]], color='m', linestyle='--', label=f'sigma_x: {sigma[0]:.2f}')
-        ax1.plot([y0[0], y1[0]], [y0[1], y1[1]], color='m', linestyle='--', label=f'sigma_y: {sigma[1]:.2f}')
-        ax1.legend()
+        # y0 = mu + [0, sigma[1]]
+        # y1 = mu - [0, sigma[1]]
+        # x0 = mu + [sigma[0], 0]
+        # x1 = mu - [sigma[0], 0]
+        # ax1.plot([x0[0], x1[0]], [x0[1], x1[1]], color='m', linestyle='--', label=f'sigma_x: {sigma[0]:.2f}mm', alpha=0)
+        # ax1.plot([y0[0], y1[0]], [y0[1], y1[1]], color='m', linestyle='--', label=f'sigma_y: {sigma[1]:.2f}mm', alpha=0)
+        # ax1.legend()
         
         ##############
         # X lineouts #
         ##############
         #ax2 = fig.add_axes(rect=[0., 0., 0.5, 0.08])
         ax2 = fig.add_subplot(gs[0,0], sharex=ax1)
-        ax2.plot(X, lineout_x)
-        ax2.set_title("X Lineout")
+        ax2.plot(X, lineout_x, label="X Lineout")
+        #ax2.set_title("X Lineout")
         ax2.set_ylabel("Intensity")
-        ax2.set_xlabel("x / mm")
+        #ax2.set_xlabel("x / mm")
+        ax2.legend()
         
         ##############
         # Y lineouts #
         ##############
         #ax3 = fig.add_axes(rect=[0.52, 0.1, 0.08, 0.4])
         ax3 = fig.add_subplot(gs[1,1], sharey=ax1)
-        ax3.plot(lineout_y[::-1], Y)
-        ax3.set_title("Y Lineout")
+        ax3.plot(lineout_y[::-1], Y, label="Y Lineout")
+        #ax3.set_title("Y Lineout")
         ax3.set_xlabel("Intensity")
-        ax3.set_ylabel("y / mm")
+        ax3.xaxis.tick_top()
+        ax3.xaxis.set_label_position("top")
+        #ax3.set_ylabel("y / mm")
+        ax3.legend()
+
+        ##############
+        # R LINEOUTS #
+        ##############
+        ax4 = fig.add_subplot(gs[2,0])
+        ax4.plot(r_dict.keys(), r_dict.values(), label="Radial Lineout")
+        #ax4.set_title("Radial Lineout")
+        ax4.set_xlabel("r / mm")
+        ax4.set_ylabel("Intensity")
+        ax4.legend()
+
+        ##################
+        # THETA LINEOUTS #
+        ##################
+        ax5 = fig.add_subplot(gs[2,1])
+        thetas = [theta_val for theta_val in theta_dict.keys()]
+        theta_intensities = [theta_intensity for theta_intensity in theta_dict.values()]
+        ax5.plot(thetas[:-1], theta_intensities[:-1], label="Azimuthal Lineout")
+        #ax5.set_title("Azimuthal Lineout")
+        ax5.set_xlabel("θ / radians")
+        ax4.set_ylabel("Intensity")
+        ax5.legend()
 
         # SHOW THE FIGURE
-        fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
-        fig.tight_layout()
+        if norm:
+            fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}\n Normalized to Max Pixel Intensity")
+        else:
+            fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         plt.show()
         
 
     
-    def _get_moments(self, img, pixels_x, pixels_y):
+    def _get_moments(self):
             """Calculates the first and second moments"""
 
             thresh = 0.2
-            max_intensity = np.max(img)
+            max_intensity = np.max(self.shot_data["DATA"])
+            img = self.shot_data["DATA"]
+            pixels_x = self.shot_data["X"]
+            pixels_y = self.shot_data["Y"]
             mu = [0., 0.]
             var = [0., 0.]
 
@@ -215,6 +287,78 @@ class DigicamImageManager(ImageManager):
 
             return mu, sigma
         
+
+    def _get_polar_lineouts(self, bin_no:int=100)->Tuple[Dict, Dict]:
+        
+        img = self.shot_data["DATA"]
+        x_interval = self.shot_data["X"][1] - self.shot_data["X"][0]
+        y_interval = self.shot_data["Y"][1] - self.shot_data["Y"][0]
+
+        #CENTROID WHICH WE TREAT AS ORIGIN
+        im_length = img.shape[1]*x_interval
+        im_height = img.shape[0]*y_interval
+
+        x0 = (im_length+1)/2 if im_length % 2 == 1 else im_length/2
+        y0 = (im_height+1)/2 if im_height % 2 == 1 else im_height/2 
+
+        #BINNING
+        r_max = np.ceil(np.sqrt(im_length**2 + im_height**2) / 2)
+        r_bins = bin_no
+        r_bin_length = r_max / r_bins
+
+        theta_max = 2*np.pi
+        theta_bins = bin_no
+        theta_bin_length = theta_max / theta_bins
+
+        #INITIALIZE EMPTY R, THETA ARRAYS
+        r_dict = {r_val : 0 for r_val in np.multiply(r_bin_length, np.arange(0, r_bins+1))}
+        theta_dict = {theta_val : 0 for theta_val in np.multiply(theta_bin_length, np.arange(0, theta_bins+1))}
+
+        for i in range(img.shape[1]):
+            for j in range(img.shape[0]):
+                dx=i*x_interval-x0
+                dy=j*y_interval-y0
+
+                if dx==0 and dy==0:
+                    r = 0
+                    theta = 0
+                else:
+                    r = np.sqrt(dx**2 + dy**2)
+                    theta = self._get_theta(dx, dy)
+
+                #ROUND TO QUANTIZED BINS
+                r_key = min(int(np.floor(r/r_bin_length)), r_bins)*r_bin_length
+                theta_key = min(int(np.floor(theta/theta_bin_length)), theta_bins)*theta_bin_length
+
+                #print(r_max, r)
+
+                # SUM PIXEL INTENSITY
+                r_dict[r_key] += img[j][i]
+                theta_dict[theta_key] += img[j][i]
+
+        return r_dict, theta_dict
+    
+
+    def _get_theta(self, x, y)->float:
+        """Returns the cylindrical polar azimuthal coordinate of a coordinate, given its x and y values.
+        
+        Parameters
+        ----------
+            x : int
+                The x coordinate of the point as an integer
+            y : int
+                The y coordinate of the point as an integer
+
+        Returns
+        -------
+            theta : float
+                The cylindrical azimuthal coordinate in radians.
+        """
+        
+        theta = np.arctan2(y, x)
+        if theta<0:
+            theta += 2*np.pi
+        return theta
 
 
 class AndorImageManager(ImageManager):
