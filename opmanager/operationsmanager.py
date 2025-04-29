@@ -13,21 +13,23 @@ class OperationsManager:
     """Class responsible for performing more advanced analysis and arithmetic on the shot data, including
     but not limited to fourier transforms and lineout calculations."""
 
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data:np.ndarray):
+    def __init__(self, DEVICE_NAME:str, shot_no:str, label:str, shot_data:np.ndarray, std_data:np.ndarray=None):
         """
         Parameters
         ----------
             DEVICE_NAME : str
                 The name of the device (e.g. "Synchro" etc.), which is used only for producing labelled plotting
                 information.
-            shot_no : int
-                The shot number corresponding to the data on which the operations are being performed. This
+            shot_no : str
+                The shot number or numbers corresponding to the data on which the operations are being performed. This
                 is used again for clarity in the plot labels.
             label : str
                 Additional information, provided by user, about the shot.
             shot_data : np.ndarray
                 The shot data, array form, on which we want to perform some specified
                 operations
+            std_data : np.ndarray
+                Standard deviation array which we can use to produce ensembles plots
         """
 
         # INITIALIZE INFORMATION WHICH WE BE USEFUL FOR DISPLAYING THE DATA TO THE USER.

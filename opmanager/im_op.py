@@ -10,46 +10,15 @@ from scipy.fft import rfftfreq, rfft
 ############################
 
 class ImageManager(OperationsManager):
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
-        super().__init__(DEVICE_NAME, shot_no, label, shot_data)
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, std_data=None):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data, std_data)
     
-    def get_average_data(data_list:List[Dict[str, np.ndarray]]):
-        """Performs statistical average (mean) over a supplied list of shots. Note
-        that the data list of shots is now a list of dictionaries, which for images
-        will look like {"DATA": []}, and for probes will look like {"DATA": {"X":[], "Y":[]}}.
-        
-        Parameters
-        ----------
-            data_list : List[Dict[str, np.ndarray]]
-                List containing the data which we want to average over. 
-
-        Returns
-        -------
-            mean_arr : np.ndarray
-                The averaged array ALONE (no x or y data)
-        
-        """
-        
-        # INITIALIZE A STACK OF IMAGE DATA IN ARRAY FORMAT
-        array_stack = data_list[0]["DATA"]
-
-        #STACK SUCCESSIVE SHOT IMAGE DATA ALONG THE 0 AXIS
-        for dict in data_list[1:]:
-            array_stack = np.stack([array_stack, dict["DATA"]], axis=0)
-        
-        #PERFORM SUM AND THEN AVERAGE OVER SHOTS (I.E. OVER 0 AXIS)
-        sum_arr = np.sum(array_stack, axis=0)
-        mean_arr = np.multiply(sum_arr, 1/len(data_list))
-
-        return mean_arr
-    
-
 
 class DigicamImageManager(ImageManager):
     """Specialized ImageManager for Chromox camaeras."""
 
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
-        super().__init__(DEVICE_NAME, shot_no, label, shot_data)
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, std_data=None):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data, std_data)
 
 
     def plot(self, norm:bool=False):
@@ -324,8 +293,8 @@ class DigicamImageManager(ImageManager):
 
 
 class AndorImageManager(ImageManager):
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
-        super().__init__(DEVICE_NAME, shot_no, label, shot_data)
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, std_data=None):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data, std_data)
 
     def plot(self, step:int=200):
         """Plots the image from the Andor camera attached to the synchrotron spectrometer,
@@ -370,8 +339,8 @@ class AndorImageManager(ImageManager):
 
 
 class OrcaImageManager(ImageManager):
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
-        super().__init__(DEVICE_NAME, shot_no, label, shot_data)
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, std_data=None):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data, std_data)
 
     def plot(self, step:int=100):
         

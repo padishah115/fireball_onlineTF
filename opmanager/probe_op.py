@@ -42,24 +42,24 @@ class ProbeManager(OperationsManager):
         fig.suptitle(f"Oscilloscope Trace from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         plt.show()
 
-    def get_average_data(self, shot_data_list, shot_nos):
+    # def get_average_data(self, shot_data_list, shot_nos):
         
-        averaged_data = {"VOLTAGES": None, "TIMES": None}
+    #     averaged_data = {"VOLTAGES": None, "TIMES": None}
 
-        times = shot_data_list[0]["DATA"]["TIMES"]
-        voltage_stack = shot_data_list[0]["DATA"]["VOLTAGES"]
+    #     times = shot_data_list[0]["DATA"]["TIMES"]
+    #     voltage_stack = shot_data_list[0]["DATA"]["VOLTAGES"]
 
-        for data in shot_data_list[1:]:
-            voltage_stack = np.stack([voltage_stack, data["VOLTAGES"]], axis=0)
+    #     for data in shot_data_list[1:]:
+    #         voltage_stack = np.stack([voltage_stack, data["VOLTAGES"]], axis=0)
 
-        voltage_sum = np.sum(voltage_stack, axis=0)
-        voltage_avg = np.multiply(voltage_sum, 1/len(shot_data_list))
+    #     voltage_sum = np.sum(voltage_stack, axis=0)
+    #     voltage_avg = np.multiply(voltage_sum, 1/len(shot_data_list))
 
-        plt.plot(times, voltage_avg)
-        plt.title(f"Oscilloscope Averaged Over Shots {shot_nos}")
-        plt.show()
+    #     plt.plot(times, voltage_avg)
+    #     plt.title(f"Oscilloscope Averaged Over Shots {shot_nos}")
+    #     plt.show()
 
-        averaged_data["VOLTAGES"] = voltage_avg
-        averaged_data["TIMES"] = times
+    #     averaged_data["VOLTAGES"] = voltage_avg
+    #     averaged_data["TIMES"] = times
 
-        return averaged_data
+    #     return averaged_data
