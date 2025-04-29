@@ -73,22 +73,24 @@ class LoadManager:
                                                   data_paths_dict=self.data_paths_dict,
                                                   camera_type=self.input["DEVICE_SPECIES"])
             
-            bkg_data_dict : Dict = self.IMAGE_load_shots(self.bkg_shot_nos, 
-                                                  self.data_paths_dict,
-                                                  camera_type=self.input["DEVICE_SPECIES"])
+            # CHECK TO MAKE SURE THAT WE ACTUALLY WANT BACKGROUND SHOTS TO ENTER THE FRAY
+            if self.input["BACKGROUND_STATUS"] != "RAW":
+                bkg_data_dict : Dict = self.IMAGE_load_shots(self.bkg_shot_nos, 
+                                                    self.data_paths_dict,
+                                                    camera_type=self.input["DEVICE_SPECIES"])
             
-            #Take average of background data to produce single background
-            bkg_images = [bkg_data_dict[shot]["DATA"] for shot in bkg_data_dict.keys()]
-            
-            averaged_bkg = arrays_stats(bkg_images)[0]
+                averaged_bkg = self.get_average_bkg(bkg_data_dict=bkg_data_dict, key_path=["DATA"])
 
-            corrected_data_dict = {}
-            for shot_no in self.exp_shot_nos:
-                corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"], bkg_arr=averaged_bkg)
-                corrected_data_dict[shot_no] = {}
-                corrected_data_dict[shot_no]["DATA"] = corrected_data
-                corrected_data_dict[shot_no]["X"] = exp_data_dict[shot_no]["X"]
-                corrected_data_dict[shot_no]["Y"] = exp_data_dict[shot_no]["Y"]
+                corrected_data_dict = {}
+                for shot_no in self.exp_shot_nos:
+                    corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"], bkg_arr=averaged_bkg)
+                    corrected_data_dict[shot_no] = {}
+                    corrected_data_dict[shot_no]["DATA"] = corrected_data
+                    corrected_data_dict[shot_no]["X"] = exp_data_dict[shot_no]["X"]
+                    corrected_data_dict[shot_no]["Y"] = exp_data_dict[shot_no]["Y"]
+            else:
+                bkg_data_dict = None
+                corrected_data_dict = None
 
             return exp_data_dict, bkg_data_dict, corrected_data_dict
         
@@ -99,46 +101,34 @@ class LoadManager:
             #IF PROBE, HAVE TO DEAL WITH THE OSCILLOSCOPE DATA
             
             # {Shot no : Experimental (raw) data}
-            exp_data_dict = self.PROBE_load_all_shots(self.exp_shot_nos, self.data_paths_dict)
+            exp_data_dict = self.PROBE_load_shots(self.exp_shot_nos, self.data_paths_dict)
             
-            # {Shot no : Background data}
-            bkg_data_dict = self.PROBE_load_all_shots(self.bkg_shot_nos, self.data_paths_dict)
-            
-            # PRODUCE LIST OF VOLTAGES FROM BACKGROUND OSCILLOSCOPE TRACES, AND THEN PASS TO 
-            # ARRAYS_STATS METHOD TO PRODUCE BACKGROUND AVERAGE
-            bkg_voltages = [bkg_data_dict[shot]["DATA"]["VOLTAGES"] for shot in bkg_data_dict.keys()]
-            #Take average of background data to produce single background
-            averaged_bkg = arrays_stats(bkg_voltages)[0]
+            if self.input["BACKGROUND_STATUS"] != "RAW":
+                # {Shot no : Background data}
+                bkg_data_dict = self.PROBE_load_shots(self.bkg_shot_nos, self.data_paths_dict)
+                
+                averaged_bkg = self.get_average_bkg(bkg_data_dict=bkg_data_dict, key_path=["DATA", "VOLTAGES"])
 
-            corrected_data_dict = {}
-            for shot_no in self.exp_shot_nos:
-                corrected_data_dict[shot_no] = {"DATA":{}}
-                
-                corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"]["VOLTAGES"], bkg_arr=averaged_bkg)
-                
-                corrected_data_dict[shot_no]["DATA"]["VOLTAGES"] = corrected_data
-                corrected_data_dict[shot_no]["DATA"]["TIMES"] = exp_data_dict[shot_no]["DATA"]["TIMES"]
+                corrected_data_dict = {}
+                for shot_no in self.exp_shot_nos:
+                    corrected_data_dict[shot_no] = {"DATA":{}}
+                    
+                    corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"]["VOLTAGES"], bkg_arr=averaged_bkg)
+                    
+                    corrected_data_dict[shot_no]["DATA"]["VOLTAGES"] = corrected_data
+                    corrected_data_dict[shot_no]["DATA"]["TIMES"] = exp_data_dict[shot_no]["DATA"]["TIMES"]
+
+            else:
+                bkg_data_dict = None
+                corrected_data_dict = None
 
             return exp_data_dict, bkg_data_dict, corrected_data_dict
+            
         
         # RAISE ERROR IF USER SPECIFIES AN ERRONEOUS DEVICE_TYPE
         else:
             raise ValueError(f"Warning: device type '{self.device_type}' not valid- device_type must be either \"CAMERA\" or \"PROBE\".")
         
-
-        ##########################
-        # BACKGROUND SUBTRACTION #
-        ##########################
-        # DICTIONARY OF FORM {EXP_SHOT_NO : BACKGROUND_CORRECTED_DATA}
-        # corrected_data_dict = {}
-        # for shot_no in self.exp_shot_nos:
-        #     corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"], bkg_arr=averaged_bkg)
-        #     corrected_data_dict[shot_no] = {}
-        #     corrected_data_dict[shot_no]["DATA"] = corrected_data
-        #     corrected_data_dict[shot_no]["X"] = exp_data_dict[shot_no]["X"]
-        #     corrected_data_dict[shot_no]["Y"] = exp_data_dict[shot_no]["Y"]
-
-        # return exp_data_dict, bkg_data_dict, corrected_data_dict
     
     
     def bkg_subtraction(self, raw_arr:np.ndarray, bkg_arr:np.ndarray)->np.ndarray:
@@ -158,6 +148,16 @@ class LoadManager:
         """
         corrected_array = np.subtract(raw_arr, bkg_arr)
         return corrected_array
+    
+
+    def get_average_bkg(self, bkg_data_dict:Dict, key_path:List[str])->np.ndarray:
+        """Returns the averaged background as a tensor"""
+
+        bkg_data = [bkg_data_dict[shot][key_path] for shot in bkg_data_dict.keys()]
+        averaged_bkg = arrays_stats(bkg_data)[0]
+
+        return averaged_bkg
+
 
     ################################################################################
     # HELPER FUNCTIONS TO LOAD DATA FROM .CSV FILES PRODUCED BY OSCILLOSCOPES/CAMS #
@@ -349,7 +349,7 @@ class LoadManager:
 
     # PROBE MANAGER
 
-    def PROBE_load_all_shots(self, shot_nos:List[int], data_paths_dict:Dict[int, str])->Dict[int, Dict[str, np.ndarray]]:
+    def PROBE_load_shots(self, shot_nos:List[int], data_paths_dict:Dict[int, str])->Dict[int, Dict[str, np.ndarray]]:
         """Loads multiple shots' oscilloscope data sequentially, using the data_paths_dict to dynamically select paths to
         different shot numbers' raw data files. Similar to the IMAGE_LOAD_ALL_SHOTS method above, but now the dictionary is
         a dictionary of dictionaries.
