@@ -1,51 +1,13 @@
+from opmanager.operationsmanager import OperationsManager
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from typing import List, Dict, Tuple
-from scipy.fft import rfft, rfftfreq
-#from stats import arrays_stats
+from scipy.fft import rfftfreq, rfft
 
-class OperationsManager:
-    """Class responsible for performing more advanced analysis and arithmetic on the shot data, including
-    but not limited to fourier transforms and lineout calculations."""
-
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data:np.ndarray):
-        """
-        Parameters
-        ----------
-            DEVICE_NAME : str
-                The name of the device (e.g. "Synchro" etc.), which is used only for producing labelled plotting
-                information.
-            shot_no : int
-                The shot number corresponding to the data on which the operations are being performed. This
-                is used again for clarity in the plot labels.
-            label : str
-                Additional information, provided by user, about the shot.
-            shot_data : np.ndarray
-                The shot data, array form, on which we want to perform some specified
-                operations
-        """
-
-        # INITIALIZE INFORMATION WHICH WE BE USEFUL FOR DISPLAYING THE DATA TO THE USER.
-        self.DEVICE_NAME = DEVICE_NAME
-        self.shot_no = shot_no
-        self.label = label
-
-        # THE RAW DATA ITSELF IN NP.NDARRAY FORMAT
-        self.shot_data = shot_data
-
-    def plot(self):
-        raise NotImplementedError(f"Warning: no plotting method implemented for {self}")
-    
-    def average_shots(self, data_list):
-        raise NotImplementedError(f"Warning: no averaging method implemented for {self}")
-    
-    def chromox_fit(self):
-        raise NotImplementedError(f"Warning: no chromox_fit method implemented for {self}")
-        
-    
-
-# IMAGE MANAGER
+############################
+# IMAGE OPERATIONS MANAGER #
+############################
 
 class ImageManager(OperationsManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
@@ -465,55 +427,4 @@ class OrcaImageManager(ImageManager):
         
         fig.suptitle(f"Data from {self.DEVICE_NAME}, Shot No {self.shot_no}, \n{self.label}")
         fig.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at the top (5%)
-        plt.show()
-
-
-# PROBE MANAGER
-
-class ProbeManager(OperationsManager):
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
-        super().__init__(DEVICE_NAME, shot_no, label, shot_data)
-
-    def plot(self):
-        time = self.shot_data["DATA"]["TIMES"]
-        voltages = self.shot_data["DATA"]["VOLTAGES"]
-
-        #Calculate number of bin centres, and the time spacing of the 'scope
-        N = len(voltages)
-        dt = time[1]-time[0]
-
-        # FREQ AND INTENSITY
-        fft_time = rfftfreq(N, d=dt)
-        fft_voltages = np.abs(rfft(voltages))
-
-        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(16,9))
-
-        # REAL DOMAIN
-        axs[0].plot(time, voltages)
-        axs[0].set_ylabel("Voltage / V")
-        axs[0].set_xlabel("Time / s")
-        axs[0].set_title("Real Domain")
-
-        #FREQUENCY DOMAIN
-        axs[1].plot(fft_time, fft_voltages)
-        axs[1].set_ylabel("Amplitude")
-        axs[1].set_xlabel("Frequency / Hz")
-        axs[1].set_title("Fourier Domain")
-
-        fig.suptitle(f"Oscilloscope Trace from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
-        plt.show()
-
-    def average_shots(self, shot_data_list, shot_nos):
-        
-        times = shot_data_list[0]["DATA"]["TIMES"]
-        voltage_stack = shot_data_list[0]["DATA"]["VOLTAGES"]
-
-        for data in shot_data_list[1:]:
-            voltage_stack = np.stack([voltage_stack, data["VOLTAGES"]], axis=0)
-
-        voltage_sum = np.sum(voltage_stack, axis=0)
-        voltage_avg = np.multiply(voltage_sum, 1/len(shot_data_list))
-
-        plt.plot(times, voltage_avg)
-        plt.title(f"Oscilloscope Averaged Over Shots {shot_nos}")
         plt.show()

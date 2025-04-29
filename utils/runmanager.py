@@ -2,7 +2,7 @@ from typing import Dict, Type, List
 import numpy as np
 
 from utils.loadmanager import LoadManager
-from utils.operationsmanager import OperationsManager, AndorImageManager, DigicamImageManager, OrcaImageManager, ProbeManager
+from opmanager.operationsmanager import OperationsManager, AndorImageManager, DigicamImageManager, OrcaImageManager, ProbeManager
 
 class RunManager:
     """Class responsible for the first (and essentially highest) level of encapsulation during execution of the code.
@@ -39,6 +39,7 @@ class RunManager:
         }
     
     def run(self):
+        """Executes the run for the RunManager, which encapsulates much of the ugliness of the process."""
 
         #############################
         # RUN/LOAD MANAGER MATERIAL #
@@ -68,6 +69,9 @@ class RunManager:
 
         print("selecting appropriate data dictionary ... \n")
         data_dict = data_type_key[self.input["BACKGROUND_STATUS"]]
+
+        # Depending on whether we are displaying the background itself or the experimental shot numbers,
+        # we need to make sure that the shot numbers are correct.
         shot_nos = self.input["BKG_SHOT_NOS"] if self.input["BACKGROUND_STATUS"] == "SHOW" else self.input["EXP_SHOT_NOS"]
 
         #SUBTRACT BACKGROUND
@@ -87,29 +91,13 @@ class RunManager:
                               \"BACKGROUND_STATUS\" in input.json file.")
         
 
-        # SINGLE-SHOT PROCESSING
+        # SINGLE-SHOT PROCESSING- go one-by-one through the shots
         for shot_no in shot_nos:
             self._call_operations_manager(
                 shot_no=shot_no,
                 shot_data=data_dict[shot_no],
                 LABEL=LABEL
             )
-        
-        # SHOT AVERAGING
-        if self.operations["AVERAGE_SHOTS"]:
-
-            # COPY X AND Y AXES FROM ONE OF THE CONSTITUENT SHOTS' DATA
-            # TO ENSURE CORRECT FORMATTING
-            X = data_dict[shot_no]["X"]
-            Y = data_dict[shot_no]["Y"]
-
-            # PERFORM THE AVERAGING OPERATION OVER THE SHOTS, GETTING A DICTIONARY OF SHOT DATA
-            averaged_shot_data = self._get_shot_averaged_data(data_dict=data_dict, X=X, Y=Y)
-            
-            # CALL AN OPERATIONS MANAGER ON THE AVERAGED DATA.
-            self._call_operations_manager(shot_no=f"Average over {shot_nos}",
-                                            shot_data=averaged_shot_data,
-                                            LABEL=LABEL)
 
     
     def _call_operations_manager(self, shot_no, shot_data, LABEL):
