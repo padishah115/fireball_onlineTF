@@ -13,7 +13,7 @@ class ImageManager(OperationsManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data)
     
-    def average_shots(data_list:List[Dict[str, np.ndarray]]):
+    def get_average_data(data_list:List[Dict[str, np.ndarray]]):
         """Performs statistical average (mean) over a supplied list of shots. Note
         that the data list of shots is now a list of dictionaries, which for images
         will look like {"DATA": []}, and for probes will look like {"DATA": {"X":[], "Y":[]}}.

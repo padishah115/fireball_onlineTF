@@ -14,7 +14,7 @@
     
     "OPERATIONS": {
         "PLOT": true,
-        "AVERAGE_SHOTS":false
+        "AVERAGE_SHOTS":true
     },
 
 

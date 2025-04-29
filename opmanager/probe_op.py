@@ -42,8 +42,10 @@ class ProbeManager(OperationsManager):
         fig.suptitle(f"Oscilloscope Trace from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         plt.show()
 
-    def average_shots(self, shot_data_list, shot_nos):
+    def get_average_data(self, shot_data_list, shot_nos):
         
+        averaged_data = {"VOLTAGES": None, "TIMES": None}
+
         times = shot_data_list[0]["DATA"]["TIMES"]
         voltage_stack = shot_data_list[0]["DATA"]["VOLTAGES"]
 
@@ -56,3 +58,8 @@ class ProbeManager(OperationsManager):
         plt.plot(times, voltage_avg)
         plt.title(f"Oscilloscope Averaged Over Shots {shot_nos}")
         plt.show()
+
+        averaged_data["VOLTAGES"] = voltage_avg
+        averaged_data["TIMES"] = times
+
+        return averaged_data

@@ -95,15 +95,21 @@ class RunManager:
 
         # SINGLE-SHOT PROCESSING- go one-by-one through the shots
         for shot_no in shot_nos:
-            self._call_operations_manager(
+            self._call_operations_manager_oneshot(
                 shot_no=shot_no,
                 shot_data=data_dict[shot_no],
                 LABEL=LABEL
             )
 
+
+        # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING
+        if self.operations["AVERAGE_SHOTS"]:
+            self._call_operations_manager_avgshot()
+
     
-    def _call_operations_manager(self, shot_no, shot_data, LABEL):
-        """Helper function to wrap up the operations manager clauses in the .run() method.
+    def _call_operations_manager_oneshot(self, shot_no, shot_data, LABEL):
+        """Helper function to wrap up the operations manager clauses in the .run() method for 
+        processing shots one at a time.
         
         Parameters
         ----------
@@ -133,38 +139,40 @@ class RunManager:
         # CHROMOX FITTING, IF THE CAMERA IS IMAGING CHROMOX
         
 
+    def _call_operations_manager_avgshot():
+        pass
         
     
-    def _get_shot_averaged_data(self, data_dict:Dict, X:np.ndarray, Y:np.ndarray):
-        """Returns a dictionary of form {"DATA" : [], "X" : [], "Y" : []} for the averaged shot data.
+    # def _get_shot_averaged_data(self, data_dict:Dict, X:np.ndarray, Y:np.ndarray):
+    #     """Returns a dictionary of form {"DATA" : [], "X" : [], "Y" : []} for the averaged shot data.
         
-        Parameters
-        ----------
-            data_dict : Dict
-                Dictionary of data over which the average is to be performed. The dictionary will
-                be of form {SHOT NO : {"DATA": [], "X":[], "Y":[]}}
-            X : np.ndarray
-                X axis array formatted in correct units.
-            Y : np.ndarray
-                Y axis array formatted in correct units.
+    #     Parameters
+    #     ----------
+    #         data_dict : Dict
+    #             Dictionary of data over which the average is to be performed. The dictionary will
+    #             be of form {SHOT NO : {"DATA": [], "X":[], "Y":[]}}
+    #         X : np.ndarray
+    #             X axis array formatted in correct units.
+    #         Y : np.ndarray
+    #             Y axis array formatted in correct units.
 
-        Returns
-        -------
-            averaged_shot_data : Dict
-                Dictionary of form {"DATA":[], "X":[], "Y":[]} for the averaged shot data.
-        """
+    #     Returns
+    #     -------
+    #         averaged_shot_data : Dict
+    #             Dictionary of form {"DATA":[], "X":[], "Y":[]} for the averaged shot data.
+    #     """
 
-        averaged_shot_data = {}
-        shot_data_list = [data for data in data_dict.values()]
+    #     averaged_shot_data = {}
+    #     shot_data_list = [data for data in data_dict.values()]
 
-        #GET THE AVERAGED DATA ITSELF
-        averaged_shot_data["DATA"] =\
-            self.manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]].average_shots(shot_data_list)
+    #     #GET THE AVERAGED DATA ITSELF
+    #     averaged_shot_data["DATA"] =\
+    #         self.manager_key[self.input["DEVICE_TYPE"]][self.input["DEVICE_SPECIES"]].get_average_data(shot_data_list)
         
-        # COPY X AND Y AXES FROM INDIVIDUAL SHOTS
-        averaged_shot_data["X"] = X
-        averaged_shot_data["Y"] = Y
+    #     # COPY X AND Y AXES FROM INDIVIDUAL SHOTS
+    #     averaged_shot_data["X"] = X
+    #     averaged_shot_data["Y"] = Y
 
-        return averaged_shot_data
+    #     return averaged_shot_data
             
         

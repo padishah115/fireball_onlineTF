@@ -41,7 +41,7 @@ class OperationsManager:
     def plot(self):
         raise NotImplementedError(f"Warning: no plotting method implemented for {self}")
     
-    def average_shots(self, data_list):
+    def get_average_data(self, data_list):
         raise NotImplementedError(f"Warning: no averaging method implemented for {self}")
     
     def chromox_fit(self):
