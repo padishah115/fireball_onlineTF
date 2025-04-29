@@ -2,7 +2,9 @@ from typing import Dict, Type, List
 import numpy as np
 
 from utils.loadmanager import LoadManager
-from opmanager.operationsmanager import OperationsManager, AndorImageManager, DigicamImageManager, OrcaImageManager, ProbeManager
+from opmanager.operationsmanager import OperationsManager
+from opmanager.im_op import *
+from opmanager.probe_op import *
 
 class RunManager:
     """Class responsible for the first (and essentially highest) level of encapsulation during execution of the code.
