@@ -10,7 +10,7 @@
     "BKG_NAME": "DARKFIELD",
     "BACKGROUND_STATUS": "RAW",
 
-    "NORM_PLOT":false,
+    "NORM_PLOT":true,
     
     "OPERATIONS": {
         "PLOT": true,
