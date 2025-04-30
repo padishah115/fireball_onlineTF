@@ -105,7 +105,7 @@ class RunManager:
 
 
         # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING
-        if self.operations["AVERAGE_SHOTS"]:
+        if self.operations["SHOW_AVERAGE_SHOTS"]:
             
             # CAMERA IMAGES AVERAGING
             if self.input["DEVICE_TYPE"] == "CAMERA":
@@ -160,9 +160,8 @@ class RunManager:
 
         
         # PLOTTING        
-        if self.operations["PLOT"]:
-            print("Plot ... \n")
-            operations_manager.plot(norm=self.input["NORM_PLOT"])
+        print("Plot ... \n")
+        operations_manager.plot(norm=self.input["NORM_PLOT"])
         # CHROMOX FITTING, IF THE CAMERA IS IMAGING CHROMOX
         
 

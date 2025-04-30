@@ -13,10 +13,9 @@
     "NORM_PLOT":false,
     
     "OPERATIONS": {
-        "PLOT": true,
         "SHOW_SINGLESHOT_PLOTS":false,
         "LINEOUT_BIN_NO":100,
-        "AVERAGE_SHOTS":true
+        "SHOW_AVERAGE_SHOTS":false
     },
 
 

@@ -12,7 +12,6 @@
     "NORM_PLOT": [true, false],
 
     "OPERATIONS": {
-        "PLOT": [true, false],
         "SHOW_SINGLESHOT_PLOTS":[true, false],
         "LINEOUT_BIN_NOS":"any integer",
         "AVERAGE_SHOTS":[true, false]
