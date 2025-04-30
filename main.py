@@ -69,7 +69,7 @@ def main(json_path="./input.json"):
         "PROBE":ProbeRunManager, 
         "CAMERA": CamRunManager
     }
-
+    #
     run_manager = runmanagerdict[input["DEVICE_TYPE"]](
         input=input,
         data_paths_dict=probe_paths_dict
