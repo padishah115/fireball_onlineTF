@@ -72,7 +72,7 @@ def main(json_path="./input.json"):
 
     run_manager = runmanagerdict[input["DEVICE_TYPE"]](
         input=input,
-        data_paths_dict=digicam3_paths_dict
+        data_paths_dict=probe_paths_dict
     )
 
     #Execute the run.

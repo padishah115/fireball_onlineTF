@@ -212,7 +212,7 @@ class ProbeRunManager(RunManager):
 
         # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING
         if self.operations["SHOW_AVERAGE_SHOTS"]:
-            raise NotImplementedError("Error: no method of averaging probe shots implemented.")
+            print("Warning: no method of probe shot averaging implemented. Ignoring command to average shots.")
 
     
     
