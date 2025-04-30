@@ -71,29 +71,39 @@ class RunManager:
 
 
         print("selecting appropriate data dictionary ... \n")
-        data_dict = data_type_key[self.input["BACKGROUND_STATUS"]]
+        data_dict = data_type_key[self.input["BACKGROUND_STATUS"]] \
+            if self.input["DEVICE_TYPE"] == "CAMERA"\
+            else raw_data_dict
+        
+        print(data_dict)
 
         # Depending on whether we are displaying the background itself or the experimental shot numbers,
         # we need to make sure that the shot numbers are correct.
         shot_nos = self.input["BKG_SHOT_NOS"] if self.input["BACKGROUND_STATUS"] == "SHOW" else self.input["EXP_SHOT_NOS"]
 
+        # Labels for cameras
         #SUBTRACT BACKGROUND
-        if self.background_status == "SUBTRACT":
-            LABEL = f"{self.input['BKG_NAME']}-SUBTRACTED"
-        
-        #PLOT RAW IMAGE ONLY (NO BACKGROUND SUBTRACTION)
-        elif self.background_status == "RAW":
-            LABEL = f"Raw (no background correction)"
-        
-        #SHOW BACKGROUND IMAGE ITSELF
-        elif self.background_status == "SHOW":
-            LABEL = f"{self.input['BKG_NAME']} BACKGROUND"
-        
+        if self.input["DEVICE_TYPE"] == "CAMERA":
+            if self.background_status == "SUBTRACT":
+                LABEL = f"{self.input['BKG_NAME']}-SUBTRACTED"
+            
+            #PLOT RAW IMAGE ONLY (NO BACKGROUND SUBTRACTION)
+            elif self.background_status == "RAW":
+                LABEL = f"Raw (no background correction)"
+            
+            #SHOW BACKGROUND IMAGE ITSELF
+            elif self.background_status == "SHOW":
+                LABEL = f"{self.input['BKG_NAME']} BACKGROUND"
+            
+            else:
+                raise ValueError(f"Warning: {self.input['BACKGROUND_STATUS']} is invalid input for\
+                                \"BACKGROUND_STATUS\" in input.json file.")
+            
+        # If probe, labels are unimportant
         else:
-            raise ValueError(f"Warning: {self.input['BACKGROUND_STATUS']} is invalid input for\
-                              \"BACKGROUND_STATUS\" in input.json file.")
-        
+            LABEL = None
 
+        
         # SINGLE-SHOT PROCESSING- go one-by-one through the shots
         if self.operations["SHOW_SINGLESHOT_PLOTS"]:
             for shot_no in shot_nos:

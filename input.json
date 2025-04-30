@@ -1,10 +1,10 @@
 {
-    "DEVICE_NAME": "HRM3",
-    "DEVICE_TYPE": "CAMERA",
+    "DEVICE_NAME": "PROBE",
+    "DEVICE_TYPE": "PROBE",
     
-    "DEVICE_SPECIES": "DIGICAM",
+    "DEVICE_SPECIES": "PROBE",
     
-    "EXP_SHOT_NOS": [2, 3],
+    "EXP_SHOT_NOS": [1],
     "BKG_SHOT_NOS": [],
     
     "BKG_NAME": "DARKFIELD",
@@ -13,9 +13,9 @@
     "NORM_PLOT":false,
     
     "OPERATIONS": {
-        "SHOW_SINGLESHOT_PLOTS":false,
+        "SHOW_SINGLESHOT_PLOTS":true,
         "LINEOUT_BIN_NO":100,
-        "SHOW_AVERAGE_SHOTS":false
+        "SHOW_AVERAGE_SHOTS":true
     },
 
 

@@ -103,25 +103,8 @@ class LoadManager:
             
             # {Shot no : Experimental (raw) data}
             exp_data_dict = self.PROBE_load_shots(self.exp_shot_nos, self.data_paths_dict)
-            
-            if self.input["BACKGROUND_STATUS"] != "RAW":
-                # {Shot no : Background data}
-                bkg_data_dict = self.PROBE_load_shots(self.bkg_shot_nos, self.data_paths_dict)
-                
-                averaged_bkg = self.get_average_bkg(bkg_data_dict=bkg_data_dict, key_path=["DATA", "VOLTAGES"])
-
-                corrected_data_dict = {}
-                for shot_no in self.exp_shot_nos:
-                    corrected_data_dict[shot_no] = {"DATA":{}}
-                    
-                    corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"]["VOLTAGES"], bkg_arr=averaged_bkg)
-                    
-                    corrected_data_dict[shot_no]["DATA"]["VOLTAGES"] = corrected_data
-                    corrected_data_dict[shot_no]["DATA"]["TIMES"] = exp_data_dict[shot_no]["DATA"]["TIMES"]
-
-            else:
-                bkg_data_dict = None
-                corrected_data_dict = None
+            bkg_data_dict = None
+            corrected_data_dict = None
 
          
         # RAISE ERROR IF USER SPECIFIES AN ERRONEOUS DEVICE_TYPE
@@ -256,12 +239,12 @@ class LoadManager:
 
     # MAY HAVE TO MODIFY THESE DEPENDING ON WHETHER WE ARE USING LECROY
 
-    def _load_scope_voltages(self, path:str, volt_key:str="Ampl", skiprows:int=4):
+    def _load_scope_voltages(self, data_path:str)->Tuple[np.ndarray, np.ndarray]:
         """Loads voltage data from oscilloscope .csv at a specified path, in the form of an arraylike list.
         
         Parameters
         ----------
-            path : str
+            data_path : str
                 Path to the .csv where the oscilloscope has stored voltage/time data, from which we load voltage data.
             volt_key : str = "Ampl"
                 Column title for the voltage information in the oscilloscope dataframe
@@ -269,20 +252,29 @@ class LoadManager:
                 Due to the strange way in which the LECROY 'scopes dump data, the top 4 rows have to be skipped over.
         """
     
-        if not path.endswith('.csv'):
-            raise ValueError(f"Warning: oscilloscope files should be .csv type, but path provided ends in {path[:-4]}.")
+        if not data_path.endswith('.csv'):
+            raise ValueError(f"Warning: oscilloscope files should be .csv type, but path provided ends in {data_path[:-4]}.")
 
-        # READ AND RETURN THE VOLTAGES FROM APPROPRIATE COLUMN IN THE PANDAS DATAFRAME
-        voltages = pd.read_csv(path, skiprows=skiprows)[volt_key]
-        return voltages
+        df = pd.read_csv(data_path)
+        columns_list = df.columns.values.tolist()
+
+        channel1_voltages = [float(columns_list[-2])] # the column header is the first data point :(
+        channel1_voltages += df[columns_list[-2]] # add the rest of the column to the 'scope data
+
+        channel2_voltages = [float(columns_list[-1])] # the column header is the first data point :(
+        channel2_voltages += df[columns_list[-1]] # add the rest of the column to the 'scope data
+
+        corr_voltages = np.subtract(channel2_voltages, channel1_voltages)
+
+        return channel1_voltages, channel2_voltages
 
     
-    def _load_scope_times(self, path:str, time_key = "Time", skiprows = 4):
+    def _load_scope_times(self, data_path:str):
         """Loads time data from oscilloscope .csv at a specified path, in the form of an arraylike list.
         
         Parameters:
         -----------
-            path : str
+            data_path : str
                 Path to the .csv where the oscilloscope has stored voltage/time data, from which we load voltage data.
             time_key : str = "Time"
                 Column title for the time information in the oscilloscope dataframe
@@ -291,8 +283,17 @@ class LoadManager:
         """
 
         # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME
-        times = pd.read_csv(path, skiprows=skiprows)[time_key]
-        return times
+        df = pd.read_csv(data_path)
+        columns_list = df.columns.values.tolist()
+        # TIME INTERVAL IN SECONDS
+        dt = df[columns_list[1]][0]
+        # NO OF RECORDING POINTS
+        N = int(columns_list[1])
+
+        # Initialize times array using information about the timestep and the number of sampling points
+        times = np.multiply(np.arange(0, N-1, step=1), dt)
+
+        return times, N, dt
 
     ##################################################################
     # WRAPPER METHODS FOR LOADING SEVERAL SHOTS' DATA SIMULTANEOUSLY #
@@ -370,7 +371,22 @@ class LoadManager:
         Returns
         -------
             scope_data_dict : Dict[int, Dict[str, np.ndarray]]
-                Dictionary of dictionaries, of format {SHOT_NO : {"VOLTAGES": [voltage data], "TIMES" : [time data]}}.
+                Dictionary of dictionaries, of format 
+                {
+                    SHOT_NO : {
+                        "VOLTAGES": {
+                            "1":[], 
+                            "2":[]
+                        }, 
+                        
+                        "TIMES" : {
+                            "TIMES":[], 
+                            "N":int, 
+                            "dt":float
+                        }
+                    }
+                }.
+                
                 This is different to the image loader, where we want to store only one piece of data per shot number.
                 Eventually, I could look at replacing this with a np.stack rather than a nested dictionary.
         
@@ -382,16 +398,30 @@ class LoadManager:
 
         #ITERATE THROUGH SPECIFIED SHOT NUMBERS, AND APPEND DATA TO SCOPE_DATA_DICT
         for shot_no in shot_nos:
-            scope_data_dict[shot_no] = {"DATA":{"VOLTAGES": None, "TIMES": None}}
+            
+            #initialize the shot data dictionary
+            scope_data_dict[shot_no] = {
+                "DATA":{
+                    "VOLTAGES": {"1":None, "2":None}, 
+                    "TIMES": {"TIMES":None, "N":None, "dt":None}
+                }
+            }
 
             # ACCESS PATH TO SHOT'S DATA USING DATA_PATH_DICT
             data_path = data_paths_dict[shot_no]
 
             #VOLTAGE DATA
-            scope_data_dict[shot_no]["DATA"]["VOLTAGES"] = self._load_scope_voltages(data_path)
+            voltages_1, voltages_2 = self._load_scope_voltages(data_path)
+            scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["1"] = voltages_1
+            scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["2"] = voltages_2
             
             #TIME DATA
-            scope_data_dict[shot_no]["DATA"]["TIMES"] = self._load_scope_times(data_path)
+            times, N, dt = self._load_scope_times(data_path)
+            scope_data_dict[shot_no]["DATA"]["TIMES"]["TIMES"] = times
+            scope_data_dict[shot_no]["DATA"]["TIMES"]["N"] = N
+            scope_data_dict[shot_no]["DATA"]["TIMES"]["dt"] = dt
+
+            print("N, dt:", N, dt)
         
         #RETURN THE DICTIONARY OF DICTIONARIES OF FORM {SHOT NO : {"VOLTAGES":[VOLTAGE DATA], "TIMES":[TIME DATA]}}
         return scope_data_dict

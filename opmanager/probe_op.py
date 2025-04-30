@@ -10,56 +10,71 @@ from scipy.fft import rfftfreq, rfft
 ############################
 
 class ProbeManager(OperationsManager):
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data):
-        super().__init__(DEVICE_NAME, shot_no, label, shot_data)
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
 
-    def plot(self):
-        time = self.shot_data["DATA"]["TIMES"]
-        voltages = self.shot_data["DATA"]["VOLTAGES"]
+    def plot(self, norm:bool=False):
+        fig, axs = plt.subplots(nrows=3, ncols=2, figsize=(16,9))
 
-        #Calculate number of bin centres, and the time spacing of the 'scope
-        N = len(voltages)
-        dt = time[1]-time[0]
+        # time information
+        times = self.shot_data["DATA"]["TIMES"]["TIMES"]
+        N = self.shot_data["DATA"]["TIMES"]["N"]
+        dt = self.shot_data["DATA"]["TIMES"]["dt"]
 
-        # FREQ AND INTENSITY
-        fft_time = rfftfreq(N, d=dt)
-        fft_voltages = np.abs(rfft(voltages))
+        # voltage information
+        channel1_voltages = self.shot_data["DATA"]["VOLTAGES"]["1"]
+        channel2_voltages = self.shot_data["DATA"]["VOLTAGES"]["2"]
+        corr_voltages = np.subtract(channel1_voltages, channel2_voltages)
 
-        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(16,9))
+        #############
+        # CHANNEL 1 #
+        #############
 
-        # REAL DOMAIN
-        axs[0].plot(time, voltages)
-        axs[0].set_ylabel("Voltage / V")
-        axs[0].set_xlabel("Time / s")
-        axs[0].set_title("Real Domain")
+        axs[0, 0].plot(times, channel1_voltages)
+        axs[0, 0].set_ylabel("Amplitude / V")
+        axs[0, 0].set_xlabel("Time / s")
+        axs[0, 0].set_title("Ch 1")
 
-        #FREQUENCY DOMAIN
-        axs[1].plot(fft_time, fft_voltages)
-        axs[1].set_ylabel("Amplitude")
-        axs[1].set_xlabel("Frequency / Hz")
-        axs[1].set_title("Fourier Domain")
+        freq1 = rfftfreq(n=N-1, d=dt)
+        fftvol1 = np.abs(rfft(channel1_voltages))
+        axs[0,1].plot(freq1, fftvol1)
+        axs[0,1].set_ylabel("Fourier Amplitude")
+        axs[0,1].set_xlabel("Freq / Hz")
+        axs[0,1].set_title("Ch 1 Fourier Transform")
 
-        fig.suptitle(f"Oscilloscope Trace from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+        #############
+        # CHANNEL 2 #
+        #############
+
+        axs[1,0].plot(times, channel2_voltages)
+        axs[1,0].set_xlabel("Time / s")
+        axs[1,0].set_ylabel("Amplitude / V")
+        axs[1,0].set_title("Ch 2")
+
+        freq2 = rfftfreq(n=N-1, d=dt)
+        fftvol2 = np.abs(rfft(channel2_voltages))
+        axs[1,1].plot(freq2, fftvol2)
+        axs[1,1].set_ylabel("Fourier Amplitude")
+        axs[1,1].set_xlabel("Freq / Hz")
+        axs[1,1].set_title("Ch2 Fourier Transform")
+
+        #############
+        # CORRECTED #
+        #############
+
+        axs[2,0].plot(times, corr_voltages)
+        axs[2,0].set_xlabel("Time / s")
+        axs[2,0].set_ylabel("Amplitude / V")
+        axs[2,0].set_title("deltaV Between Channels")
+
+        freq_corr = rfftfreq(n=N-1, d=dt)
+        fftvolcorr = np.abs(rfft(corr_voltages))
+        axs[2,1].plot(freq_corr, fftvolcorr)
+        axs[2,1].set_ylabel("Fourier Amplitude")
+        axs[2,1].set_xlabel("Freq / Hz")
+        axs[2,1].set_title("deltaV Signal Fourier Transform")
+
+        fig.suptitle("Data from Scope")
+        fig.tight_layout()
         plt.show()
 
-    # def get_average_data(self, shot_data_list, shot_nos):
-        
-    #     averaged_data = {"VOLTAGES": None, "TIMES": None}
-
-    #     times = shot_data_list[0]["DATA"]["TIMES"]
-    #     voltage_stack = shot_data_list[0]["DATA"]["VOLTAGES"]
-
-    #     for data in shot_data_list[1:]:
-    #         voltage_stack = np.stack([voltage_stack, data["VOLTAGES"]], axis=0)
-
-    #     voltage_sum = np.sum(voltage_stack, axis=0)
-    #     voltage_avg = np.multiply(voltage_sum, 1/len(shot_data_list))
-
-    #     plt.plot(times, voltage_avg)
-    #     plt.title(f"Oscilloscope Averaged Over Shots {shot_nos}")
-    #     plt.show()
-
-    #     averaged_data["VOLTAGES"] = voltage_avg
-    #     averaged_data["TIMES"] = times
-
-    #     return averaged_data

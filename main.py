@@ -61,12 +61,12 @@ def main(json_path="./input.json"):
     }
 
     probe_paths_dict = {
-        1:"./example_data/data/C1--XX_SCOPE2--00081.csv"
+        1:"./example_data/data/C1_SCOPE1_00013.csv"
     }
 
     run_manager = RunManager(
         input=input,
-        data_paths_dict=digicam3_paths_dict
+        data_paths_dict=probe_paths_dict
     )
 
     run_manager.run()
