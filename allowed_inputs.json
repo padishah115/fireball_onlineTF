@@ -13,7 +13,7 @@
 
     "OPERATIONS": {
         "PLOT": [true, false],
-        
+        "LINEOUT_BIN_NOS":"any integer",
         "AVERAGE_SHOTS":[true, false]
     },
     

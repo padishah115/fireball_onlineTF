@@ -99,7 +99,7 @@ class RunManager:
             self._call_operations_manager(
                 shot_no=shot_no,
                 shot_data=data_dict[shot_no],
-                LABEL=LABEL
+                LABEL=LABEL,
             )
 
 
@@ -118,7 +118,7 @@ class RunManager:
                     shot_no=f"Avg. Over Shots {shot_nos}",
                     shot_data=mean_data,
                     LABEL=LABEL,
-                    std_data=std_data
+                    std_data=std_data,
                 )
                 pass
 
@@ -141,6 +141,8 @@ class RunManager:
                 The shot data itself in processed form.
             LABEL : str
                 Extra detail about the nature of processing which the data has undergone.
+            input : Dict
+                Input configuration dictionary
             std_data : Dict[np.ndarray]
                 By default, none- useful for ensembles.
         """
@@ -151,7 +153,8 @@ class RunManager:
             shot_no=shot_no,
             label=LABEL,
             shot_data=shot_data,
-            std_data=std_data
+            std_data=std_data,
+            input=self.input
         ) 
 
         

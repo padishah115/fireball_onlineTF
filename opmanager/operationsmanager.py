@@ -13,7 +13,7 @@ class OperationsManager:
     """Class responsible for performing more advanced analysis and arithmetic on the shot data, including
     but not limited to fourier transforms and lineout calculations."""
 
-    def __init__(self, DEVICE_NAME:str, shot_no:str, label:str, shot_data:np.ndarray, std_data:np.ndarray=None):
+    def __init__(self, DEVICE_NAME:str, shot_no:str, label:str, shot_data:np.ndarray, input, std_data:np.ndarray=None):
         """
         Parameters
         ----------
@@ -28,6 +28,8 @@ class OperationsManager:
             shot_data : np.ndarray
                 The shot data, array form, on which we want to perform some specified
                 operations
+            input : Dict
+                Input configuration dictionary
             std_data : np.ndarray
                 Standard deviation array which we can use to produce ensembles plots
         """
@@ -42,6 +44,9 @@ class OperationsManager:
 
         # DETAILS ABOUT STD DEV
         self.std_data = std_data
+
+        #INPUT CONFIGURATION DICTIONARY
+        self.input = input
 
     def plot(self):
         raise NotImplementedError(f"Warning: no plotting method implemented for {self}")

@@ -10,15 +10,15 @@ from scipy.fft import rfftfreq, rfft
 ############################
 
 class ImageManager(OperationsManager):
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, std_data=None):
-        super().__init__(DEVICE_NAME, shot_no, label, shot_data, std_data)
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data=None):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
     
 
 class DigicamImageManager(ImageManager):
     """Specialized ImageManager for Chromox camaeras."""
 
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, std_data=None):
-        super().__init__(DEVICE_NAME, shot_no, label, shot_data, std_data)
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data=None):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
 
 
     def plot(self, norm:bool=False):
@@ -35,6 +35,7 @@ class DigicamImageManager(ImageManager):
         X = self.shot_data["X"]
         Y = self.shot_data["Y"]
         image = self.shot_data["DATA"]
+        aspect = image.shape[0]/image.shape[1]
         
         # Check whether we want to normalize
         print(f"Normalise image: {norm}")
@@ -88,8 +89,8 @@ class DigicamImageManager(ImageManager):
         fig = plt.figure(figsize=(16,8))
 
         gs = gridspec.GridSpec(nrows=3, ncols=2, wspace=0.3, hspace=0.5, 
-                               #width_ratios=[], 
-                               #height_ratios=[]
+                               #width_ratios=[1,1], 
+                               #height_ratios=[1, aspect, 1]
                                )
 
         ########
@@ -97,8 +98,8 @@ class DigicamImageManager(ImageManager):
         ########
         ax_data = fig.add_subplot(gs[0,1])
         ax_data.axis("off")
-        text = f'mu=[x̄={mu[0]:.2f}mm, ȳ={mu[1]:.2f}mm]. σ=[σ_x={sigma[0]:.2f}mm, σ_y={sigma[1]:.2f}mm]'
-        ax_data.text(x=0.05, y=0.95, s=text)
+        text = f'mu=[x̄={mu[0]:.2f}mm, ȳ={mu[1]:.2f}mm]. \nσ=[σ_x={sigma[0]:.2f}mm, σ_y={sigma[1]:.2f}mm]'
+        ax_data.text(x=0.05, y=0.95, s=text, fontsize=20)
 
         #########
         # IMAGE #
@@ -106,13 +107,14 @@ class DigicamImageManager(ImageManager):
         #ax1 = fig.add_axes(rect=[0., 0.05, 0.5, 0.5])
         ax1 = fig.add_subplot(gs[1,0])
         im = ax1.imshow(image, extent=extent, aspect='auto')
+        #ax1.set_aspect(image.shape[0]/image.shape[1])
         
         # Get position of ax1 for colorbar placement
-        bbox = ax1.get_position()
+        bbox = ax_data.get_position()
         # Create colorbar axis above ax1
         cbar_ax = fig.add_axes([
             bbox.x0,          # left
-            bbox.y0 - 0.03,   # bottom (just below ax1)
+            bbox.y0-0.001,   # bottom (just below ax1)
             bbox.width,       # same width as ax1
             0.02              # height of colorbar
         ])
@@ -243,7 +245,10 @@ class DigicamImageManager(ImageManager):
             return mu, sigma
         
 
-    def _get_polar_lineouts(self, img, bin_no:int=100)->Tuple[Dict, Dict]:
+    def _get_polar_lineouts(self, img)->Tuple[Dict, Dict]:
+
+        # Number of bins for quantization during radial and azimuthal lineout
+        bin_no = self.input["OPERATIONS"]["LINEOUT_BIN_NO"]
         
         x_interval = self.shot_data["X"][1] - self.shot_data["X"][0]
         y_interval = self.shot_data["Y"][1] - self.shot_data["Y"][0]
