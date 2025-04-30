@@ -95,12 +95,13 @@ class RunManager:
         
 
         # SINGLE-SHOT PROCESSING- go one-by-one through the shots
-        for shot_no in shot_nos:
-            self._call_operations_manager(
-                shot_no=shot_no,
-                shot_data=data_dict[shot_no],
-                LABEL=LABEL,
-            )
+        if self.operations["SHOW_SINGLESHOT_PLOTS"]:
+            for shot_no in shot_nos:
+                self._call_operations_manager(
+                    shot_no=shot_no,
+                    shot_data=data_dict[shot_no],
+                    LABEL=LABEL,
+                )
 
 
         # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING

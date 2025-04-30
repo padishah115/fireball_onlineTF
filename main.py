@@ -71,7 +71,7 @@ def main(json_path="./input.json"):
 
     run_manager.run()
         
-    print("Run terminated successfully. \n")
+    print("Run terminated successfully without errors. \n")
 
 if __name__ == "__main__":
     main()

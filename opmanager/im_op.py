@@ -159,7 +159,9 @@ class DigicamImageManager(ImageManager):
         # R LINEOUTS #
         ##############
         ax4 = fig.add_subplot(gs[2,0])
-        ax4.plot(r_dict.keys(), r_dict.values(), label="Radial Marginal")
+        ax4.plot(r_dict.keys(), r_dict.values(), 
+                 label="Radial Marginal"
+                 )
         ax4.fill_between(r_dict.keys(), lower_r_dict.values(), upper_r_dict.values(), alpha=0.2)
         #ax4.set_title("Radial Lineout")
         ax4.set_xlabel("r / mm")
@@ -293,7 +295,7 @@ class DigicamImageManager(ImageManager):
                 #print(r_max, r)
 
                 # SUM PIXEL INTENSITY
-                r_dict[r_key] += img[j][i]
+                r_dict[r_key] += img[j][i] #/ (2*np.pi*r)
                 theta_dict[theta_key] += img[j][i]
 
         return r_dict, theta_dict

@@ -4,7 +4,7 @@
     
     "DEVICE_SPECIES": "DIGICAM",
     
-    "EXP_SHOT_NOS": [3, 5],
+    "EXP_SHOT_NOS": [2, 3],
     "BKG_SHOT_NOS": [],
     
     "BKG_NAME": "DARKFIELD",
@@ -14,8 +14,9 @@
     
     "OPERATIONS": {
         "PLOT": true,
+        "SHOW_SINGLESHOT_PLOTS":false,
         "LINEOUT_BIN_NO":100,
-        "AVERAGE_SHOTS":false
+        "AVERAGE_SHOTS":true
     },
 
 
