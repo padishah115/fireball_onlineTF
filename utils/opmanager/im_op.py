@@ -34,8 +34,6 @@ class DigicamImageManager(ImageOperationsManager):
         #INITIALIZE THE X AND Y AXES CORRECTLY.
         X = self.shot_data["X"]
         Y = self.shot_data["Y"]
-        print(f"Shot no: {self.shot_no}")
-        print(f"Y : {Y}\n")
         image = self.shot_data["DATA"]
         
         # Check whether we want to normalize

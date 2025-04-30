@@ -83,8 +83,6 @@ class CamRunManager(RunManager):
 
         print("selecting appropriate data dictionary ... \n")
         data_dict = data_type_key[self.input["BACKGROUND_STATUS"]]
-        
-        print(data_dict)
 
         # Depending on whether we are displaying the background itself or the experimental shot numbers,
         # we need to make sure that the shot numbers are correct.
@@ -121,11 +119,9 @@ class CamRunManager(RunManager):
         # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING
         if self.operations["SHOW_AVERAGE_SHOTS"]:
             data_dict_list =[array for array in data_dict.values()]
-            #print("First data_dict_list entry", data_dict_list[0])
 
             #Returns two dictionarys of form {"DATA":, "X":, "Y":,}
             mean_data, std_data = img_arrays_stats(data_dict_list=data_dict_list)
-            #print("Mean data shape", mean_data["DATA"].shape)
             self._call_operations_manager(
                 shot_no=f"Avg. Over Shots {shot_nos}",
                 shot_data=mean_data,

@@ -256,7 +256,6 @@ class CamLoadManager(LoadManager):
         
         # INITIALIZE EMPTY DICTIONARY OF FORM {SHOT NO : DATA (NP.NDARRAY)}
         image_dict = {}
-        print(data_paths_dict)
         
         # ITERATE THROUGH SPECIFIED SHOT NUMBERS. THESE COULD CORRESPOND TO BACKGROUND SHOTS
         # OR EXPERIMENTAL (RAW) SHOTS
@@ -444,8 +443,6 @@ class ProbeLoadManager(LoadManager):
             scope_data_dict[shot_no]["DATA"]["TIMES"]["TIMES"] = times
             scope_data_dict[shot_no]["DATA"]["TIMES"]["N"] = N
             scope_data_dict[shot_no]["DATA"]["TIMES"]["dt"] = dt
-
-            print("N, dt:", N, dt)
         
         #RETURN THE DICTIONARY OF DICTIONARIES OF FORM {SHOT NO : {"VOLTAGES":[VOLTAGE DATA], "TIMES":[TIME DATA]}}
         return scope_data_dict
