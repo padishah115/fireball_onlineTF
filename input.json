@@ -15,7 +15,7 @@
     "OPERATIONS": {
         "SHOW_SINGLESHOT_PLOTS":true,
         "LINEOUT_BIN_NO":100,
-        "SHOW_AVERAGE_SHOTS":true
+        "SHOW_AVERAGE_SHOTS":false
     },
 
 

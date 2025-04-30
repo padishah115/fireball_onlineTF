@@ -9,12 +9,12 @@ from scipy.fft import rfftfreq, rfft
 # IMAGE OPERATIONS MANAGER #
 ############################
 
-class ImageManager(OperationsManager):
+class ImageOperationsManager(OperationsManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data=None):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
     
 
-class DigicamImageManager(ImageManager):
+class DigicamImageManager(ImageOperationsManager):
     """Specialized ImageManager for Chromox camaeras."""
 
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data=None):
@@ -323,7 +323,7 @@ class DigicamImageManager(ImageManager):
         return theta
 
 
-class AndorImageManager(ImageManager):
+class AndorImageManager(ImageOperationsManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data, std_data=None):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data, std_data)
 
@@ -369,7 +369,7 @@ class AndorImageManager(ImageManager):
         plt.show()
 
 
-class OrcaImageManager(ImageManager):
+class OrcaImageManager(ImageOperationsManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data, std_data=None):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data, std_data)
 

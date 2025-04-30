@@ -9,7 +9,7 @@ from scipy.fft import rfftfreq, rfft
 # PROBE OPERATIONS MANAGER #
 ############################
 
-class ProbeManager(OperationsManager):
+class ProbeOperationsManager(OperationsManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
 

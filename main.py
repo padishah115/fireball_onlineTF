@@ -4,7 +4,7 @@ import json
 import os
 sys.path.append(".")
 
-from utils.runmanager.runmanager import RunManager
+from utils.runmanager.runmanager import CamRunManager, ProbeRunManager
 
 # IMPLEMENT LATER...
 #from utils.dictmanager import DictManager
@@ -64,7 +64,12 @@ def main(json_path="./input.json"):
         1:"./example_data/data/C1_SCOPE1_00013.csv"
     }
 
-    run_manager = RunManager(
+    runmanagerdict = {
+        "PROBE":ProbeRunManager, 
+        "CAMERA": CamRunManager
+    }
+
+    run_manager = runmanagerdict[input["DEVICE_TYPE"]](
         input=input,
         data_paths_dict=probe_paths_dict
     )
