@@ -34,8 +34,9 @@ class DigicamImageManager(ImageManager):
         #INITIALIZE THE X AND Y AXES CORRECTLY.
         X = self.shot_data["X"]
         Y = self.shot_data["Y"]
+        print(f"Shot no: {self.shot_no}")
+        print(f"Y : {Y}\n")
         image = self.shot_data["DATA"]
-        aspect = image.shape[0]/image.shape[1]
         
         # Check whether we want to normalize
         print(f"Normalise image: {norm}")
@@ -276,7 +277,7 @@ class DigicamImageManager(ImageManager):
         for i in range(img.shape[1]):
             for j in range(img.shape[0]):
                 dx=i*x_interval-x0
-                dy=j*y_interval-y0
+                dy=(img.shape[0] -1 - j)*y_interval-y0
 
                 if dx==0 and dy==0:
                     r = 0
