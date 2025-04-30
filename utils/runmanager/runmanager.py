@@ -1,11 +1,11 @@
 from typing import Dict, Type, List
 import numpy as np
 
-from utils.loadmanager import LoadManager
-from opmanager.operationsmanager import OperationsManager
-from opmanager.im_op import *
-from opmanager.probe_op import *
-from stats.stats import img_arrays_stats
+from utils.loadmanager.loadmanager import LoadManager
+from utils.opmanager.operationsmanager import OperationsManager
+from utils.opmanager.im_op import *
+from utils.opmanager.probe_op import *
+from utils.stats.stats import img_arrays_stats
 
 class RunManager:
     """Class responsible for the first (and essentially highest) level of encapsulation during execution of the code.

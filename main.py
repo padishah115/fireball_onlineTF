@@ -4,7 +4,7 @@ import json
 import os
 sys.path.append(".")
 
-from utils.runmanager import RunManager
+from utils.runmanager.runmanager import RunManager
 
 # IMPLEMENT LATER...
 #from utils.dictmanager import DictManager

@@ -2,7 +2,7 @@ from typing import List, Dict, Tuple
 import numpy as np
 import pandas as pd
 
-from stats.stats import img_arrays_stats
+from utils.stats.stats import img_arrays_stats
 
 class LoadManager:
     """Class responsible for loading data for specified shots at runtime. This is responsible,

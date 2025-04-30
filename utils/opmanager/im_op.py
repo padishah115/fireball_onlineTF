@@ -1,4 +1,4 @@
-from opmanager.operationsmanager import OperationsManager
+from utils.opmanager.operationsmanager import OperationsManager
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
