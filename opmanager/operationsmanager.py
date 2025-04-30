@@ -40,6 +40,9 @@ class OperationsManager:
         # THE RAW DATA ITSELF IN NP.NDARRAY FORMAT
         self.shot_data = shot_data
 
+        # DETAILS ABOUT STD DEV
+        self.std_data = std_data
+
     def plot(self):
         raise NotImplementedError(f"Warning: no plotting method implemented for {self}")
     

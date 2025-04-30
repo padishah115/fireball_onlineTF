@@ -2,7 +2,7 @@ from typing import List, Dict, Tuple
 import numpy as np
 import pandas as pd
 
-from stats.stats import arrays_stats
+from stats.stats import img_arrays_stats
 
 class LoadManager:
     """Class responsible for loading data for specified shots at runtime. This is responsible,
@@ -157,7 +157,7 @@ class LoadManager:
         """Returns the averaged background as a tensor"""
 
         bkg_data = [bkg_data_dict[shot][key_path] for shot in bkg_data_dict.keys()]
-        averaged_bkg = arrays_stats(bkg_data)[0]
+        averaged_bkg = img_arrays_stats(bkg_data)[0]
 
         return averaged_bkg
 

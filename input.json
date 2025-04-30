@@ -4,13 +4,13 @@
     
     "DEVICE_SPECIES": "DIGICAM",
     
-    "EXP_SHOT_NOS": [3],
+    "EXP_SHOT_NOS": [2, 3],
     "BKG_SHOT_NOS": [],
     
     "BKG_NAME": "DARKFIELD",
     "BACKGROUND_STATUS": "RAW",
 
-    "NORM_PLOT":true,
+    "NORM_PLOT":false,
     
     "OPERATIONS": {
         "PLOT": true,

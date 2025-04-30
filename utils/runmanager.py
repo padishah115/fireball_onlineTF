@@ -108,10 +108,12 @@ class RunManager:
             
             # CAMERA IMAGES AVERAGING
             if self.input["DEVICE_TYPE"] == "CAMERA":
-                arrays_list =[array for array in data_dict.values()]
+                data_dict_list =[array for array in data_dict.values()]
+                #print("First data_dict_list entry", data_dict_list[0])
 
                 #Returns two dictionarys of form {"DATA":, "X":, "Y":,}
-                mean_data, std_data = img_arrays_stats(arrays=arrays_list)
+                mean_data, std_data = img_arrays_stats(data_dict_list=data_dict_list)
+                #print("Mean data shape", mean_data["DATA"].shape)
                 self._call_operations_manager(
                     shot_no=f"Avg. Over Shots {shot_nos}",
                     shot_data=mean_data,

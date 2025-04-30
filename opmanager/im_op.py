@@ -36,20 +36,48 @@ class DigicamImageManager(ImageManager):
         Y = self.shot_data["Y"]
         image = self.shot_data["DATA"]
         
+        # Check whether we want to normalize
         print(f"Normalise image: {norm}")
-        if norm:
-            image /= np.max(image)
+        normalization_factor = np.max(image) if norm else 1
+        
+        image /= normalization_factor
         
         extent = [X[0], X[-1], Y[0], Y[-1]]
         
         # GET LINEOUTS
         lineout_x = np.sum(image, axis=0) # x lineout
         lineout_y = np.sum(image, axis=1) # y lineout
-
         # Get polar lineouts. These are dictionaries whose keys are the polar coordinates,
         # and whose values are the sum over the other dimension. I.e. r_dict is of form
         # {rval : intensity_summed_across_2pi}
-        r_dict, theta_dict = self._get_polar_lineouts()
+        r_dict, theta_dict = self._get_polar_lineouts(image)
+
+        # CHECK WHETHER WE HAVE STD DEVIATION INFORMATION
+        if self.std_data is not None:
+            upper_image = np.multiply(np.add(self.shot_data["DATA"],self.std_data["DATA"]), normalization_factor**-1)
+            lower_image = np.multiply(np.subtract(self.shot_data["DATA"],self.std_data["DATA"]), normalization_factor**-1)
+
+        ###################################
+        # Lineouts for stddev information #
+        ###################################
+
+        # Upper bound 
+        upper_lineout_x = np.sum(upper_image, axis=0) if self.std_data is not None else lineout_x
+        upper_lineout_y = np.sum(upper_image, axis=1) if self.std_data is not None else lineout_y
+        upper_r_dict, upper_theta_dict = (
+            self._get_polar_lineouts(upper_image) 
+            if self.std_data is not None
+            else (r_dict, theta_dict)
+        )
+
+        # Lower bound
+        lower_lineout_x = np.sum(lower_image, axis=0) if self.std_data is not None else lineout_x
+        lower_lineout_y = np.sum(lower_image, axis=1) if self.std_data is not None else lineout_y
+        lower_r_dict, lower_theta_dict = (
+            self._get_polar_lineouts(lower_image)
+            if self.std_data is not None
+            else (r_dict, theta_dict)
+        )
 
 
         # GET MOMENTS OF THE IMAGE
@@ -96,25 +124,15 @@ class DigicamImageManager(ImageManager):
         ax1.xaxis.tick_top()
         ax1.xaxis.set_label_position("top")
         ax1.set_ylabel("y / mm")
-        
-        #PLOT CENTROID AS A DOT
-        #ax1.scatter(mu[0], mu[1], label=f'mu=[x̄={mu[0]:.2f}mm, ȳ={mu[1]:.2f}mm]', alpha=0)
-        
-        # PLOT STD LINES IN BOTH DIMENSIONS
-        # y0 = mu + [0, sigma[1]]
-        # y1 = mu - [0, sigma[1]]
-        # x0 = mu + [sigma[0], 0]
-        # x1 = mu - [sigma[0], 0]
-        # ax1.plot([x0[0], x1[0]], [x0[1], x1[1]], color='m', linestyle='--', label=f'sigma_x: {sigma[0]:.2f}mm', alpha=0)
-        # ax1.plot([y0[0], y1[0]], [y0[1], y1[1]], color='m', linestyle='--', label=f'sigma_y: {sigma[1]:.2f}mm', alpha=0)
-        # ax1.legend()
+
         
         ##############
         # X lineouts #
         ##############
         #ax2 = fig.add_axes(rect=[0., 0., 0.5, 0.08])
         ax2 = fig.add_subplot(gs[0,0], sharex=ax1)
-        ax2.plot(X, lineout_x, label="X Lineout")
+        ax2.plot(X, lineout_x, label="X Marginal")
+        ax2.fill_between(X, lower_lineout_x, upper_lineout_x, alpha=0.2)
         #ax2.set_title("X Lineout")
         ax2.set_ylabel("Intensity")
         #ax2.set_xlabel("x / mm")
@@ -125,7 +143,8 @@ class DigicamImageManager(ImageManager):
         ##############
         #ax3 = fig.add_axes(rect=[0.52, 0.1, 0.08, 0.4])
         ax3 = fig.add_subplot(gs[1,1], sharey=ax1)
-        ax3.plot(lineout_y[::-1], Y, label="Y Lineout")
+        ax3.plot(lineout_y[::-1], Y, label="Y Marginal")
+        ax3.fill_betweenx(Y, lower_lineout_y[::-1], upper_lineout_y[::-1], alpha=0.2)
         #ax3.set_title("Y Lineout")
         ax3.set_xlabel("Intensity")
         ax3.xaxis.tick_top()
@@ -137,7 +156,8 @@ class DigicamImageManager(ImageManager):
         # R LINEOUTS #
         ##############
         ax4 = fig.add_subplot(gs[2,0])
-        ax4.plot(r_dict.keys(), r_dict.values(), label="Radial Lineout")
+        ax4.plot(r_dict.keys(), r_dict.values(), label="Radial Marginal")
+        ax4.fill_between(r_dict.keys(), lower_r_dict.values(), upper_r_dict.values(), alpha=0.2)
         #ax4.set_title("Radial Lineout")
         ax4.set_xlabel("r / mm")
         ax4.set_ylabel("Intensity")
@@ -149,7 +169,11 @@ class DigicamImageManager(ImageManager):
         ax5 = fig.add_subplot(gs[2,1])
         thetas = [theta_val for theta_val in theta_dict.keys()]
         theta_intensities = [theta_intensity for theta_intensity in theta_dict.values()]
-        ax5.plot(thetas[:-1], theta_intensities[:-1], label="Azimuthal Lineout")
+        lower_theta_intensities = [theta_intensity for theta_intensity in lower_theta_dict.values()]
+        upper_theta_intensities = [theta_intensity for theta_intensity in upper_theta_dict.values()]
+        
+        ax5.plot(thetas[:-1], theta_intensities[:-1], label="Azimuthal Marginal")
+        ax5.fill_between(thetas, lower_theta_intensities, upper_theta_intensities, alpha=0.2)
         #ax5.set_title("Azimuthal Lineout")
         ax5.set_xlabel("θ / radians")
         ax4.set_ylabel("Intensity")
@@ -219,9 +243,8 @@ class DigicamImageManager(ImageManager):
             return mu, sigma
         
 
-    def _get_polar_lineouts(self, bin_no:int=100)->Tuple[Dict, Dict]:
+    def _get_polar_lineouts(self, img, bin_no:int=100)->Tuple[Dict, Dict]:
         
-        img = self.shot_data["DATA"]
         x_interval = self.shot_data["X"][1] - self.shot_data["X"][0]
         y_interval = self.shot_data["Y"][1] - self.shot_data["Y"][0]
 
