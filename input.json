@@ -1,8 +1,8 @@
 {
-    "DEVICE_NAME": "PROBE",
-    "DEVICE_TYPE": "PROBE",
+    "DEVICE_NAME": "PT100",
+    "DEVICE_TYPE": "PT100",
     
-    "DEVICE_SPECIES": "PROBE",
+    "DEVICE_SPECIES": "PT100",
     
     "EXP_SHOT_NOS": [1],
     "BKG_SHOT_NOS": [],

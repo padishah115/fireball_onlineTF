@@ -1,7 +1,14 @@
 {
-    "DEVICE_NAME": ["HRM3/4/5/6", "ANDOR", "ORCA", "FARADAY PROBE", "BDOT1", "BDOT2"],
-    "DEVICE_TYPE": ["CAMERA", "PROBE"],
-    "DEVICE_SPECIES": [false, "DIGICAM", "ANDOR", "ORCA", "PROBE"],
+    "DEVICE_NAME": ["HRM3/4/5/6", 
+                    "ANDOR", 
+                    "ORCA", 
+                    "FARADAY PROBE", 
+                    "BDOT1", 
+                    "BDOT2", 
+                    "PT100"],
+
+    "DEVICE_TYPE": ["CAMERA", "PROBE", "PT100"],
+    "DEVICE_SPECIES": [false, "DIGICAM", "ANDOR", "ORCA", "PROBE", "PT100"],
 
     "EXP_SHOT_NOS": "any integer",
     "BKG_SHOT_NOS": ["any interger"],

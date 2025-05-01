@@ -8,6 +8,7 @@ from typing import Dict, Type
 from utils.runmanager.runmanager import RunManager
 from utils.runmanager.camrunmanager import CamRunManager 
 from utils.runmanager.proberunmanager import ProbeRunManager
+from utils.runmanager.temprunmanager import TempRunManager
 
 # IMPLEMENT LATER...
 #from utils.dictmanager import DictManager
@@ -67,14 +68,19 @@ def main(json_path="./input.json"):
         1:"./example_data/data/C1_SCOPE1_00013.csv"
     }
 
+    pt100_paths_dict = {
+        1:"/Users/hayden/Desktop/HRMT64 data/Temperature/hrmt64_temperatures.csv"
+    }
+
     runmanagerdict : Dict[str, Type[RunManager]]= {
         "PROBE":ProbeRunManager, 
-        "CAMERA": CamRunManager
+        "CAMERA": CamRunManager,
+        "PT100": TempRunManager
     }
     #
     run_manager = runmanagerdict[input["DEVICE_TYPE"]](
         input=input,
-        data_paths_dict=probe_paths_dict
+        data_paths_dict=pt100_paths_dict
     )
 
     #Execute the run.
