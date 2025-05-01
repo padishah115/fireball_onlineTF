@@ -77,7 +77,8 @@ def main(json_path="./input.json"):
         "CAMERA": CamRunManager,
         "PT100": TempRunManager
     }
-    #
+    
+    # INITIALIZE THE APPROPRIATE RUN MANAGER
     run_manager = runmanagerdict[input["DEVICE_TYPE"]](
         input=input,
         data_paths_dict=pt100_paths_dict
