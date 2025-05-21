@@ -37,13 +37,6 @@ def main(json_path="./input.json"):
     # # LOAD ALL DATA PATH DICTIONARIES
     # # of form {"DEVICE NAME" : {SHOT NO : /path/to/data}}
     # dict_of_dicts = dict_manager.run()
-
-    # # START THE RUNMANAGER TO PERFORM DATA LOADING AND ARITHMETIC
-    # print("Starting run manager ... \n")
-    # run_manager = RunManager(
-    #     input=input,
-    #     data_paths_dict=dict_of_dicts["DEVICE_NAME"]
-    # )
     
     ###############################################################
     ###############################################################
