@@ -15,6 +15,8 @@ from utils.runmanager.temprunmanager import TempRunManager
 
 def main(json_path="./input.json"):
     
+    
+
     with open(json_path) as jsfile:
         input = json.load(jsfile)
 
