@@ -1,0 +1,20 @@
+{
+    "SYNCHROTRON_PATH": "",
+    "ANDOR_PATH": "",
+    "CAM3_PATH": "",
+    "CAM4_PATH": "",
+    "CAM5_PATH": "",
+    "CAM6_PATH": "",
+    "BDOT1_PATH": "",
+    "BDOT2_PATH": "",
+    "FARADAY_PROBE": "",
+
+    "PT100_TEMP_PROBE":"",
+    "LDV":"",
+    "STRING_GAUGES":""
+
+
+
+
+
+}

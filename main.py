@@ -13,12 +13,13 @@ from utils.runmanager.temprunmanager import TempRunManager
 # IMPLEMENT LATER...
 #from utils.dictmanager import DictManager
 
-def main(json_path="./input.json"):
+def main(
+        data_json_path="./paths.json",
+        input_json_path="./input.json"
+    ):
     
-    
-
-    with open(json_path) as jsfile:
-        input = json.load(jsfile)
+    with open(data_json_path) as jsfile:
+        paths = json.load(jsfile)
 
     #######################################
     # DICTIONARY MANAGER- IMPLEMENT LATER #
@@ -42,6 +43,9 @@ def main(json_path="./input.json"):
     
     ###############################################################
     ###############################################################
+
+    with open(input_json_path) as jsfile:
+        input = json.load(jsfile)
 
     digicam3_paths_dict = {
         1:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
