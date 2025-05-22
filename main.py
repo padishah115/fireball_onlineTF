@@ -9,6 +9,8 @@ from utils.runmanager.runmanager import RunManager
 from utils.runmanager.camrunmanager import CamRunManager 
 from utils.runmanager.proberunmanager import ProbeRunManager
 from utils.runmanager.temprunmanager import TempRunManager
+from utils.runmanager.ldvrunmanager import LDVRunManager
+
 
 from utils.dictmanager.dictmanager import DictManager
 
@@ -40,29 +42,33 @@ def main(
     data_paths_dict = dict_manager.get_data_paths_dict()
     print(data_paths_dict)
 
-    # digicam3_paths_dict = {
-    #     1:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
-    #     2:"./example_data/data/HRM3.DigiCam_OD0_1714383312791697_1714383306135000.csv",
-    #     3:"./example_data/data/HRM3.DigiCam_OD1_1714604587992043_1714604581335000.csv",
-    #     4:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
-    #     5:"./example_data/data/HRM3.DigiCam_OD2_1684845285167029_1684845278535000.csv"
-    # }
+    digicam3_paths_dict = {
+        1:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
+        2:"./example_data/data/HRM3.DigiCam_OD0_1714383312791697_1714383306135000.csv",
+        3:"./example_data/data/HRM3.DigiCam_OD1_1714604587992043_1714604581335000.csv",
+        4:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
+        5:"./example_data/data/HRM3.DigiCam_OD2_1684845285167029_1684845278535000.csv"
+    }
 
-    # andor_paths_dict = {
-    #     1:'./example_data/data/andor.asc'
-    # }
+    andor_paths_dict = {
+        1:'./example_data/data/andor.asc'
+    }
 
-    # orca_paths_dict = {
-    #     1:'./example_data/data/1ns_test.dac'
-    # }
+    orca_paths_dict = {
+        1:'./example_data/data/1ns_test.dac'
+    }
 
-    # probe_paths_dict = {
-    #     1:"./example_data/data/C1_SCOPE1_00013.csv"
-    # }
+    probe_paths_dict = {
+        1:"./example_data/data/C1_SCOPE1_00013.csv"
+    }
 
-    # pt100_paths_dict = {
-    #     1:"/Users/hayden/Desktop/HRMT64 data/Temperature/hrmt64_temperatures.csv"
-    # }
+    pt100_paths_dict = {
+        1:"/Users/hayden/Desktop/HRMT64 data/Temperature/hrmt64_temperatures.csv"
+    }
+
+    ldv_paths_dict = {
+        1:"/Users/hayden/Desktop/FIREBALL/HRMT68_data/ldv_and_strain_gauges/Triggers/2025/05/13/2025-05-13T180531_0200.tdms"
+    }
 
     #######
     # RUN #
@@ -72,13 +78,15 @@ def main(
     runmanagerdict : Dict[str, Type[RunManager]]= {
         "PROBE":ProbeRunManager, 
         "CAMERA": CamRunManager,
-        "PT100": TempRunManager
+        "PT100": TempRunManager,
+        "LDV": LDVRunManager,
     }
     
     # INITIALIZE THE APPROPRIATE RUN MANAGER
     run_manager = runmanagerdict[input["DEVICE_TYPE"]](
         input=input, # input configuration
-        data_paths_dict=data_paths_dict # select appropriate dictionary from the dict_of_dicts variable.
+        #data_paths_dict=data_paths_dict # select appropriate dictionary from the dict_of_dicts variable.
+        data_paths_dict=ldv_paths_dict
     )
 
     #Execute the run.
