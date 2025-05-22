@@ -16,29 +16,8 @@
         "SHOW_SINGLESHOT_PLOTS":true,
         "LINEOUT_BIN_NO":100,
         "SHOW_AVERAGE_SHOTS":true
-    },
-
-
-
-
-
-
-    "DATA_PATH": "/eos/project/h/hiradmat/HRMT Experiments/2024/FIREBALL2/FB2_HRMT64_repository/HRMT64 data",
-    "SHOTLOG_PATH" : "./example_data/shotlog.csv",
-    "DEVICE_FOLDERS" : {
-        "BDOT1": "SCOPE1", 
-        "BDOT2": "SCOPE2", 
-        "FARADAY PROBE": "",
-        "HRM3" : "PlasmaCell_Cams",
-        "HRM4" : "PlasmaCell_Cams",
-        "HRM5" : "EP_Spectrometer_Cams",
-        "HRM6" : "EP_Spectrometer_Cams",
-        "ANDOR" : "",
-        "ORCA" : ""
-    },
-
-    "TEMPLATE_FNAMES" : {
-        "DIGICAM": "HRM{}.DigiCam_OD{}_{}_{}.csv",
-        "PROBE": "C{}_SCOPE{}_{}.csv"
     }
 }
+
+
+

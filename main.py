@@ -10,6 +10,8 @@ from utils.runmanager.camrunmanager import CamRunManager
 from utils.runmanager.proberunmanager import ProbeRunManager
 from utils.runmanager.temprunmanager import TempRunManager
 
+from utils.dictmanager.dictmanager import DictManager
+
 # IMPLEMENT LATER...
 #from utils.dictmanager import DictManager
 
@@ -17,29 +19,16 @@ def main(
         data_json_path="./paths.json",
         input_json_path="./input.json"
     ):
-    
-    with open(data_json_path) as jsfile:
-        paths = json.load(jsfile)
 
     #######################################
     # DICTIONARY MANAGER- IMPLEMENT LATER #
     #######################################
-
-    # # Need to load the data for all shots, including the background shots.
-    # all_shots = input["EXP_SHOT_NOS"] + input["BKG_SHOT_NOS"]
-
-    # # START THE DICTIONARY MANAGER TO CREATE DATA PATH DICTIONARIES
-    # dict_manager = DictManager(
-    #     shot_nos=all_shots,
-    #     data_path=input["DATA_PATH"],
-    #     folders=input["DEVICE_FOLDERS"],
-    #     template_fnames=input["TEMPLATE_FNAMES"], 
-    #     shotlog_path=input["SHOTLOG_PATH"]
-    #     )
     
-    # # LOAD ALL DATA PATH DICTIONARIES
-    # # of form {"DEVICE NAME" : {SHOT NO : /path/to/data}}
-    # dict_of_dicts = dict_manager.run()
+    with open(data_json_path) as jsfile:
+        paths = json.load(jsfile)
+
+    dict_manager = DictManager(paths)
+
     
     ###############################################################
     ###############################################################
