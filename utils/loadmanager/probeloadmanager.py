@@ -125,7 +125,9 @@ class ProbeLoadManager(LoadManager):
                     SHOT_NO : {
                         "VOLTAGES": {
                             "1":[], 
-                            "2":[]
+                            "2":[],
+                            "3":[],
+                            "4":[]
                         }, 
                         
                         "TIMES" : {
@@ -160,15 +162,15 @@ class ProbeLoadManager(LoadManager):
             data_path = data_paths_dict[shot_no]
 
             #VOLTAGE DATA
-            voltages_1, voltages_2 = self._load_scope_voltages(data_path)
+            voltages_1, voltages_2, voltages_3, voltages_4 = self._load_scope_voltages(data_path)
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["1"] = voltages_1
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["2"] = voltages_2
+            scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["2"] = voltages_3
+            scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["2"] = voltages_4
             
             #TIME DATA
-            times, N, dt = self._load_scope_times(data_path)
+            times = self._load_scope_times(data_path)
             scope_data_dict[shot_no]["DATA"]["TIMES"]["TIMES"] = times
-            scope_data_dict[shot_no]["DATA"]["TIMES"]["N"] = N
-            scope_data_dict[shot_no]["DATA"]["TIMES"]["dt"] = dt
         
         #RETURN THE DICTIONARY OF DICTIONARIES OF FORM {SHOT NO : {"VOLTAGES":[VOLTAGE DATA], "TIMES":[TIME DATA]}}
         return scope_data_dict
