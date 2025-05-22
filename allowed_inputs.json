@@ -5,7 +5,10 @@
                     "FARADAY PROBE", 
                     "BDOT1", 
                     "BDOT2", 
-                    "PT100"],
+                    "PT100",
+                    "LDV",
+                    "STRING GAUGE"
+                ],
 
     "DEVICE_TYPE": ["CAMERA", "PROBE", "PT100"],
     "DEVICE_SPECIES": [false, "DIGICAM", "ANDOR", "ORCA", "PROBE", "PT100"],
@@ -22,27 +25,6 @@
         "SHOW_SINGLESHOT_PLOTS":[true, false],
         "LINEOUT_BIN_NOS":"any integer",
         "AVERAGE_SHOTS":[true, false]
-    },
-    
-    
-    "DATA_PATH": "any",
-    "SHOTLOG_PATH" : "any",
-    
-    "DEVICE_FOLDERS" : {
-        "BDOT1": "any", 
-        "BDOT2": "any", 
-        "FARADAY PROBE": "any",
-        "HRM3" : "any",
-        "HRM4" : "any",
-        "HRM5" : "any",
-        "HRM6" : "any",
-        "ANDOR" : "",
-        "ORCA" : ""
-    },
-
-    "TEMPLATE_FNAMES" : {
-        "DIGICAM": "HRM{}.DigiCam_OD{}_{}_{}.csv",
-        "PROBE": "C{}_SCOPE{}_{}.csv"
     }
 
 }

@@ -20,6 +20,9 @@ def main(
         input_json_path="./input.json"
     ):
 
+    with open(input_json_path) as jsfile:
+        input = json.load(jsfile)
+
     #######################################
     # DICTIONARY MANAGER- IMPLEMENT LATER #
     #######################################
@@ -27,39 +30,45 @@ def main(
     with open(data_json_path) as jsfile:
         paths = json.load(jsfile)
 
-    dict_manager = DictManager(paths)
+    # INITIALIZE THE DICTIONARY MANAGER
+    dict_manager = DictManager(
+        shot_nos=input["EXP_SHOT_NOS"],
+        path = os.path.join(paths["PARENT_PATH_LOCAL"], paths[input["DEVICE_NAME"]])
+    )
 
+    # Create the correct data path dictionary.
+    data_paths_dict = dict_manager.get_data_paths_dict()
+    print(data_paths_dict)
+
+    # digicam3_paths_dict = {
+    #     1:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
+    #     2:"./example_data/data/HRM3.DigiCam_OD0_1714383312791697_1714383306135000.csv",
+    #     3:"./example_data/data/HRM3.DigiCam_OD1_1714604587992043_1714604581335000.csv",
+    #     4:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
+    #     5:"./example_data/data/HRM3.DigiCam_OD2_1684845285167029_1684845278535000.csv"
+    # }
+
+    # andor_paths_dict = {
+    #     1:'./example_data/data/andor.asc'
+    # }
+
+    # orca_paths_dict = {
+    #     1:'./example_data/data/1ns_test.dac'
+    # }
+
+    # probe_paths_dict = {
+    #     1:"./example_data/data/C1_SCOPE1_00013.csv"
+    # }
+
+    # pt100_paths_dict = {
+    #     1:"/Users/hayden/Desktop/HRMT64 data/Temperature/hrmt64_temperatures.csv"
+    # }
+
+    #######
+    # RUN #
+    #######
     
-    ###############################################################
-    ###############################################################
-
-    with open(input_json_path) as jsfile:
-        input = json.load(jsfile)
-
-    digicam3_paths_dict = {
-        1:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
-        2:"./example_data/data/HRM3.DigiCam_OD0_1714383312791697_1714383306135000.csv",
-        3:"./example_data/data/HRM3.DigiCam_OD1_1714604587992043_1714604581335000.csv",
-        4:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
-        5:"./example_data/data/HRM3.DigiCam_OD2_1684845285167029_1684845278535000.csv"
-    }
-
-    andor_paths_dict = {
-        1:'./example_data/data/andor.asc'
-    }
-
-    orca_paths_dict = {
-        1:'./example_data/data/1ns_test.dac'
-    }
-
-    probe_paths_dict = {
-        1:"./example_data/data/C1_SCOPE1_00013.csv"
-    }
-
-    pt100_paths_dict = {
-        1:"/Users/hayden/Desktop/HRMT64 data/Temperature/hrmt64_temperatures.csv"
-    }
-
+    # Initialise the runmanager as appropriate for each device.
     runmanagerdict : Dict[str, Type[RunManager]]= {
         "PROBE":ProbeRunManager, 
         "CAMERA": CamRunManager,
@@ -68,8 +77,8 @@ def main(
     
     # INITIALIZE THE APPROPRIATE RUN MANAGER
     run_manager = runmanagerdict[input["DEVICE_TYPE"]](
-        input=input,
-        data_paths_dict=pt100_paths_dict
+        input=input, # input configuration
+        data_paths_dict=data_paths_dict # select appropriate dictionary from the dict_of_dicts variable.
     )
 
     #Execute the run.

@@ -1,21 +1,20 @@
 {
 
     "PARENT_PATH": "/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data",
-    "PARENT_PATH_LOCAL": "../",
+    "PARENT_PATH_LOCAL": "../HRMT68_data",
 
-    "ANDOR_FOLDERNAME": "andor_spectrometer",
-    "ORCA_FOLDERNAME": "orca_streak",
-    "CAM3_FOLDERNAME": "plasmacell_cams",
-    "CAM4_FOLDERNAME": "plasmacell_cams",
-    "CAM5_FOLDERNAME": "spectrometer_cams",
-    "CAM6_FOLDERNAME": "spectrometer_cams",
-    "BDOT1_FOLDERNAME": false,
-    "BDOT2_FOLDERNAME": false,
-    "FP_FOLDERNAME": false,
+    "ANDOR": "andor_spectrometer",
+    "ORCA": "orca_streak",
+    "HRM3": "plasmacell_cams",
+    "HRM4": "plasmacell_cams",
+    "HRM5": "spectrometer_cams",
+    "HRM6": "spectrometer_cams",
+    "BDOT1": false,
+    "BDOT2": false,
+    "FARADAY PROBE": false,
 
-    "PT100_FOLDERNAME":"temperatures",
-    "LDV_FOLDERNAME":"ldv_and_string_gauges",
-    "STRGAUGE_FOLDERNAME":"ldv_and_string_gauges"
+    "PT100":"temperatures",
+    "LDV":"ldv_and_strain_gauges/Triggers/2025/05/13/"
 
 
 

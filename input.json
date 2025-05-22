@@ -1,8 +1,8 @@
 {
-    "DEVICE_NAME": "PT100",
-    "DEVICE_TYPE": "PT100",
+    "DEVICE_NAME": "LDV",
+    "DEVICE_TYPE": "LDV",
     
-    "DEVICE_SPECIES": "PT100",
+    "DEVICE_SPECIES": "LDV",
     
     "EXP_SHOT_NOS": [1],
     "BKG_SHOT_NOS": [],
