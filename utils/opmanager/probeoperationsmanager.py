@@ -46,6 +46,13 @@ class ProbeOperationsManager(OperationsManager):
         # CHANNEL 1 #
 
         axs1[0, 0].plot(times, channel1_voltages)
+        
+        if self.std_data is not None:
+            sigma_v = self.std_data["DATA"]["VOLTAGES"]["1"]
+            upper_bound = np.add(channel1_voltages, sigma_v)
+            lower_bound = np.subtract(channel1_voltages, sigma_v)
+            axs1[0, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
+
         axs1[0, 0].set_ylabel("Amplitude / V")
         axs1[0, 0].set_xlabel("Time / s")
         axs1[0, 0].set_title("Ch 1")

@@ -5,6 +5,8 @@ from utils.runmanager.runmanager import RunManager
 from utils.opmanager.operationsmanager import OperationsManager
 from utils.opmanager.probeoperationsmanager import ProbeOperationsManager
 
+from utils.stats.stats import probe_arrays_stats
+
 
 class ProbeRunManager(RunManager):
 
@@ -55,7 +57,17 @@ class ProbeRunManager(RunManager):
 
         # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING
         if self.operations["SHOW_AVERAGE_SHOTS"]:
-            print("Warning: no method of probe shot averaging implemented. Ignoring command to average shots.")
+
+            # Assemble list of shot data dictionaries for each of the shots specified.
+            data_dict_list = [shot_dict for shot_dict in data_dict.values()]
+
+            mean_data, std_data = probe_arrays_stats(data_dict_list=data_dict_list)
+            self._call_operations_manager(
+                shot_no=f"Avg. Over Shots {shot_nos}",
+                shot_data = mean_data,
+                LABEL=LABEL,
+                std_data=std_data
+            )
 
     
     

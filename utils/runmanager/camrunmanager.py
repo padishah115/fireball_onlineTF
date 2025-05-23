@@ -46,7 +46,7 @@ class CamRunManager(RunManager):
             "SHOW": bkg_data_dict
         }
 
-
+        #  SELECT CORRECT DICTIONARY BASED ON SPECIFIED BACKGROUND REMOVAL STATUS
         print("selecting appropriate data dictionary ... \n")
         data_dict = data_type_key[self.input["BACKGROUND_STATUS"]]
 
@@ -84,7 +84,9 @@ class CamRunManager(RunManager):
 
         # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING
         if self.operations["SHOW_AVERAGE_SHOTS"]:
-            data_dict_list =[array for array in data_dict.values()]
+
+            #Create list of shot dictionaries.
+            data_dict_list =[shot_dict for shot_dict in data_dict.values()]
 
             #Returns two dictionarys of form {"DATA":, "X":, "Y":,}
             mean_data, std_data = img_arrays_stats(data_dict_list=data_dict_list)
