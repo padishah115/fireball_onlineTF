@@ -59,7 +59,7 @@ def main(
     }
 
     probe_paths_dict = {
-        1:"./example_data/data/C1_SCOPE1_00013.csv"
+        1:"/Users/hayden/Desktop/FIREBALL/HRMT68_data/scope_test/FastScope_TestSave_ALL_20250520173102723.csv"
     }
 
     pt100_paths_dict = {
@@ -86,7 +86,7 @@ def main(
     run_manager = runmanagerdict[input["DEVICE_TYPE"]](
         input=input, # input configuration
         #data_paths_dict=data_paths_dict # select appropriate dictionary from the dict_of_dicts variable.
-        data_paths_dict=ldv_paths_dict
+        data_paths_dict=probe_paths_dict
     )
 
     #Execute the run.

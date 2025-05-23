@@ -11,7 +11,7 @@
     "HRM6": "spectrometer_cams",
     "BDOT1": false,
     "BDOT2": false,
-    "FARADAY PROBE": false,
+    "FARADAY PROBE": "scope_test",
 
     "PT100":"temperatures",
     "LDV":"ldv_and_strain_gauges/Triggers/2025/05/13/"

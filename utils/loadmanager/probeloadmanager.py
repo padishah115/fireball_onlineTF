@@ -45,57 +45,60 @@ class ProbeLoadManager(LoadManager):
         return exp_data_dict, bkg_data_dict, corrected_data_dict
     
 
-    def _load_scope_voltages(self, data_path:str)->Tuple[np.ndarray, np.ndarray]:
+    def _load_scope_voltages(self, data_path:str, skiprows:int=16)->Tuple[np.ndarray, np.ndarray]:
         """Loads voltage data from oscilloscope .csv at a specified path, in the form of an arraylike list.
         
         Parameters
         ----------
             data_path : str
                 Path to the .csv where the oscilloscope has stored voltage/time data, from which we load voltage data.
-            volt_key : str = "Ampl"
-                Column title for the voltage information in the oscilloscope dataframe
-            skiprows : int = 4
-                Due to the strange way in which the LECROY 'scopes dump data, the top 4 rows have to be skipped over.
+            skiprows : int = 16
+                Due to the strange way in which the TEKTRONIX 'scopes dump data, the top 4 rows have to be skipped over.
         """
     
         if not data_path.endswith('.csv'):
             raise ValueError(f"Warning: oscilloscope files should be .csv type, but path provided ends in {data_path[:-4]}.")
 
-        df = pd.read_csv(data_path)
-        columns_list = df.columns.values.tolist()
+        df = pd.read_csv(data_path, skiprows=skiprows)
+        
+        channel1_voltages = df["CH1"]
+        channel2_voltages = df["CH2"]
+        channel3_voltages = df["CH3"]
+        channel4_voltages = df["CH4"]
 
-        channel1_voltages = [float(columns_list[-2])] # the column header is the first data point :(
-        channel1_voltages += df[columns_list[-2]] # add the rest of the column to the 'scope data
+        print(f"Lengths: \n1: {len(channel1_voltages)}, 2: {len(channel2_voltages)}, 3: {len(channel3_voltages)}, 4: {len(channel4_voltages)}")
 
-        channel2_voltages = [float(columns_list[-1])] # the column header is the first data point :(
-        channel2_voltages += df[columns_list[-1]] # add the rest of the column to the 'scope data
-
-        return channel1_voltages, channel2_voltages
+        return channel1_voltages, channel2_voltages, channel3_voltages, channel4_voltages
 
     
-    def _load_scope_times(self, data_path:str):
+    def _load_scope_times(self, data_path:str, skiprows:int=16)->tuple[np.ndarray, int, float]:
         """Loads time data from oscilloscope .csv at a specified path, in the form of an arraylike list.
         
         Parameters:
         -----------
             data_path : str
                 Path to the .csv where the oscilloscope has stored voltage/time data, from which we load voltage data.
-            time_key : str = "Time"
-                Column title for the time information in the oscilloscope dataframe
-            skiprows : int = 4
-                Due to the strange way in which the LECROY 'scopes dump data, the top 4 rows have to be skipped over.
+            skiprows : int = 16
+                Due to the strange way in which the TEKTRONIX 'scopes dump data, the top 16 rows have to be skipped over.
+
+        Returns:
+        --------
+            times
+            N
+            dt
         """
 
         # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME
         df = pd.read_csv(data_path)
-        columns_list = df.columns.values.tolist()
-        # TIME INTERVAL IN SECONDS
-        dt = df[columns_list[1]][0]
-        # NO OF RECORDING POINTS
-        N = int(columns_list[1])
+        N = int(df[df.columns.values[1]][6])
+        dt = float(df[df.columns.values[1]][5])
+        print("N", N)
+        print("dt", dt)
 
-        # Initialize times array using information about the timestep and the number of sampling points
-        times = np.multiply(np.arange(0, N-1, step=1), dt)
+        # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME, this time skipping the rows
+        df = pd.read_csv(data_path, skiprows=skiprows)
+        
+        times = df["TIME"]
 
         return times, N, dt
 
@@ -153,7 +156,7 @@ class ProbeLoadManager(LoadManager):
             #initialize the shot data dictionary
             scope_data_dict[shot_no] = {
                 "DATA":{
-                    "VOLTAGES": {"1":None, "2":None}, 
+                    "VOLTAGES": {"1":None, "2":None, "3":None, "4":None}, 
                     "TIMES": {"TIMES":None, "N":None, "dt":None}
                 }
             }
@@ -165,12 +168,14 @@ class ProbeLoadManager(LoadManager):
             voltages_1, voltages_2, voltages_3, voltages_4 = self._load_scope_voltages(data_path)
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["1"] = voltages_1
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["2"] = voltages_2
-            scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["2"] = voltages_3
-            scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["2"] = voltages_4
+            scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["3"] = voltages_3
+            scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["4"] = voltages_4
             
             #TIME DATA
-            times = self._load_scope_times(data_path)
+            times, N, dt = self._load_scope_times(data_path)
             scope_data_dict[shot_no]["DATA"]["TIMES"]["TIMES"] = times
+            scope_data_dict[shot_no]["DATA"]["TIMES"]["N"] = N
+            scope_data_dict[shot_no]["DATA"]["TIMES"]["dt"] = dt
         
         #RETURN THE DICTIONARY OF DICTIONARIES OF FORM {SHOT NO : {"VOLTAGES":[VOLTAGE DATA], "TIMES":[TIME DATA]}}
         return scope_data_dict

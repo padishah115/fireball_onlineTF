@@ -38,7 +38,7 @@ class ProbeOperationsManager(OperationsManager):
         axs1[0, 0].set_xlabel("Time / s")
         axs1[0, 0].set_title("Ch 1")
 
-        freq1 = rfftfreq(n=N-1, d=dt)
+        freq1 = rfftfreq(n=N, d=dt)
         fftvol1 = np.abs(rfft(channel1_voltages))
         axs1[0,1].plot(freq1, fftvol1)
         axs1[0,1].set_ylabel("Fourier Amplitude")
@@ -52,7 +52,7 @@ class ProbeOperationsManager(OperationsManager):
         axs1[1,0].set_ylabel("Amplitude / V")
         axs1[1,0].set_title("Ch 2")
 
-        freq2 = rfftfreq(n=N-1, d=dt)
+        freq2 = rfftfreq(n=N, d=dt)
         fftvol2 = np.abs(rfft(channel2_voltages))
         axs1[1,1].plot(freq2, fftvol2)
         axs1[1,1].set_ylabel("Fourier Amplitude")
@@ -71,35 +71,35 @@ class ProbeOperationsManager(OperationsManager):
 
         # voltage information
         channel3_voltages = self.shot_data["DATA"]["VOLTAGES"]["3"]
-        channel2_voltages = self.shot_data["DATA"]["VOLTAGES"]["3"]
+        channel4_voltages = self.shot_data["DATA"]["VOLTAGES"]["4"]
         
-        # CHANNEL 1 #
+        # CHANNEL 3 #
 
-        axs2[0, 0].plot(times, channel1_voltages)
+        axs2[0, 0].plot(times, channel3_voltages)
         axs2[0, 0].set_ylabel("Amplitude / V")
         axs2[0, 0].set_xlabel("Time / s")
-        axs2[0, 0].set_title("Ch 1")
+        axs2[0, 0].set_title("Ch 3")
 
-        freq3 = rfftfreq(n=N-1, d=dt)
-        fftvol3 = np.abs(rfft(channel1_voltages))
-        axs2[0,1].plot(freq1, fftvol1)
+        freq3 = rfftfreq(n=N, d=dt)
+        fftvol3 = np.abs(rfft(channel3_voltages))
+        axs2[0,1].plot(freq3, fftvol3)
         axs2[0,1].set_ylabel("Fourier Amplitude")
         axs2[0,1].set_xlabel("Freq / Hz")
-        axs2[0,1].set_title("Ch 1 Fourier Transform")
+        axs2[0,1].set_title("Ch 3 Fourier Transform")
 
-        # CHANNEL 2 #
+        # CHANNEL 4 #
 
-        axs2[1,0].plot(times, channel2_voltages)
+        axs2[1,0].plot(times, channel4_voltages)
         axs2[1,0].set_xlabel("Time / s")
         axs2[1,0].set_ylabel("Amplitude / V")
-        axs2[1,0].set_title("Ch 2")
+        axs2[1,0].set_title("Ch 4")
 
-        freq4 = rfftfreq(n=N-1, d=dt)
-        fftvol4 = np.abs(rfft(channel2_voltages))
-        axs2[1,1].plot(freq2, fftvol2)
+        freq4 = rfftfreq(n=N, d=dt)
+        fftvol4 = np.abs(rfft(channel4_voltages))
+        axs2[1,1].plot(freq4, fftvol4)
         axs2[1,1].set_ylabel("Fourier Amplitude")
         axs2[1,1].set_xlabel("Freq / Hz")
-        axs2[1,1].set_title("Ch2 Fourier Transform")
+        axs2[1,1].set_title("Ch4 Fourier Transform")
 
         fig2.suptitle("Data from Scope")
         fig2.tight_layout()
