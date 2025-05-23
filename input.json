@@ -1,10 +1,9 @@
 {
-    "DEVICE_NAME": "LDV",
-    "DEVICE_TYPE": "LDV",
+    "DEVICE_NAME": "FARADAY PROBE",
+    "DEVICE_TYPE": "PROBE",
+    "DEVICE_SPECIES": "PROBE",
     
-    "DEVICE_SPECIES": "LDV",
-    
-    "EXP_SHOT_NOS": [1],
+    "EXP_SHOT_NOS": [1, 2, 3],
     "BKG_SHOT_NOS": [],
     
     "BKG_NAME": "DARKFIELD",
@@ -13,7 +12,7 @@
     "NORM_PLOT":false,
     
     "OPERATIONS": {
-        "SHOW_SINGLESHOT_PLOTS":true,
+        "SHOW_SINGLESHOT_PLOTS":false,
         "LINEOUT_BIN_NO":100,
         "SHOW_AVERAGE_SHOTS":true
     }

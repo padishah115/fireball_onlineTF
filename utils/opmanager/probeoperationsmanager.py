@@ -71,7 +71,7 @@ class ProbeOperationsManager(OperationsManager):
         axs1[1,1].set_xlabel("Freq / Hz")
         axs1[1,1].set_title("Ch2 Fourier Transform")
 
-        fig1.suptitle("Data from Scope")
+        fig1.suptitle(f'Data from {self.input["DEVICE_NAME"]}, Shot {self.shot_no}')
         fig1.tight_layout()
         plt.show()
 
@@ -109,7 +109,7 @@ class ProbeOperationsManager(OperationsManager):
         axs2[1,1].set_xlabel("Freq / Hz")
         axs2[1,1].set_title("Ch4 Fourier Transform")
 
-        fig2.suptitle("Data from Scope")
+        fig2.suptitle(f'Data from {self.input["DEVICE_NAME"]}, Shot {self.shot_no}')
         fig2.tight_layout()
         plt.show()
 
