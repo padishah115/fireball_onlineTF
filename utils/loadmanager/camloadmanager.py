@@ -1,6 +1,7 @@
 from utils.stats.stats import img_arrays_stats
 from utils.loadmanager.loadmanager import LoadManager
 from typing import Dict, Tuple, List
+import tifffile
 import numpy as np
 
 class CamLoadManager(LoadManager):
@@ -136,7 +137,7 @@ class CamLoadManager(LoadManager):
         return img, space_mm_x, time_ns_y
 
 
-    def _load_ANDOR_image(self, path:str, skipfooter:int=41)->Tuple[np.ndarray, List, List]:
+    def _load_ANDOR_image(self, path:str)->Tuple[np.ndarray, List, List]:
         """Loads an image produced by the ANDOR synchrotron spectroscopy camera from some specified
         path location.
         
@@ -144,8 +145,6 @@ class CamLoadManager(LoadManager):
         ----------
             path : str
                 The path to the image data.
-            skipfooter : int = 41
-                The number of rows at the bottom of the andor .asc file which we have to skip over
 
         Returns
         -------
@@ -154,7 +153,7 @@ class CamLoadManager(LoadManager):
             wavelengths (aka pixels_y) : List
         """
 
-        image = np.genfromtxt(path, skip_footer=skipfooter)
+        image = tifffile.imread(path)
 
 
         #EXTRACT THE FIRST COLUMN, WHICH CONTAIN WAVELENGTHS IN NM- this is "pixels_y"
