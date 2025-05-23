@@ -107,8 +107,6 @@ class CamRunManager(RunManager):
                 The shot data itself in processed form.
             LABEL : str
                 Extra detail about the nature of processing which the data has undergone.
-            input : Dict
-                Input configuration dictionary
             std_data : Dict[np.ndarray]
                 By default, none- useful for ensembles.
         """

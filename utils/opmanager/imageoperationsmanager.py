@@ -322,10 +322,10 @@ class DigicamImageManager(ImageOperationsManager):
 
 
 class AndorImageManager(ImageOperationsManager):
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, std_data=None):
-        super().__init__(DEVICE_NAME, shot_no, label, shot_data, std_data)
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data=None):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
 
-    def plot(self, step:int=200):
+    def plot(self, step:int=200, norm=False):
         """Plots the image from the Andor camera attached to the synchrotron spectrometer,
         which is already a fourier transform. This image is then summed along the pixel axis, producing
         a 1D fourier transform, which is plotted alongside the raw image.
@@ -334,6 +334,8 @@ class AndorImageManager(ImageOperationsManager):
         ----------
             step : int = 200
                 Stepsize between ticks on the wavelength axis in order to ease readability after plotting.
+            norm : bool
+                Whether or not we want to normalize the image.
         """
     
         img = self.shot_data["DATA"]
@@ -368,10 +370,19 @@ class AndorImageManager(ImageOperationsManager):
 
 
 class OrcaImageManager(ImageOperationsManager):
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, std_data=None):
-        super().__init__(DEVICE_NAME, shot_no, label, shot_data, std_data)
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data=None):
+        super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
 
-    def plot(self, step:int=100):
+    def plot(self, step:int=100, norm=False):
+        """Plotting function for the ORCA streak camera.
+        
+        Parameters
+        ----------
+            step : int = 100
+                Stepsize for the x and y tick positions on the graph. This makes the ORCA plot less clunky-looking.
+            norm : bool = False
+                Whether or not we wan to norm the image (no current method implemented for doing this with the ORCA)
+        """
         
         # INITIALIZE IMAGE AND AXES FROM DATA
         img = self.shot_data["DATA"]

@@ -13,7 +13,7 @@ class OperationsManager:
     """Class responsible for performing more advanced analysis and arithmetic on the shot data, including
     but not limited to fourier transforms and lineout calculations."""
 
-    def __init__(self, DEVICE_NAME:str, shot_no:str, label:str, shot_data:np.ndarray, input, std_data:np.ndarray=None):
+    def __init__(self, DEVICE_NAME:str, shot_no:str, label:str, shot_data:np.ndarray, input:dict, std_data:np.ndarray=None):
         """
         Parameters
         ----------
