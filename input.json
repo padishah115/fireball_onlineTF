@@ -1,8 +1,8 @@
 {
-    "DEVICE_NAME": "LDV",
-    "DEVICE_TYPE": "LDV",
+    "DEVICE_NAME": "FARADAY PROBE",
+    "DEVICE_TYPE": "PROBE",
     
-    "DEVICE_SPECIES": "LDV",
+    "DEVICE_SPECIES": "PROBE",
     
     "EXP_SHOT_NOS": [1],
     "BKG_SHOT_NOS": [],
