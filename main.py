@@ -88,7 +88,7 @@ def main(
     run_manager = runmanagerdict[input["DEVICE_TYPE"]](
         input=input, # input configuration
         #data_paths_dict=data_paths_dict # select appropriate dictionary from the dict_of_dicts variable.
-        data_paths_dict=probe_paths_dict
+        data_paths_dict=andor_paths_dict
     )
 
     #Execute the run.
