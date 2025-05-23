@@ -1,6 +1,5 @@
 from utils.opmanager.operationsmanager import OperationsManager
 
-from nptdms import TdmsFile
 import matplotlib.pyplot as plt
 
 class LDVOperationsManager(OperationsManager):

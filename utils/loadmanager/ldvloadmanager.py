@@ -36,7 +36,6 @@ class LDVLoadManager(LoadManager):
 
             for channel in group.channels():
                 shot_data_dict[channel.name] = channel[:]
-                print("Channel:", channel)
 
             return shot_data_dict
 
