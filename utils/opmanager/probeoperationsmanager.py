@@ -23,7 +23,7 @@ class ProbeOperationsManager(OperationsManager):
                 Whether or not we want to normalize the 
         """
 
-        #2x2 grid of plots.
+        #2x2 grid of plots, figsize is 16x9.
         nrows = 2
         ncols = 2
         figsize = (16, 9)
