@@ -23,102 +23,72 @@ class ProbeOperationsManager(OperationsManager):
                 Whether or not we want to normalize the 
         """
 
+        channel_nos = ["1", "2", "3", "4"]
+
         #2x2 grid of plots, figsize is 16x9.
         nrows = 2
         ncols = 2
         figsize = (16, 9)
 
-        ########################
-        # CHANNELS ONE AND TWO #
-        ########################
-
-        fig1, axs1 = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
-
         # TIME information- INCLUDING number of discrete time steps and the interval for each step
         times, N, dt = self._get_time_data()
 
         # VOLTAGE information
-        channel1_voltages = self.shot_data["DATA"]["VOLTAGES"]["1"]
-        channel2_voltages = self.shot_data["DATA"]["VOLTAGES"]["2"]
-        channel3_voltages = self.shot_data["DATA"]["VOLTAGES"]["3"]
-        channel4_voltages = self.shot_data["DATA"]["VOLTAGES"]["4"]
+        channel_voltages_dict = {channel_no:self.shot_data["DATA"]["VOLTAGES"][channel_no] for channel_no in channel_nos}
         
-        # CHANNEL 1 #
+        ####################
+        # CHANNELS 1 AND 2 #
+        ####################
+        fig1, axs1 = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+        for i in range(2):
 
-        axs1[0, 0].plot(times, channel1_voltages)
-        
-        if self.std_data is not None:
-            sigma_v = self.std_data["DATA"]["VOLTAGES"]["1"]
-            upper_bound = np.add(channel1_voltages, sigma_v)
-            lower_bound = np.subtract(channel1_voltages, sigma_v)
-            axs1[0, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
+            # REAL-SPACE VOLTAGE VS TIME PLOT
+            channel_no = channel_nos[i]
+            channel_voltage = channel_voltages_dict[channel_no]
+            axs1[i, 0].plot(times, channel_voltage)
+            if self.std_data is not None:
+                sigma_v = self.std_data["DATA"]["VOLTAGES"][channel_no]
+                upper_bound = np.add(channel_voltage, sigma_v)
+                lower_bound = np.subtract(channel_voltage, sigma_v)
+                axs1[i, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
+            axs1[i, 0].set_ylabel("Amplitude / V")
+            axs1[i, 0].set_xlabel("Time / s")
+            axs1[i, 0].set_title(f"Ch {channel_no}")
+            
+            # FOURIER TRANSFORM
+            freq = rfftfreq(n=N, d=dt)
+            fftvol = np.abs(rfft(channel_voltage))
+            axs1[i,1].plot(freq, fftvol)
+            axs1[i,1].set_ylabel("Fourier Amplitude")
+            axs1[i,1].set_xlabel("Freq / Hz")
+            axs1[i,1].set_title(f"Ch {channel_no} Fourier Transform")
 
-        axs1[0, 0].set_ylabel("Amplitude / V")
-        axs1[0, 0].set_xlabel("Time / s")
-        axs1[0, 0].set_title("Ch 1")
-
-        freq1 = rfftfreq(n=N, d=dt)
-        fftvol1 = np.abs(rfft(channel1_voltages))
-        axs1[0,1].plot(freq1, fftvol1)
-        axs1[0,1].set_ylabel("Fourier Amplitude")
-        axs1[0,1].set_xlabel("Freq / Hz")
-        axs1[0,1].set_title("Ch 1 Fourier Transform")
-
-        # CHANNEL 2 #
-
-        axs1[1,0].plot(times, channel2_voltages)
-        axs1[1,0].set_xlabel("Time / s")
-        axs1[1,0].set_ylabel("Amplitude / V")
-        axs1[1,0].set_title("Ch 2")
-
-        freq2 = rfftfreq(n=N, d=dt)
-        fftvol2 = np.abs(rfft(channel2_voltages))
-        axs1[1,1].plot(freq2, fftvol2)
-        axs1[1,1].set_ylabel("Fourier Amplitude")
-        axs1[1,1].set_xlabel("Freq / Hz")
-        axs1[1,1].set_title("Ch2 Fourier Transform")
-
-        fig1.suptitle(f'Data from {self.input["DEVICE_NAME"]}, Shot {self.shot_no}')
-        fig1.tight_layout()
-        plt.show()
-
-        #############
+        ####################
         # CHANNELS 3 AND 4 #
-        #############
+        ####################
+        fig2, axs2 = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+        for i in range(2):
+            channel_no = channel_nos[i+2]
+            channel_voltage = channel_voltages_dict[channel_no]
 
-        fig2, axs2 = plt.subplots(nrows=2, ncols=2, figsize=(16,9))
-        
-        # CHANNEL 3 #
+            axs2[i, 0].plot(times, channel_voltage)
+            if self.std_data is not None:
+                sigma_v = self.std_data["DATA"]["VOLTAGES"]["1"]
+                upper_bound = np.add(channel_voltage, sigma_v)
+                lower_bound = np.subtract(channel_voltage, sigma_v)
+                axs2[i, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
+            axs2[i, 0].set_ylabel("Amplitude / V")
+            axs2[i, 0].set_xlabel("Time / s")
+            axs2[i, 0].set_title(f"Ch {channel_no}")
+            freq = rfftfreq(n=N, d=dt)
+            fftvol = np.abs(rfft(channel_voltage))
+            axs2[i,1].plot(freq, fftvol)
+            axs2[i,1].set_ylabel("Fourier Amplitude")
+            axs2[i,1].set_xlabel("Freq / Hz")
+            axs2[i,1].set_title(f"Ch {channel_no} Fourier Transform")
 
-        axs2[0, 0].plot(times, channel3_voltages)
-        axs2[0, 0].set_ylabel("Amplitude / V")
-        axs2[0, 0].set_xlabel("Time / s")
-        axs2[0, 0].set_title("Ch 3")
-
-        freq3 = rfftfreq(n=N, d=dt)
-        fftvol3 = np.abs(rfft(channel3_voltages))
-        axs2[0,1].plot(freq3, fftvol3)
-        axs2[0,1].set_ylabel("Fourier Amplitude")
-        axs2[0,1].set_xlabel("Freq / Hz")
-        axs2[0,1].set_title("Ch 3 Fourier Transform")
-
-        # CHANNEL 4 #
-
-        axs2[1,0].plot(times, channel4_voltages)
-        axs2[1,0].set_xlabel("Time / s")
-        axs2[1,0].set_ylabel("Amplitude / V")
-        axs2[1,0].set_title("Ch 4")
-
-        freq4 = rfftfreq(n=N, d=dt)
-        fftvol4 = np.abs(rfft(channel4_voltages))
-        axs2[1,1].plot(freq4, fftvol4)
-        axs2[1,1].set_ylabel("Fourier Amplitude")
-        axs2[1,1].set_xlabel("Freq / Hz")
-        axs2[1,1].set_title("Ch4 Fourier Transform")
-
-        fig2.suptitle(f'Data from {self.input["DEVICE_NAME"]}, Shot {self.shot_no}')
-        fig2.tight_layout()
         plt.show()
+
 
     
     def _get_time_data(self)->tuple[np.ndarray, int, float]:
