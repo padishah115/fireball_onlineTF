@@ -235,12 +235,12 @@ class DigicamImageManager(ImageOperationsManager):
                     else:
                         val = 0
                     
-                    squared_displacement = np.pow(np.subtract(mu, coords),2)
+                    squared_displacement = np.power(np.subtract(mu, coords),2)
                     var += np.multiply(squared_displacement, val)
                     total_counts += val
 
             var = np.multiply(var, 1/total_counts)
-            sigma = np.pow(var, 0.5)
+            sigma = np.power(var, 0.5)
 
 
             return mu, sigma

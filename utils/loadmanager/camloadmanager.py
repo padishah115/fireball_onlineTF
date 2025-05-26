@@ -2,6 +2,7 @@ from utils.stats.stats import img_arrays_stats
 from utils.loadmanager.loadmanager import LoadManager
 from typing import Dict, Tuple, List
 import numpy as np
+import tifffile
 
 class CamLoadManager(LoadManager):
     def load(self)->Tuple[Dict[int, np.ndarray], Dict[int, np.ndarray], Dict[int, np.ndarray]]:
@@ -34,11 +35,11 @@ class CamLoadManager(LoadManager):
                                                 self.data_paths_dict,
                                                 camera_type=self.input["DEVICE_SPECIES"])
         
-            averaged_bkg = self.get_average_bkg(bkg_data_dict=bkg_data_dict, key_path=["DATA"])
+            averaged_bkg = self.get_average_bkg(bkg_data_dict=bkg_data_dict)
 
             corrected_data_dict = {}
             for shot_no in self.exp_shot_nos:
-                corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"], bkg_arr=averaged_bkg)
+                corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"], bkg_arr=averaged_bkg["DATA"])
                 corrected_data_dict[shot_no] = {}
                 corrected_data_dict[shot_no]["DATA"] = corrected_data
                 corrected_data_dict[shot_no]["X"] = exp_data_dict[shot_no]["X"]
@@ -71,10 +72,19 @@ class CamLoadManager(LoadManager):
         return corrected_array
     
 
-    def get_average_bkg(self, bkg_data_dict:Dict, key_path:List[str])->np.ndarray:
-        """Returns the averaged background as a tensor"""
+    def get_average_bkg(self, bkg_data_dict:dict)->np.ndarray:
+        """Returns the averaged background as a tensor.
+        
+        Parameters
+        ----------
+            bkg_data_dict : dict
+                Dictionary containing background data, which has shot numbers as keys and data as values.
+        """
+        
+        # Create list of background data
+        bkg_data = [bkg_data_dict[shot] for shot in bkg_data_dict.keys()]
 
-        bkg_data = [bkg_data_dict[shot][key_path] for shot in bkg_data_dict.keys()]
+        # Get the mean (first value returned by img_arrays_stats() function
         averaged_bkg = img_arrays_stats(bkg_data)[0]
 
         return averaged_bkg
@@ -154,7 +164,7 @@ class CamLoadManager(LoadManager):
             wavelengths (aka pixels_y) : List
         """
 
-        image = np.genfromtxt(path, skip_footer=skipfooter)
+        image = tifffile.imread(path)
 
 
         #EXTRACT THE FIRST COLUMN, WHICH CONTAIN WAVELENGTHS IN NM- this is "pixels_y"

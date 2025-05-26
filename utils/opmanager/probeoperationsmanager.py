@@ -87,6 +87,9 @@ class ProbeOperationsManager(OperationsManager):
             axs2[i,1].set_xlabel("Freq / Hz")
             axs2[i,1].set_title(f"Ch {channel_no} Fourier Transform")
 
+        fig1.suptitle(f'Probe Data from {self.input["DEVICE_NAME"]}, Shot {self.shot_no}')
+        fig1.tight_layout()
+        fig2.tight_layout()
         plt.show()
 
 

@@ -17,8 +17,8 @@ class LDVLoadManager(LoadManager):
         """
 
         # EXTRACT SHOT NUMBERS AND SHOT DATA PATHS IN ITERABLE FORM
-        shot_nos = [shot_no for shot_no in self.data_paths_dict.keys()]
-        shot_paths = [shot_path for shot_path in self.data_paths_dict.values()]
+        shot_nos = [shot_no for shot_no in self.input["EXP_SHOT_NOS"]]
+        shot_paths = [self.data_paths_dict[shot_no] for shot_no in shot_nos]
 
         for i, shot_no in enumerate(shot_nos):
             self.data_dict[shot_no] = self._load_ldv_data(shot_paths[i])
@@ -36,7 +36,6 @@ class LDVLoadManager(LoadManager):
 
             for channel in group.channels():
                 shot_data_dict[channel.name] = channel[:]
-                print("Channel:", channel)
 
             return shot_data_dict
 

@@ -36,11 +36,10 @@ class ProbeLoadManager(LoadManager):
         
         # {Shot no : Experimental (raw) data}
         exp_data_dict = self.PROBE_load_shots(self.exp_shot_nos, self.data_paths_dict)
+        
+        # Background-removal is not done shot-via-shot
         bkg_data_dict = None
         corrected_data_dict = None
-
-
-
 
         return exp_data_dict, bkg_data_dict, corrected_data_dict
     
@@ -66,8 +65,6 @@ class ProbeLoadManager(LoadManager):
         channel3_voltages = df["CH3"]
         channel4_voltages = df["CH4"]
 
-        print(f"Lengths: \n1: {len(channel1_voltages)}, 2: {len(channel2_voltages)}, 3: {len(channel3_voltages)}, 4: {len(channel4_voltages)}")
-
         return channel1_voltages, channel2_voltages, channel3_voltages, channel4_voltages
 
     
@@ -92,8 +89,6 @@ class ProbeLoadManager(LoadManager):
         df = pd.read_csv(data_path)
         N = int(df[df.columns.values[1]][6])
         dt = float(df[df.columns.values[1]][5])
-        print("N", N)
-        print("dt", dt)
 
         # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME, this time skipping the rows
         df = pd.read_csv(data_path, skiprows=skiprows)
