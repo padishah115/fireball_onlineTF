@@ -1,0 +1,39 @@
+import os
+
+class FileManager:
+    """Class which is responsible for handling files for a device at some specified location."""
+    
+    def __init__(self, path, input):
+        """Initialization function for the FileManager class.
+        
+        Parameters
+        ----------
+            path : str
+                Path to the directory containing the data files for the device.
+            input : dict
+                Input configuration dictionary for the run.
+        """
+
+        # Initialise the path and input configuration dictionary
+        self.path = path
+        self.input = input
+
+
+    def get_files(self)->list[str]:
+        """Returns a list of file names in the provided directory, so long as the files contain the appropriate extension.
+        
+        Returns
+        -------
+            files : list[str]
+                List of file names with the appropriate extension in the path specified.
+        """
+
+        # Select the appropriate file extension from above
+        extension = self.input["EXTENSION_DICT"][self.input["DEVICE_NAME"]]
+        #Accumulate list of files with the correct extension in the directory provided
+        files = [f for f in os.listdir(self.path) if f.endswith(extension)\
+                 and not os.path.isdir(os.path.join(self.path, f))]
+
+        return files
+
+        
