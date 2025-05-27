@@ -73,7 +73,7 @@ class ProbeOperationsManager(OperationsManager):
 
             axs2[i, 0].plot(times, channel_voltage)
             if self.std_data is not None:
-                sigma_v = self.std_data["DATA"]["VOLTAGES"][channel_no]
+                sigma_v = self.std_data["DATA"]["VOLTAGES"]["1"]
                 upper_bound = np.add(channel_voltage, sigma_v)
                 lower_bound = np.subtract(channel_voltage, sigma_v)
                 axs2[i, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)

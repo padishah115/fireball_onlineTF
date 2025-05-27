@@ -95,7 +95,7 @@ def probe_arrays_stats(data_dict_list:list[dict])->tuple[dict, dict]:
         stack_list = [np.expand_dims(a=d["DATA"]["VOLTAGES"][channel_no], axis=0) for d in data_dict_list]
         stack = np.concatenate(stack_list, axis=0)
         
-        channel_voltages_mean = np.mean(a=stack, axis=0)
+        channel_voltages_mean = np.multiply(np.mean(a=stack, axis=0), 1 / stack.shape[0])
         channel_voltages_stddev = np.std(a=stack, axis=0)
 
         mean_data["DATA"]["VOLTAGES"][channel_no] = channel_voltages_mean

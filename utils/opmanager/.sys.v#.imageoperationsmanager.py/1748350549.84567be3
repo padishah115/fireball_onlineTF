@@ -197,11 +197,6 @@ class DigicamImageManager(ImageOperationsManager):
             thresh = 0.2
             max_intensity = np.max(self.shot_data["DATA"])
             img = self.shot_data["DATA"]
-
-            # Make sure that we have a 2D image 
-            if img.shape == None or img.shape[0] == 0 or img.shape[1] == 1:
-                raise ValueError(f"Error: image shape is {img.shape}.")
-        
             pixels_x = self.shot_data["X"]
             pixels_y = self.shot_data["Y"]
             mu = [0., 0.]
@@ -225,9 +220,6 @@ class DigicamImageManager(ImageOperationsManager):
                     mu += weighted_coord
                     total_counts+=val
 
-            if total_counts == 0:
-                raise ValueError(f"Error: calculating moment of image with 0 pixel counts.")
-                
             mu = np.multiply(mu, 1/total_counts)
 
             total_counts = 0

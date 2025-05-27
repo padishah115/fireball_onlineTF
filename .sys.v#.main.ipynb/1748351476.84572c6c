@@ -26,7 +26,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 4,
    "id": "cd278f9a-a0a0-4634-b55c-d17773394ecd",
    "metadata": {},
    "outputs": [
@@ -47,7 +47,7 @@
     "    \"DEVICE_SPECIES\": \"PROBE\",\n",
     "    \n",
     "    \"EXP_SHOT_NOS\": [0, 1, 2],\n",
-    "    \"BKG_SHOT_NOS\": [0],\n",
+    "    \"BKG_SHOT_NOS\": [3],\n",
     "    \n",
     "    \"BKG_NAME\": \"DARKFIELD\",\n",
     "    \"BACKGROUND_STATUS\": \"RAW\",\n",
@@ -82,7 +82,8 @@
     "            \"SCOPE 3\": \".csv\",\n",
     "            \"LDV\": \".tdms\",\n",
     "        },\n",
-    "    \n",
+    "\n",
+    "    # Which part of the filename string (SLICE) encodes time data? use this to sort files in a directory with most recent first.\n",
     "    \"TIMESTAMP_SLICE\": {\n",
     "            \"ANDOR SPECTROMETER\": (4, 9),\n",
     "            \"ORCA\": None,\n",
@@ -100,7 +101,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 5,
    "id": "3ac1a0db-e998-43ad-8fa1-ef85e2b0fbfa",
    "metadata": {},
    "outputs": [

@@ -211,6 +211,8 @@ class DigicamImageManager(ImageOperationsManager):
             
             # FIRST MOMENT CALCULATION
             for i in range(img.shape[1]):
+                if i%100 == 0:
+                    print(i)
                 for j in range(img.shape[0]):
                     x = pixels_x[i]
                     y = -1*pixels_y[j]

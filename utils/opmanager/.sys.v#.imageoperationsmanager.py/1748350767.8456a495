@@ -225,9 +225,6 @@ class DigicamImageManager(ImageOperationsManager):
                     mu += weighted_coord
                     total_counts+=val
 
-            if total_counts == 0:
-                raise ValueError(f"Error: calculating moment of image with 0 pixel counts.")
-                
             mu = np.multiply(mu, 1/total_counts)
 
             total_counts = 0
