@@ -17,7 +17,6 @@ class LDVRunManager(RunManager):
         # RETURN A DICTIONARY OF FORM {SHOT NO : DATA}        
         data_dict = loadmanager.load()
         shot_nos = data_dict.keys()
-        print(shot_nos)
 
         LABEL = None
 
@@ -29,5 +28,4 @@ class LDVRunManager(RunManager):
                 shot_data=data_dict[shot_no],
                 input=self.input,
             )
-            print(shot_no)
             opmanager.plot()

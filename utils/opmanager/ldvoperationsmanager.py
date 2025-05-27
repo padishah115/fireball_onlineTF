@@ -9,8 +9,7 @@ class LDVOperationsManager(OperationsManager):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
 
     def plot(self):
-        """Produces plots for LDV data- this includes the position and velocity of the LDV data as a function of time, as well as upstream and central
-        strain gauge readings. We produce these as 2x2 plots."""
+        """Produces plots for LDV data- this includes the position and velocity of the LDV data as a function of time, as well as upstream           and central strain gauge readings. We produce these as 2x2 plots."""
 
         #######################################
         # LOAD DATA FROM SHOT DATA DICTIONARY #
@@ -62,3 +61,8 @@ class LDVOperationsManager(OperationsManager):
         fig.suptitle("LDV and String Gauge Data")
         fig.tight_layout()
         plt.show()
+
+
+    def _get_fft(self):
+        """Fast fourier transform for the LDV position and velocity data."""
+        

@@ -59,6 +59,9 @@ class ProbeLoadManager(LoadManager):
             raise ValueError(f"Warning: oscilloscope files should be .csv type, but path provided ends in {data_path[:-4]}.")
 
         df = pd.read_csv(data_path, skiprows=skiprows)
+
+        # Load the channels' voltage information. First, we want to see how many channels are present.
+
         
         channel1_voltages = df["CH1"]
         channel2_voltages = df["CH2"]
@@ -80,15 +83,24 @@ class ProbeLoadManager(LoadManager):
 
         Returns:
         --------
-            times
-            N
-            dt
+            times : np.ndarray
+                Array of timestamps from the probe data.
+            N : int
+                The number of samples taken by the scope- this will be used for DFT later on.
+            dt : float
+                The time step size between samples.
         """
 
         # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME
         df = pd.read_csv(data_path)
-        N = int(df[df.columns.values[1]][6])
-        dt = float(df[df.columns.values[1]][5])
+        
+        N = int(
+            df[df.columns.values[1]].iloc[6]
+        )
+        
+        dt = float(
+            df[df.columns.values[1]].iloc[5]
+        )
 
         # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME, this time skipping the rows
         df = pd.read_csv(data_path, skiprows=skiprows)

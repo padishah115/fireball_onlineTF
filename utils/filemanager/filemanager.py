@@ -28,12 +28,26 @@ class FileManager:
                 List of file names with the appropriate extension in the path specified.
         """
 
-        # Select the appropriate file extension from above
+        # Select the appropriate file extension
         extension = self.input["EXTENSION_DICT"][self.input["DEVICE_NAME"]]
-        #Accumulate list of files with the correct extension in the directory provided
-        files = [f for f in os.listdir(self.path) if f.endswith(extension)\
-                 and not os.path.isdir(os.path.join(self.path, f))]
 
-        return files
-
+        # Accumulate list of files with the correct extension in the directory provided.
+        timestamp_slice = self.input["TIMESTAMP_SLICE"][self.input["DEVICE_NAME"]] # slice we need to take from the string to get the timestamp
         
+        # Create dictionary of files and their timestamps.
+        files_dict = {f:f[timestamp_slice[0]:timestamp_slice[1]] for f in os.listdir(self.path) if f.endswith(extension)\
+                and not os.path.isdir(os.path.join(self.path, f))}
+
+        # Sort the files in reverse order to their timestamps (i.e. most recent files are earlier in the list)
+        files_dict_sorted = dict(sorted(files_dict.items(), key=lambda item : item[1], reverse=True))
+
+        files = [f for f in files_dict_sorted.keys()]
+
+        # make sure that we are not asking for a larger number of shots than actually exist ...
+        if len(self.input["EXP_SHOT_NOS"]) > len(files):
+            no_of_req_shots = len(self.input["EXP_SHOT_NOS"])
+            no_of_files = len(files)
+            raise ValueError(f"Error: requested {no_of_req_shots} shots, but only {no_of_files} were found.")
+
+        print("Files: ", files)
+        return files

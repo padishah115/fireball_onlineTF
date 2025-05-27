@@ -2,7 +2,7 @@
 import os
 
 # pathmanager imports
-from utils.filemanager.filemanager import *
+from utils.filemanager.filemanager import FileManager
 
 # runmanager imports
 from utils.runmanager.runmanager import RunManager
