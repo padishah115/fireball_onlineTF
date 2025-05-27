@@ -61,6 +61,9 @@ def main(input):
         # Check to make sure that we have a prescription for extracting timestamp data from the filename
         if input["TIMESTAMP_SLICE"] is None:
             raise ValueError(f"Error: device {input['DEVICE_NAME']} does not have any timestamp or cyclestamp naming implemented.")
+        for shot_no in input["EXP_SHOT_NOS"]:
+            if type(shot_no) != str:
+                raise ValueError("When specifying shot numbers by timestamps, must pass timestamps as strings.")
 
         paths_dict = {timestamp:os.path.join(path, file) for timestamp, file in files_dict_sorted.items()\
                       if timestamp in input["EXP_SHOT_NOS"] or timestamp in input["BKG_SHOT_NOS"]
