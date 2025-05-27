@@ -367,10 +367,10 @@ class AndorImageManager(ImageOperationsManager):
         axs[1].plot(intensities, np.arange(0, img.shape[0]))
         axs[1].set_yticks(y_tick_loc)
         axs[1].set_yticklabels(pixels_y_rounded[::step], rotation='vertical')
-        axs[1].set_ylim(y_tick_loc[0], y_tick_loc[-1])
         axs[1].invert_yaxis()
         axs[1].set_xlabel("Intensity")
         axs[1].set_ylabel("Wavelength / nm")
+        axs[1].set_ylim(pixels_y_rounded[0], pixels_y_rounded[-1])
         
         fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         fig.tight_layout()

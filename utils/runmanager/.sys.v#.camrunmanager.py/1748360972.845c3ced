@@ -48,7 +48,7 @@ class CamRunManager(RunManager):
         #SHOW BACKGROUND IMAGE ITSELF
         elif self.background_status == "SHOW":
             if not self.input["BKG_SHOT_NOS"]:
-                raise ValueError("Error: requested background image display, but no background shots were provided.")
+                raise ValueError("Error: requested background image display, but no ")
             
             LABEL = f"{self.input['BKG_NAME']} BACKGROUND"
         
@@ -95,7 +95,7 @@ class CamRunManager(RunManager):
         # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING
         if self.operations["SHOW_AVERAGE_SHOTS"]:
 
-            #Create list of shot dictionaries. These shot_dict's contain ["DATA"], ["X"], ["Y"] lists, etc.
+            #Create list of shot dictionaries.
             data_dict_list =[shot_dict for shot_dict in data_dict.values()]
 
             #Returns two dictionarys of form {"DATA":, "X":, "Y":,}

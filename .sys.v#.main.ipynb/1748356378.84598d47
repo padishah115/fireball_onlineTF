@@ -2,10 +2,18 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 1,
    "id": "346fa04a-95b2-4726-85d6-fa2e1d3d5e83",
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Executed\n"
+     ]
+    }
+   ],
    "source": [
     "#MODULE IMPORTS\n",
     "import sys\n",
@@ -18,10 +26,18 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 2,
    "id": "cd278f9a-a0a0-4634-b55c-d17773394ecd",
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Executed\n"
+     ]
+    }
+   ],
    "source": [
     "# INPUT CONFIGURATION\n",
     "\n",
@@ -45,13 +61,9 @@
     "    #   in the target directory by timestamp, then 0-indexes the shot from most recent to most distant.\n",
     "    # - Can also specify the timestamp specifically. \n",
     "\n",
-    "    # Timestamps that we want to scrape for. You will have to go and dig these out by hand.\n",
-    "    \"EXP_SHOT_TIMESTAMPS\" : [\"1745405989335000\"], #need to be strings\n",
-    "    \"BKG_SHOT_TIMESTAMPS\" : [],\n",
-    "\n",
     "    # Shots indexed from 0 in reverse chronology. This is easy, and the shots are 0-indexed automatically\n",
     "    # in reverse-chronological order of acquisition.\n",
-    "    \"EXP_SHOT_NOS\": [0, 1, 2],\n",
+    "    \"EXP_SHOT_NOS\": [1745405989335000, \"1745406109335000\"], #if timestamps, need to be strings\n",
     "    \"BKG_SHOT_NOS\": [],\n",
     "\n",
     "    # Do we use the timestamps or the relative reverse-chronology method?\n",
@@ -65,7 +77,7 @@
     "    #   image averaging.\n",
     "    # - If more than one background shot was specified, these are averaged before being subtracted from the shot image.\n",
     "    \"BKG_NAME\": \"DARKFIELD\",\n",
-    "    \"BACKGROUND_STATUS\": \"SUBTRACT\",\n",
+    "    \"BACKGROUND_STATUS\": \"RAW\",\n",
     "\n",
     "    #########################\n",
     "    # Operations Specifiers #\n",
@@ -130,10 +142,23 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 3,
    "id": "3ac1a0db-e998-43ad-8fa1-ef85e2b0fbfa",
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "ename": "ValueError",
+     "evalue": "When specifying shot numbers by timestamps, must pass timestamps as strings.",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
+      "\u001b[0;32m/tmp/ipykernel_15140/3185705747.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m runtime(\n\u001b[0m\u001b[1;32m      2\u001b[0m     \u001b[0minput\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0minput\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m )\n",
+      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/runtime.py\u001b[0m in \u001b[0;36mmain\u001b[0;34m(input)\u001b[0m\n\u001b[1;32m     64\u001b[0m         \u001b[0;32mfor\u001b[0m \u001b[0mshot_no\u001b[0m \u001b[0;32min\u001b[0m \u001b[0minput\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"EXP_SHOT_NOS\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     65\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mtype\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mshot_no\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m!=\u001b[0m \u001b[0mstr\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 66\u001b[0;31m                 \u001b[0;32mraise\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"When specifying shot numbers by timestamps, must pass timestamps as strings.\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     67\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     68\u001b[0m         paths_dict = {timestamp:os.path.join(path, file) for timestamp, file in files_dict_sorted.items()\\\n",
+      "\u001b[0;31mValueError\u001b[0m: When specifying shot numbers by timestamps, must pass timestamps as strings."
+     ]
+    }
+   ],
    "source": [
     "runtime(\n",
     "    input=input\n",
