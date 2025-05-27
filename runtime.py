@@ -30,7 +30,6 @@ def main(input):
     # check to make sure it actually exists
     if not os.path.exists(path):
         raise FileNotFoundError(f"Warning: path {path} doesn't exist")
-    
 
     # select appropriate filemanager from dictionary.
     file_manager = FileManager(
@@ -39,14 +38,38 @@ def main(input):
     )
                 
     #Get a list of files for the device
-    files = file_manager.get_files()
-    if not files:
+    files_dict_sorted = file_manager.get_files()
+    if not files_dict_sorted:
             raise FileNotFoundError(f"Error: no files of appropriate type found at specified location.")
 
-    # initialise path dictionary.
-    paths_dict = {
-        i:os.path.join(path, file) for i, file in enumerate(files)
-    }
+
+    ##########################################################################################
+    # INITIALIZE PATH DICTIONARY BASED ON WHETHER USER WANTS TO SCRAPE FROM TIMESTAMP OR NOT #
+    ##########################################################################################
+    
+    # If specifying by relative shot number (reverse chronological order)
+    if input["SCRAPE_FROM_TIMESTAMP"] == False:
+        files = [f for f in files_dict_sorted.values()]
+        # initialise path dictionary.
+        paths_dict = {
+            i:os.path.join(path, file) for i, file in enumerate(files)
+        }
+    
+    # if specifying by timestamp rather than relative shot number.
+    elif input["SCRAPE_FROM_TIMESTAMP"] == True:
+
+        # Check to make sure that we have a prescription for extracting timestamp data from the filename
+        if input["TIMESTAMP_SLICE"] is None:
+            raise ValueError(f"Error: device {input['DEVICE_NAME']} does not have any timestamp or cyclestamp naming implemented.")
+
+        paths_dict = {timestamp:os.path.join(path, file) for timestamp, file in files_dict_sorted.items()\
+                      if timestamp in input["EXP_SHOT_NOS"] or timestamp in input["BKG_SHOT_NOS"]
+        }
+
+    # Check to make sure that the user hasn't specified something other than true or false for SCRAPE_FROM_TIMESTAMP
+    else:
+        raise ValueError(f"Error: value {input['SCRAPE_FROM_TIMESTAMP']} for SCRAPE_FROM_TIMESTAMP is not valid.")        
+    
     if not paths_dict:
         raise FileNotFoundError(f"Warning: paths dictionary is empty.")
 

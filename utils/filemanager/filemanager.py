@@ -19,13 +19,14 @@ class FileManager:
         self.input = input
 
 
-    def get_files(self)->list[str]:
+    def get_files(self)->dict[str, str]:
         """Returns a list of file names in the provided directory, so long as the files contain the appropriate extension.
         
         Returns
         -------
-            files : list[str]
-                List of file names with the appropriate extension in the path specified.
+            files_dict_sorted : dict[str, str]
+                Dictionary of files and timestamps, sorted in reverse-chronological order by timestamp. The KEY is the timestamp,
+                the VALUE is the filename.
         """
 
         # Select the appropriate file extension
@@ -34,23 +35,21 @@ class FileManager:
         # Accumulate list of files with the correct extension in the directory provided.
         timestamp_slice = self.input["TIMESTAMP_SLICE"][self.input["DEVICE_NAME"]] # slice we need to take from the string to get the timestamp
         
-        # Create dictionary of files and their timestamps. If we have no pre-determined means of doing this, fall back on using os.stat().st_mtime
+        # Create dictionary of files and their timestamps. If we have no pre-determined means of doing this, fall back on using os.stat().st_mtime. The dictionaries are of form {Timestamp:Slice}
         if timestamp_slice is not None:
-            files_dict = {f:f[timestamp_slice[0]:timestamp_slice[1]] for f in os.listdir(self.path) if f.endswith(extension)\
+            files_dict = {f[timestamp_slice[0]:timestamp_slice[1]]:f for f in os.listdir(self.path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.path, f))}
         else:
-            files_dict = {f:os.stat(os.path.join(self.path, f)).st_mtime for f in os.listdir(self.path) if f.endswith(extension)\
+            files_dict = {os.stat(os.path.join(self.path, f)).st_mtime:f for f in os.listdir(self.path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.path, f))}
 
         # Sort the files in reverse order to their timestamps (i.e. most recent files are earlier in the list)
-        files_dict_sorted = dict(sorted(files_dict.items(), key=lambda item : item[1], reverse=True))
-
-        files = [f for f in files_dict_sorted.keys()]
+        files_dict_sorted = dict(sorted(files_dict.items(), key=lambda item : item[0], reverse=True))
 
         # make sure that we are not asking for a larger number of shots than actually exist ...
-        if len(self.input["EXP_SHOT_NOS"]) > len(files):
+        if len(self.input["EXP_SHOT_NOS"]) > len(files_dict_sorted.values()):
             no_of_req_shots = len(self.input["EXP_SHOT_NOS"])
             no_of_files = len(files)
             raise ValueError(f"Error: requested {no_of_req_shots} shots, but only {no_of_files} were found.")
 
-        return files
+        return files_dict_sorted

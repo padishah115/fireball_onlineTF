@@ -29,6 +29,27 @@ class CamRunManager(RunManager):
         # DATA_PATHS_DICTIONARY TO DATA_DICTIONARY
         load_manager = CamLoadManager(input=self.input, 
                                         data_paths_dict=self.data_paths_dict)
+
+        # Labels for cameras
+        #SUBTRACT BACKGROUND
+        if self.background_status == "SUBTRACT":
+            if not self.input["BKG_SHOT_NOS"]:
+                raise ValueError("Warning: requested background-subtraction, but did not specify any background shots.")
+            
+            LABEL = f"{self.input['BKG_NAME']}-SUBTRACTED"
+        
+        #PLOT RAW IMAGE ONLY (NO BACKGROUND SUBTRACTION)
+        elif self.background_status == "RAW":
+            LABEL = f"Raw (no background correction)"
+        
+        #SHOW BACKGROUND IMAGE ITSELF
+        elif self.background_status == "SHOW":
+            LABEL = f"{self.input['BKG_NAME']} BACKGROUND"
+        
+        else:
+            raise ValueError(f"Warning: {self.input['BACKGROUND_STATUS']} is invalid input for\
+                            \"BACKGROUND_STATUS\" in input.json file.")
+        
         
         # CALL THE RUNMANAGER.LOAD() METHOD, WHICH RETURNS
         # DICTIONARIES OF FORM {SHOT NO : {"DATA": [], "X": [], "Y": []}} FOR IMAGES
@@ -53,23 +74,6 @@ class CamRunManager(RunManager):
         # Depending on whether we are displaying the background itself or the experimental shot numbers,
         # we need to make sure that the shot numbers are correct.
         shot_nos = self.input["BKG_SHOT_NOS"] if self.input["BACKGROUND_STATUS"] == "SHOW" else self.input["EXP_SHOT_NOS"]
-
-        # Labels for cameras
-        #SUBTRACT BACKGROUND
-        if self.background_status == "SUBTRACT":
-            LABEL = f"{self.input['BKG_NAME']}-SUBTRACTED"
-        
-        #PLOT RAW IMAGE ONLY (NO BACKGROUND SUBTRACTION)
-        elif self.background_status == "RAW":
-            LABEL = f"Raw (no background correction)"
-        
-        #SHOW BACKGROUND IMAGE ITSELF
-        elif self.background_status == "SHOW":
-            LABEL = f"{self.input['BKG_NAME']} BACKGROUND"
-        
-        else:
-            raise ValueError(f"Warning: {self.input['BACKGROUND_STATUS']} is invalid input for\
-                            \"BACKGROUND_STATUS\" in input.json file.")
 
         
         # SINGLE-SHOT PROCESSING- go one-by-one through the shots
