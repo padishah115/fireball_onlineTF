@@ -59,8 +59,6 @@ class LDVOperationsManager(OperationsManager):
         axs[1, 0].set_xlabel("Time / s")
         axs[1, 0].set_ylabel("Velocity / mm s^-1")
         axs[1, 0].grid()
-
-        axs[1,1].axis("off")
         
         # CENTRAL GAUGE POSITION VS TIME
         axs[2, 0].plot(self.times, self.strain_gauge_center)

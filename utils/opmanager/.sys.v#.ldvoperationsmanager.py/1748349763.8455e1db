@@ -19,7 +19,7 @@ class LDVOperationsManager(OperationsManager):
 
         # DISPLACEMENT OF THE LDV IN UM
         self.ldv_position = self.shot_data["POS_LDV"]
-        self.ldv_position_freq, self.ldv_position_ftransform = self._get_fft(self.ldv_position)
+        self.ldv_pos_freq, self.ldv_pos_ftransform = self._get_fft(self.ldv_position)
 
         # LDV VELOCITY IN MM/S
         self.ldv_speed = self.shot_data["SPEED_LDV"]
@@ -47,7 +47,7 @@ class LDVOperationsManager(OperationsManager):
         axs[0, 0].set_ylabel("Displacement / um")
         axs[0, 0].grid()
         # FT OF POSITION VS TIME
-        axs[0, 1].plot(self.ldv_position_freq, self.ldv_position_ftransform)
+        axs[0, 1].plot(self.ldv_pos_freq, self.ldv_position_ftransform)
         axs[0, 1].set_title("LDV Position Fourier Transform")
         axs[0, 1].set_xlabel("Freq / Hz")
         axs[0, 1].set_ylabel("Fourier Amplitude")
@@ -59,8 +59,6 @@ class LDVOperationsManager(OperationsManager):
         axs[1, 0].set_xlabel("Time / s")
         axs[1, 0].set_ylabel("Velocity / mm s^-1")
         axs[1, 0].grid()
-
-        axs[1,1].axis("off")
         
         # CENTRAL GAUGE POSITION VS TIME
         axs[2, 0].plot(self.times, self.strain_gauge_center)
@@ -83,7 +81,7 @@ class LDVOperationsManager(OperationsManager):
         axs[3, 0].grid()
         # FT OF DOWNSTREAM GAUGE
         axs[3, 1].plot(self.strain_gauge_center_freq, self.strain_gauge_center_ftransform)
-        axs[3, 1].set_title("Strain Gauge (Downstream) Fourier Transform")
+        axs[3, 1].set_title("Strain Gauge (Center) Fourier Transform")
         axs[3, 1].set_xlabel("Frequency / Hz")
         axs[3, 1].set_ylabel("Fourier Amplitude")
         axs[3, 1].grid()

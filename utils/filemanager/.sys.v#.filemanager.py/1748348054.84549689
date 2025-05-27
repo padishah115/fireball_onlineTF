@@ -34,8 +34,8 @@ class FileManager:
         # Accumulate list of files with the correct extension in the directory provided.
         timestamp_slice = self.input["TIMESTAMP_SLICE"][self.input["DEVICE_NAME"]] # slice we need to take from the string to get the timestamp
         
-        # Create dictionary of files and their timestamps. If we have no pre-determined means of doing this, fall back on using os.stat().st_mtime
-        if timestamp_slice is not None:
+        # Create dictionary of files and their timestamps. If we 
+        if timestamp_slice not None:
             files_dict = {f:f[timestamp_slice[0]:timestamp_slice[1]] for f in os.listdir(self.path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.path, f))}
         else:
