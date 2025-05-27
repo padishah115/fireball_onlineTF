@@ -49,4 +49,5 @@ class FileManager:
             no_of_files = len(files)
             raise ValueError(f"Error: requested {no_of_req_shots} shots, but only {no_of_files} were found.")
 
+
         return files

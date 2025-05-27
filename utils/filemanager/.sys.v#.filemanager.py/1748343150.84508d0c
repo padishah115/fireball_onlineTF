@@ -35,13 +35,16 @@ class FileManager:
         timestamp_slice = self.input["TIMESTAMP_SLICE"][self.input["DEVICE_NAME"]] # slice we need to take from the string to get the timestamp
         
         # Create dictionary of files and their timestamps.
+        print(timestamp_slice)
         files_dict = {f:f[timestamp_slice[0]:timestamp_slice[1]] for f in os.listdir(self.path) if f.endswith(extension)\
                 and not os.path.isdir(os.path.join(self.path, f))}
 
         # Sort the files in reverse order to their timestamps (i.e. most recent files are earlier in the list)
         files_dict_sorted = dict(sorted(files_dict.items(), key=lambda item : item[1], reverse=True))
+        print(files_dict)
+        print(files_dict_sorted)
 
-        files = [f for f in files_dict_sorted.keys()]
+        files = [f for f in files_dict_sorted.values()]
 
         # make sure that we are not asking for a larger number of shots than actually exist ...
         if len(self.input["EXP_SHOT_NOS"]) > len(files):

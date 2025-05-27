@@ -1,0 +1,172 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "346fa04a-95b2-4726-85d6-fa2e1d3d5e83",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Executed\n"
+     ]
+    }
+   ],
+   "source": [
+    "#MODULE IMPORTS\n",
+    "import sys\n",
+    "sys.path.append(\".\")\n",
+    "\n",
+    "#Import main function that calls the whole run\n",
+    "from runtime import main as runtime\n",
+    "print(\"Executed\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "cd278f9a-a0a0-4634-b55c-d17773394ecd",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Executed\n"
+     ]
+    }
+   ],
+   "source": [
+    "# INPUT CONFIGURATION\n",
+    "\n",
+    "input = {\n",
+    "    \"DEVICE_NAME\": \"SCOPE 1\",\n",
+    "    \"DEVICE_TYPE\": \"PROBE\",\n",
+    "    \"DEVICE_SPECIES\": \"PROBE\",\n",
+    "    \n",
+    "    \"EXP_SHOT_NOS\": [0, 1, 2],\n",
+    "    \"BKG_SHOT_NOS\": [0],\n",
+    "    \n",
+    "    \"BKG_NAME\": \"DARKFIELD\",\n",
+    "    \"BACKGROUND_STATUS\": \"RAW\",\n",
+    "\n",
+    "    \"NORM_PLOT\": False,\n",
+    "    \n",
+    "    \"OPERATIONS\": {\n",
+    "        \"SHOW_SINGLESHOT_PLOTS\": True,\n",
+    "        \"LINEOUT_BIN_NO\": 100,\n",
+    "        \"SHOW_AVERAGE_SHOTS\": True\n",
+    "    },\n",
+    "\n",
+    "    \"PARENT_DIR\":\"/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data\",\n",
+    "\n",
+    "    \"FOLDER_NAMES\": {\n",
+    "            \"ANDOR SPECTROMETER\":\"andor_spectrometer\",\n",
+    "            \"ORCA\":\"orca_streak\",\n",
+    "            \"PLASMA CAMS\":\"plasmacell_cams\",\n",
+    "            \"SCOPE 1\":\"scope_test\",\n",
+    "            \"SCOPE 2\":\"scope_test\",\n",
+    "            \"SCOPE 3\":\"scope_test\",\n",
+    "            \"LDV\":\"ldv_and_strain_gauges/Triggers/2025/05/23\"\n",
+    "\n",
+    "    },\n",
+    "\n",
+    "    \"EXTENSION_DICT\" : {\n",
+    "            \"ANDOR SPECTROMETER\": \".tif\",\n",
+    "            \"ORCA\": \".dac\",\n",
+    "            \"PLASMA CAMS\": \".csv\",\n",
+    "            \"SCOPE 1\": \".csv\",\n",
+    "            \"SCOPE 2\": \".csv\",\n",
+    "            \"SCOPE 3\": \".csv\",\n",
+    "            \"LDV\": \".tdms\",\n",
+    "        },\n",
+    "    \n",
+    "    \"TIMESTAMP_SLICE\": {\n",
+    "            \"ANDOR SPECTROMETER\": (),\n",
+    "            \"ORCA\": (),\n",
+    "            \"PLASMA CAMS\": (),\n",
+    "            \"SCOPE 1\": (-21, -4),\n",
+    "            \"SCOPE 2\": (-21, -4),\n",
+    "            \"SCOPE 3\": (-21, -4),\n",
+    "            \"LDV\": (),\n",
+    "    } \n",
+    "    \n",
+    "}\n",
+    "\n",
+    "print(\"Executed\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "3ac1a0db-e998-43ad-8fa1-ef85e2b0fbfa",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/eos/home-i02/h/hramm/fireball_onlineTF/utils/loadmanager/probeloadmanager.py:61: DtypeWarning: Columns (0,1) have mixed types. Specify dtype option on import or set low_memory=False.\n",
+      "  df = pd.read_csv(data_path)\n"
+     ]
+    },
+    {
+     "ename": "ValueError",
+     "evalue": "could not convert string to float: 'Channel'",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mTypeError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32mparsers.pyx\u001b[0m in \u001b[0;36mpandas._libs.parsers.TextReader._convert_tokens\u001b[0;34m()\u001b[0m\n",
+      "\u001b[0;31mTypeError\u001b[0m: Cannot cast array data from dtype('O') to dtype('float64') according to the rule 'safe'",
+      "\nDuring handling of the above exception, another exception occurred:\n",
+      "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
+      "\u001b[0;32m/tmp/ipykernel_4348/3185705747.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m runtime(\n\u001b[0m\u001b[1;32m      2\u001b[0m     \u001b[0minput\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0minput\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m )\n",
+      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/runtime.py\u001b[0m in \u001b[0;36mmain\u001b[0;34m(input)\u001b[0m\n\u001b[1;32m     72\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     73\u001b[0m     \u001b[0;31m#Execute the run.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 74\u001b[0;31m     \u001b[0mrun_manager\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mrun\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     75\u001b[0m     \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Run terminated successfully without errors. \\n\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/utils/runmanager/proberunmanager.py\u001b[0m in \u001b[0;36mrun\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m     32\u001b[0m         \u001b[0;31m# DICTIONARIES OF FORM {SHOT NO : {\"DATA\": [], \"X\": [], \"Y\": []}} FOR IMAGES\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     33\u001b[0m         \u001b[0;31m# AND OF FORM {SHOT NO : { \"DATA\": { \"VOLTAGES\":[], \"TIMES\":[] } } } FOR PROBES\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 34\u001b[0;31m         \u001b[0mraw_data_dict\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mbkg_data_dict\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mcorrected_data_dict\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mload_manager\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mload\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     35\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     36\u001b[0m         \u001b[0;31m##############################\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/utils/loadmanager/probeloadmanager.py\u001b[0m in \u001b[0;36mload\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m     36\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     37\u001b[0m         \u001b[0;31m# {Shot no : Experimental (raw) data}\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 38\u001b[0;31m         \u001b[0mexp_data_dict\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mPROBE_load_shots\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mexp_shot_nos\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata_paths_dict\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     39\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     40\u001b[0m         \u001b[0;31m# Background-removal is not done shot-via-shot\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/utils/loadmanager/probeloadmanager.py\u001b[0m in \u001b[0;36mPROBE_load_shots\u001b[0;34m(self, shot_nos, data_paths_dict)\u001b[0m\n\u001b[1;32m    185\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    186\u001b[0m             \u001b[0;31m#TIME DATA\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 187\u001b[0;31m             \u001b[0mtimes\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mN\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdt\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_load_scope_times\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdata_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    188\u001b[0m             \u001b[0mscope_data_dict\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mshot_no\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"DATA\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"TIMES\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"TIMES\"\u001b[0m\u001b[0;34m]\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mtimes\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    189\u001b[0m             \u001b[0mscope_data_dict\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mshot_no\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"DATA\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"TIMES\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"N\"\u001b[0m\u001b[0;34m]\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mN\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/utils/loadmanager/probeloadmanager.py\u001b[0m in \u001b[0;36m_load_scope_times\u001b[0;34m(self, data_path, skiprows)\u001b[0m\n\u001b[1;32m     98\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     99\u001b[0m         \u001b[0;31m# READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 100\u001b[0;31m         \u001b[0mdf\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mpd\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mread_csv\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdata_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdtype\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mfloat\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    101\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    102\u001b[0m         N = int(\n",
+      "\u001b[0;32m~/.local/lib/python3.11/site-packages/pandas/io/parsers/readers.py\u001b[0m in \u001b[0;36mread_csv\u001b[0;34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, date_format, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, encoding_errors, dialect, on_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options, dtype_backend)\u001b[0m\n\u001b[1;32m   1024\u001b[0m     \u001b[0mkwds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mupdate\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mkwds_defaults\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1025\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1026\u001b[0;31m     \u001b[0;32mreturn\u001b[0m \u001b[0m_read\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfilepath_or_buffer\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mkwds\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   1027\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1028\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/.local/lib/python3.11/site-packages/pandas/io/parsers/readers.py\u001b[0m in \u001b[0;36m_read\u001b[0;34m(filepath_or_buffer, kwds)\u001b[0m\n\u001b[1;32m    624\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    625\u001b[0m     \u001b[0;32mwith\u001b[0m \u001b[0mparser\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 626\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mparser\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mread\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mnrows\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    627\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    628\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/.local/lib/python3.11/site-packages/pandas/io/parsers/readers.py\u001b[0m in \u001b[0;36mread\u001b[0;34m(self, nrows)\u001b[0m\n\u001b[1;32m   1921\u001b[0m                     \u001b[0mcolumns\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1922\u001b[0m                     \u001b[0mcol_dict\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1923\u001b[0;31m                 \u001b[0;34m)\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_engine\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mread\u001b[0m\u001b[0;34m(\u001b[0m  \u001b[0;31m# type: ignore[attr-defined]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   1924\u001b[0m                     \u001b[0mnrows\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1925\u001b[0m                 )\n",
+      "\u001b[0;32m~/.local/lib/python3.11/site-packages/pandas/io/parsers/c_parser_wrapper.py\u001b[0m in \u001b[0;36mread\u001b[0;34m(self, nrows)\u001b[0m\n\u001b[1;32m    232\u001b[0m         \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    233\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mlow_memory\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 234\u001b[0;31m                 \u001b[0mchunks\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_reader\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mread_low_memory\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mnrows\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    235\u001b[0m                 \u001b[0;31m# destructive to chunks\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    236\u001b[0m                 \u001b[0mdata\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0m_concatenate_chunks\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mchunks\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32mparsers.pyx\u001b[0m in \u001b[0;36mpandas._libs.parsers.TextReader.read_low_memory\u001b[0;34m()\u001b[0m\n",
+      "\u001b[0;32mparsers.pyx\u001b[0m in \u001b[0;36mpandas._libs.parsers.TextReader._read_rows\u001b[0;34m()\u001b[0m\n",
+      "\u001b[0;32mparsers.pyx\u001b[0m in \u001b[0;36mpandas._libs.parsers.TextReader._convert_column_data\u001b[0;34m()\u001b[0m\n",
+      "\u001b[0;32mparsers.pyx\u001b[0m in \u001b[0;36mpandas._libs.parsers.TextReader._convert_tokens\u001b[0;34m()\u001b[0m\n",
+      "\u001b[0;31mValueError\u001b[0m: could not convert string to float: 'Channel'"
+     ]
+    }
+   ],
+   "source": [
+    "runtime(\n",
+    "    input=input\n",
+    ")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

@@ -1,0 +1,181 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "31b500e0-3eba-4dd6-979e-e1164c7a2f3a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import os"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "aea8d379-ce67-4b82-ad5d-b76ee9df1fcb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "parent_dir = \"/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data\"\n",
+    "folder_name = \"scope_test\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "da16a216-aa92-4675-bf2f-d2d56984e3b4",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data/scope_test'"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "path = os.path.join(parent_dir, folder_name)\n",
+    "path"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "b3948d9b-91b5-49fe-b982-06962d214c35",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'FastScope_TestSave_ALL_20250520173102723.csv': os.stat_result(st_mode=33188, st_ino=9223372037779592797, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=784642, st_atime=1747755062, st_mtime=1747755063, st_ctime=1747755063),\n",
+       " 'FastScope_TestSave_ALL_20250520173522578.csv': os.stat_result(st_mode=33188, st_ino=9223372037779593709, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=787773, st_atime=1747755322, st_mtime=1747755323, st_ctime=1747755323),\n",
+       " 'FastScope_TestSave_ALL_20250520173527657.csv': os.stat_result(st_mode=33188, st_ino=9223372037779593725, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=786412, st_atime=1747755327, st_mtime=1747755328, st_ctime=1747755328),\n",
+       " 'fireball_commisioning__ALL_20250523161340535.csv': os.stat_result(st_mode=33188, st_ino=9223372037780586598, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=777356, st_atime=1748009620, st_mtime=1748009621, st_ctime=1748009621),\n",
+       " 'fireball_commisioning__ALL_20250523161534420.csv': os.stat_result(st_mode=33188, st_ino=9223372037780586763, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=776853, st_atime=1748009734, st_mtime=1748009735, st_ctime=1748009735),\n",
+       " 'fireball_commisioning__ALL_20250523161557216.csv': os.stat_result(st_mode=33188, st_ino=9223372037780586803, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=777878, st_atime=1748009757, st_mtime=1748009758, st_ctime=1748009758),\n",
+       " 'fireball_commisioning__ALL_20250523161619971.csv': os.stat_result(st_mode=33188, st_ino=9223372037780586840, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=777488, st_atime=1748009779, st_mtime=1748009781, st_ctime=1748009781),\n",
+       " 'fireball_commisioning__ALL_20250523161642766.csv': os.stat_result(st_mode=33188, st_ino=9223372037780586862, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=777892, st_atime=1748009802, st_mtime=1748009803, st_ctime=1748009803),\n",
+       " 'fireball_commisioning__ALL_20250523161813981.csv': os.stat_result(st_mode=33188, st_ino=9223372037780586946, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=777143, st_atime=1748009893, st_mtime=1748009895, st_ctime=1748009895),\n",
+       " 'fireball_commisioning__ALL_20250523162658385.csv': os.stat_result(st_mode=33188, st_ino=9223372037780587799, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=780782, st_atime=1748010418, st_mtime=1748010419, st_ctime=1748010419),\n",
+       " 'fireball_commisioning__ALL_20250523162721178.csv': os.stat_result(st_mode=33188, st_ino=9223372037780587823, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=781157, st_atime=1748010441, st_mtime=1748010442, st_ctime=1748010442),\n",
+       " 'fireball_commisioning__ALL_20250523162743972.csv': os.stat_result(st_mode=33188, st_ino=9223372037780587849, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=779801, st_atime=1748010463, st_mtime=1748010465, st_ctime=1748010465),\n",
+       " 'fireball_commisioning__ALL_20250523162806778.csv': os.stat_result(st_mode=33188, st_ino=9223372037780587873, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=779957, st_atime=1748010486, st_mtime=1748010487, st_ctime=1748010487),\n",
+       " 'fireball_commisioning__ALL_20250523163023581.csv': os.stat_result(st_mode=33188, st_ino=9223372037780587997, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=779856, st_atime=1748010623, st_mtime=1748010624, st_ctime=1748010624),\n",
+       " 'fireball_commisioning__ALL_20250523163109551.csv': os.stat_result(st_mode=33188, st_ino=9223372037780588146, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=780389, st_atime=1748010669, st_mtime=1748010670, st_ctime=1748010670),\n",
+       " 'fireball_commisioning__ALL_20250523163154787.csv': os.stat_result(st_mode=33188, st_ino=9223372037780588264, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=779336, st_atime=1748010714, st_mtime=1748010715, st_ctime=1748010715),\n",
+       " 'fireball_commisioning__ALL_20250523163217568.csv': os.stat_result(st_mode=33188, st_ino=9223372037780588302, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=779683, st_atime=1748010737, st_mtime=1748010738, st_ctime=1748010738),\n",
+       " 'fireball_commisioning__ALL_20250523163240372.csv': os.stat_result(st_mode=33188, st_ino=9223372037780588328, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=780049, st_atime=1748010760, st_mtime=1748010761, st_ctime=1748010761),\n",
+       " 'fireball_commisioning__ALL_20250523163303190.csv': os.stat_result(st_mode=33188, st_ino=9223372037780588356, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=780188, st_atime=1748010783, st_mtime=1748010784, st_ctime=1748010784),\n",
+       " 'fireball_commisioning__ALL_20250523181235696.csv': os.stat_result(st_mode=33188, st_ino=9223372037780608663, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=777722, st_atime=1748016755, st_mtime=1748016756, st_ctime=1748016756),\n",
+       " 'fireball_commisioning__ALL_20250523181343975.csv': os.stat_result(st_mode=33188, st_ino=9223372037780608831, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=774716, st_atime=1748016823, st_mtime=1748016825, st_ctime=1748016825),\n",
+       " 'fireball_commisioning__ALL_20250523181452390.csv': os.stat_result(st_mode=33188, st_ino=9223372037780608892, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=774697, st_atime=1748016892, st_mtime=1748016893, st_ctime=1748016893),\n",
+       " 'fireball_commisioning__ALL_20250523181537988.csv': os.stat_result(st_mode=33188, st_ino=9223372037780608936, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=7710538, st_atime=1748016938, st_mtime=1748016939, st_ctime=1748016939),\n",
+       " 'fireball_commisioning__ALL_20250523181600834.csv': os.stat_result(st_mode=33188, st_ino=9223372037780608974, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=95813438, st_atime=1748016960, st_mtime=1748016971, st_ctime=1748016971),\n",
+       " 'fireball_commisioning__ALL_20250523181646429.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609030, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=95880114, st_atime=1748017006, st_mtime=1748017017, st_ctime=1748017017),\n",
+       " 'fireball_commisioning__ALL_20250523181709265.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609044, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=95895687, st_atime=1748017029, st_mtime=1748017040, st_ctime=1748017040),\n",
+       " 'fireball_commisioning__ALL_20250523181732011.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609064, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=776188, st_atime=1748017052, st_mtime=1748017053, st_ctime=1748017053),\n",
+       " 'fireball_commisioning__ALL_20250523181754777.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609093, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=776111, st_atime=1748017074, st_mtime=1748017075, st_ctime=1748017075),\n",
+       " 'fireball_commisioning__ALL_20250523181817579.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609124, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=774808, st_atime=1748017097, st_mtime=1748017098, st_ctime=1748017098),\n",
+       " 'fireball_commisioning__ALL_20250523181840369.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609159, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=775389, st_atime=1748017120, st_mtime=1748017121, st_ctime=1748017121),\n",
+       " 'fireball_commisioning__ALL_20250523181903223.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609184, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=774729, st_atime=1748017143, st_mtime=1748017144, st_ctime=1748017144),\n",
+       " 'fireball_commisioning__ALL_20250523181925975.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609205, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=775282, st_atime=1748017165, st_mtime=1748017167, st_ctime=1748017167),\n",
+       " 'fireball_commisioning__ALL_20250523181948773.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609259, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=775417, st_atime=1748017188, st_mtime=1748017189, st_ctime=1748017189),\n",
+       " 'fireball_commisioning__ALL_20250523182011582.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609281, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=774786, st_atime=1748017211, st_mtime=1748017212, st_ctime=1748017212),\n",
+       " 'fireball_commisioning__ALL_20250523182034522.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609301, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=773709, st_atime=1748017234, st_mtime=1748017235, st_ctime=1748017235),\n",
+       " 'fireball_commisioning__ALL_20250523182057183.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609330, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388535, st_atime=1748017257, st_mtime=1748017258, st_ctime=1748017258),\n",
+       " 'fireball_commisioning__ALL_20250523182119971.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609363, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388230, st_atime=1748017279, st_mtime=1748017281, st_ctime=1748017281),\n",
+       " 'fireball_commisioning__ALL_20250523182142800.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609394, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388662, st_atime=1748017302, st_mtime=1748017303, st_ctime=1748017303),\n",
+       " 'fireball_commisioning__ALL_20250523182205579.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609415, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388474, st_atime=1748017325, st_mtime=1748017326, st_ctime=1748017326),\n",
+       " 'fireball_commisioning__ALL_20250523182228367.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609438, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388694, st_atime=1748017348, st_mtime=1748017349, st_ctime=1748017349),\n",
+       " 'fireball_commisioning__ALL_20250523182251181.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609461, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388392, st_atime=1748017371, st_mtime=1748017372, st_ctime=1748017372),\n",
+       " 'fireball_commisioning__ALL_20250523182313972.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609527, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388558, st_atime=1748017393, st_mtime=1748017395, st_ctime=1748017395),\n",
+       " 'fireball_commisioning__ALL_20250523182336783.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609567, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=387000, st_atime=1748017416, st_mtime=1748017417, st_ctime=1748017417),\n",
+       " 'fireball_commisioning__ALL_20250523182359584.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609599, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388423, st_atime=1748017439, st_mtime=1748017440, st_ctime=1748017440),\n",
+       " 'fireball_commisioning__ALL_20250523182810421.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609833, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388218, st_atime=1748017690, st_mtime=1748017691, st_ctime=1748017691),\n",
+       " 'fireball_commisioning__ALL_20250523182833175.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609853, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388163, st_atime=1748017713, st_mtime=1748017714, st_ctime=1748017714),\n",
+       " 'fireball_commisioning__ALL_20250523182855979.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609894, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388322, st_atime=1748017736, st_mtime=1748017737, st_ctime=1748017737),\n",
+       " 'fireball_commisioning__ALL_20250523182918789.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609930, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388019, st_atime=1748017758, st_mtime=1748017759, st_ctime=1748017759),\n",
+       " 'fireball_commisioning__ALL_20250523182941572.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609952, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388319, st_atime=1748017781, st_mtime=1748017782, st_ctime=1748017782),\n",
+       " 'fireball_commisioning__ALL_20250523183004382.csv': os.stat_result(st_mode=33188, st_ino=9223372037780609986, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388362, st_atime=1748017804, st_mtime=1748017805, st_ctime=1748017805),\n",
+       " 'fireball_commisioning__ALL_20250523185857275.csv': os.stat_result(st_mode=33188, st_ino=9223372037780611681, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=385918, st_atime=1748019537, st_mtime=1748019538, st_ctime=1748019538),\n",
+       " 'fireball_commisioning__ALL_20250523185919991.csv': os.stat_result(st_mode=33188, st_ino=9223372037780611701, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=389907, st_atime=1748019560, st_mtime=1748019561, st_ctime=1748019561),\n",
+       " 'fireball_commisioning__ALL_20250523200358514.csv': os.stat_result(st_mode=33188, st_ino=9223372037780618637, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390045, st_atime=1748023438, st_mtime=1748023439, st_ctime=1748023439),\n",
+       " 'fireball_commisioning__ALL_20250523200421173.csv': os.stat_result(st_mode=33188, st_ino=9223372037780618722, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=389783, st_atime=1748023461, st_mtime=1748023462, st_ctime=1748023462),\n",
+       " 'fireball_commisioning__ALL_20250523200443972.csv': os.stat_result(st_mode=33188, st_ino=9223372037780619083, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=389822, st_atime=1748023483, st_mtime=1748023485, st_ctime=1748023485),\n",
+       " 'fireball_commisioning__ALL_20250523200506770.csv': os.stat_result(st_mode=33188, st_ino=9223372037780619140, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=389886, st_atime=1748023506, st_mtime=1748023507, st_ctime=1748023507),\n",
+       " 'fireball_commisioning__ALL_20250523200529569.csv': os.stat_result(st_mode=33188, st_ino=9223372037780619284, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390671, st_atime=1748023529, st_mtime=1748023530, st_ctime=1748023530),\n",
+       " 'fireball_commisioning__ALL_20250523200552370.csv': os.stat_result(st_mode=33188, st_ino=9223372037780619400, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390059, st_atime=1748023552, st_mtime=1748023553, st_ctime=1748023553),\n",
+       " 'fireball_commisioning__ALL_20250523200615179.csv': os.stat_result(st_mode=33188, st_ino=9223372037780619468, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390773, st_atime=1748023575, st_mtime=1748023576, st_ctime=1748023576),\n",
+       " 'fireball_commisioning__ALL_20250523200637969.csv': os.stat_result(st_mode=33188, st_ino=9223372037780619662, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390800, st_atime=1748023597, st_mtime=1748023599, st_ctime=1748023599),\n",
+       " 'fireball_commisioning__ALL_20250523200700777.csv': os.stat_result(st_mode=33188, st_ino=9223372037780619840, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390452, st_atime=1748023620, st_mtime=1748023621, st_ctime=1748023621),\n",
+       " 'fireball_commisioning__ALL_20250523200723580.csv': os.stat_result(st_mode=33188, st_ino=9223372037780619918, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=391108, st_atime=1748023643, st_mtime=1748023644, st_ctime=1748023644),\n",
+       " 'fireball_commisioning__ALL_20250523200746371.csv': os.stat_result(st_mode=33188, st_ino=9223372037780620078, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390172, st_atime=1748023666, st_mtime=1748023667, st_ctime=1748023667),\n",
+       " 'fireball_commisioning__ALL_20250523200809175.csv': os.stat_result(st_mode=33188, st_ino=9223372037780620417, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390239, st_atime=1748023689, st_mtime=1748023690, st_ctime=1748023690),\n",
+       " 'fireball_commisioning__ALL_20250523200831970.csv': os.stat_result(st_mode=33188, st_ino=9223372037780620997, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390368, st_atime=1748023711, st_mtime=1748023713, st_ctime=1748023713),\n",
+       " 'fireball_commisioning__ALL_20250523200854769.csv': os.stat_result(st_mode=33188, st_ino=9223372037780621407, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390216, st_atime=1748023734, st_mtime=1748023735, st_ctime=1748023735),\n",
+       " 'fireball_commisioning__ALL_20250523200917576.csv': os.stat_result(st_mode=33188, st_ino=9223372037780621602, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390531, st_atime=1748023757, st_mtime=1748023758, st_ctime=1748023758),\n",
+       " 'fireball_commisioning__ALL_20250523200940367.csv': os.stat_result(st_mode=33188, st_ino=9223372037780621795, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390046, st_atime=1748023780, st_mtime=1748023781, st_ctime=1748023781),\n",
+       " 'fireball_commisioning__ALL_20250523201003176.csv': os.stat_result(st_mode=33188, st_ino=9223372037780621969, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390713, st_atime=1748023803, st_mtime=1748023804, st_ctime=1748023804),\n",
+       " 'fireball_commisioning__ALL_20250523201025967.csv': os.stat_result(st_mode=33188, st_ino=9223372037780622144, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390363, st_atime=1748023825, st_mtime=1748023827, st_ctime=1748023827),\n",
+       " 'fireball_commisioning__ALL_20250523201048771.csv': os.stat_result(st_mode=33188, st_ino=9223372037780622428, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=391140, st_atime=1748023848, st_mtime=1748023849, st_ctime=1748023849),\n",
+       " 'fireball_commisioning__ALL_20250523201111598.csv': os.stat_result(st_mode=33188, st_ino=9223372037780622724, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390671, st_atime=1748023871, st_mtime=1748023872, st_ctime=1748023872),\n",
+       " 'fireball_commisioning__ALL_20250523201134368.csv': os.stat_result(st_mode=33188, st_ino=9223372037780623040, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390749, st_atime=1748023894, st_mtime=1748023895, st_ctime=1748023895),\n",
+       " 'fireball_commisioning__ALL_20250523201157204.csv': os.stat_result(st_mode=33188, st_ino=9223372037780623294, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390501, st_atime=1748023917, st_mtime=1748023918, st_ctime=1748023918),\n",
+       " 'fireball_commisioning__ALL_20250523201219969.csv': os.stat_result(st_mode=33188, st_ino=9223372037780623607, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390645, st_atime=1748023940, st_mtime=1748023941, st_ctime=1748023941),\n",
+       " 'fireball_commisioning__ALL_20250523201242769.csv': os.stat_result(st_mode=33188, st_ino=9223372037780623855, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390928, st_atime=1748023962, st_mtime=1748023963, st_ctime=1748023963),\n",
+       " 'fireball_commisioning__ALL_20250523201305580.csv': os.stat_result(st_mode=33188, st_ino=9223372037780624158, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390842, st_atime=1748023985, st_mtime=1748023986, st_ctime=1748023986),\n",
+       " 'fireball_commisioning__ALL_20250523201328366.csv': os.stat_result(st_mode=33188, st_ino=9223372037780624222, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=389975, st_atime=1748024008, st_mtime=1748024009, st_ctime=1748024009),\n",
+       " 'fireball_commisioning__ALL_20250523201351172.csv': os.stat_result(st_mode=33188, st_ino=9223372037780624301, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390099, st_atime=1748024031, st_mtime=1748024032, st_ctime=1748024032),\n",
+       " 'fireball_commisioning__ALL_20250523201413976.csv': os.stat_result(st_mode=33188, st_ino=9223372037780624451, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390535, st_atime=1748024053, st_mtime=1748024055, st_ctime=1748024055),\n",
+       " 'fireball_commisioning__ALL_20250523201459580.csv': os.stat_result(st_mode=33188, st_ino=9223372037780624715, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=389982, st_atime=1748024099, st_mtime=1748024100, st_ctime=1748024100),\n",
+       " 'fireball_commisioning__ALL_20250523201522380.csv': os.stat_result(st_mode=33188, st_ino=9223372037780624776, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390501, st_atime=1748024122, st_mtime=1748024123, st_ctime=1748024123),\n",
+       " 'fireball_commisioning__ALL_20250523201545170.csv': os.stat_result(st_mode=33188, st_ino=9223372037780624879, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=390087, st_atime=1748024145, st_mtime=1748024146, st_ctime=1748024146),\n",
+       " 'fireball_commisioning__ALL_20250523201630776.csv': os.stat_result(st_mode=33188, st_ino=9223372037780625073, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=389925, st_atime=1748024190, st_mtime=1748024191, st_ctime=1748024191),\n",
+       " 'fireball_commisioning__ALL_20250523202212786.csv': os.stat_result(st_mode=33188, st_ino=9223372037780626399, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388328, st_atime=1748024532, st_mtime=1748024533, st_ctime=1748024533),\n",
+       " 'fireball_commisioning__ALL_20250523202235575.csv': os.stat_result(st_mode=33188, st_ino=9223372037780626440, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388785, st_atime=1748024555, st_mtime=1748024556, st_ctime=1748024556),\n",
+       " 'fireball_commisioning__ALL_20250523202258376.csv': os.stat_result(st_mode=33188, st_ino=9223372037780626529, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388568, st_atime=1748024578, st_mtime=1748024579, st_ctime=1748024579),\n",
+       " 'fireball_commisioning__ALL_20250523202321205.csv': os.stat_result(st_mode=33188, st_ino=9223372037780626649, st_dev=1048681, st_nlink=1, st_uid=106810, st_gid=2766, st_size=388821, st_atime=1748024601, st_mtime=1748024602, st_ctime=1748024602)}"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "files = {\n",
+    "    f:os.stat(os.path.join(path, f)).e for f in os.listdir(path) if f.endswith(\".csv\") and \n",
+    "    os.path.isfile(os.path.join(path, f))\n",
+    "}\n",
+    "\n",
+    "files"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

@@ -58,7 +58,7 @@ class ProbeLoadManager(LoadManager):
         if not data_path.endswith('.csv'):
             raise ValueError(f"Warning: oscilloscope files should be .csv type, but path provided ends in {data_path[:-4]}.")
 
-        df = pd.read_csv(data_path, skiprows=skiprows)
+        df = pd.read_csv(data_path, skiprows=skiprows, dtype=float)
         column_names = df.columns.values
 
         # Load the channels' voltage information. First, we want to see how many channels are present.
@@ -97,7 +97,7 @@ class ProbeLoadManager(LoadManager):
         """
 
         # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME
-        df = pd.read_csv(data_path)
+        df = pd.read_csv(data_path, skiprows=skiprows, dtype=float)
         
         N = int(
             df[df.columns.values[1]].iloc[6]

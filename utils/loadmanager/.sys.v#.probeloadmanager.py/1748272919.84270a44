@@ -59,19 +59,11 @@ class ProbeLoadManager(LoadManager):
             raise ValueError(f"Warning: oscilloscope files should be .csv type, but path provided ends in {data_path[:-4]}.")
 
         df = pd.read_csv(data_path, skiprows=skiprows)
-        column_names = df.columns.values
-
-        # Load the channels' voltage information. First, we want to see how many channels are present.
-        voltage_channels = column_names[1:] # scrape out the voltage channel names, 
-        # taking all column headers apart from the first, which we assume to be time data.
-
-        # initialise empty voltages array for cases where the 'scope's data from certain channels is empty or missing.
-        empty_voltages = np.zeros_like(df[column_names[0]])
-
-        channel1_voltages = df["CH1"] if "CH1" in voltage_channels else empty_voltages 
-        channel2_voltages = df["CH2"] if "CH2" in voltage_channels else empty_voltages 
-        channel3_voltages = df["CH3"] if "CH3" in voltage_channels else empty_voltages 
-        channel4_voltages = df["CH4"] if "CH4" in voltage_channels else empty_voltages 
+        
+        channel1_voltages = df["CH1"]
+        channel2_voltages = df["CH2"]
+        channel3_voltages = df["CH3"]
+        channel4_voltages = df["CH4"]
 
         return channel1_voltages, channel2_voltages, channel3_voltages, channel4_voltages
 
@@ -88,24 +80,15 @@ class ProbeLoadManager(LoadManager):
 
         Returns:
         --------
-            times : np.ndarray
-                Array of timestamps from the probe data.
-            N : int
-                The number of samples taken by the scope- this will be used for DFT later on.
-            dt : float
-                The time step size between samples.
+            times
+            N
+            dt
         """
 
         # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME
         df = pd.read_csv(data_path)
-        
-        N = int(
-            df[df.columns.values[1]].iloc[6]
-        )
-        
-        dt = float(
-            df[df.columns.values[1]].iloc[5]
-        )
+        N = int(df[df.columns.values[1]][6])
+        dt = float(df[df.columns.values[1]][5])
 
         # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME, this time skipping the rows
         df = pd.read_csv(data_path, skiprows=skiprows)
