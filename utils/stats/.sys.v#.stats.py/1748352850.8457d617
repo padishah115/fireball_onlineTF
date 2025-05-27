@@ -29,7 +29,7 @@ def img_arrays_stats(data_dict_list:list[dict])->tuple[dict, dict]:
     stack = np.concatenate(stack_list, axis=0) #join along 0 axis
 
     #Array of mean values, produced by calculating mean across axis 0
-    mean_arr = np.mean(stack, axis=0)
+    mean_arr = np.multiply(np.sum(stack, axis=0), 1/stack.shape[0])
     #Array of std values, produced by calculating std across axis 0
     std_arr = np.std(stack, axis=0)
 
