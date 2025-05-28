@@ -2,18 +2,10 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": null,
    "id": "346fa04a-95b2-4726-85d6-fa2e1d3d5e83",
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Executed\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "#MODULE IMPORTS\n",
     "import sys\n",
@@ -26,18 +18,10 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": null,
    "id": "cd278f9a-a0a0-4634-b55c-d17773394ecd",
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Executed\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "# INPUT CONFIGURATION\n",
     "\n",
@@ -50,9 +34,9 @@
     "    # - DEVICE_TYPE type tells us how many channels of data we have/what type of data we're dealing with.\n",
     "    # - DEVICE_SPECIES is a subset of type, and helps us decide how to load different types of data files\n",
     "    #   even if the underlying data type (i.e. \"image\") is the same.\n",
-    "    \"DEVICE_NAME\": \"PLASMA CAMS\",\n",
+    "    \"DEVICE_NAME\": \"ANDOR SPECTROMETER\",\n",
     "    \"DEVICE_TYPE\": \"CAMERA\",\n",
-    "    \"DEVICE_SPECIES\": \"DIGICAM\",\n",
+    "    \"DEVICE_SPECIES\": \"ANDOR\",\n",
     "\n",
     "    ##################\n",
     "    # Shot Selection #\n",
@@ -63,11 +47,11 @@
     "\n",
     "    # Shots indexed from 0 in reverse chronology. This is easy, and the shots are 0-indexed automatically\n",
     "    # in reverse-chronological order of acquisition.\n",
-    "    \"EXP_SHOT_NOS\": [1745405989335000, \"1745406109335000\"], #if timestamps, need to be strings\n",
+    "    \"EXP_SHOT_NOS\": [0, 1, 2], #if timestamps, need to be strings\n",
     "    \"BKG_SHOT_NOS\": [],\n",
     "\n",
     "    # Do we use the timestamps or the relative reverse-chronology method?\n",
-    "    \"SCRAPE_FROM_TIMESTAMP\": True,\n",
+    "    \"SCRAPE_FROM_TIMESTAMP\": False,\n",
     "\n",
     "    ##########################\n",
     "    # Background Subtraction #\n",
@@ -84,6 +68,10 @@
     "    #########################\n",
     "    # - Brief details of what analysis we want to see live, but this is largely fixed for the underlying devices.\n",
     "    \"NORM_PLOT\": False,\n",
+    "\n",
+    "    # Want the option to choose whether or not we actually perform the analysis, or whether we just want to show the images\n",
+    "    # Some of the calculations take some time to perform, and we can benefit from switching this off online\n",
+    "    \"PERFORM_ANALYSIS\": True,\n",
     "    \n",
     "    \"OPERATIONS\": {\n",
     "        \"SHOW_SINGLESHOT_PLOTS\": True,\n",
@@ -101,7 +89,7 @@
     "    \"FOLDER_NAMES\": {\n",
     "            \"ANDOR SPECTROMETER\":\"andor_spectrometer\",\n",
     "            \"ORCA\":\"orca_streak\",\n",
-    "            \"PLASMA CAMS\":\"plasmacell_cams\",\n",
+    "            \"PLASMA CAMS\":\"plasmacell_cams\", #\"chromox_cameras/HRM{3, 4, 5, 6}\"\n",
     "            \"SCOPE 1\":\"scope_test\",\n",
     "            \"SCOPE 2\":\"scope_test\",\n",
     "            \"SCOPE 3\":\"scope_test\",\n",
@@ -118,7 +106,7 @@
     "    \"EXTENSION_DICT\" : {\n",
     "            \"ANDOR SPECTROMETER\": \".tif\",\n",
     "            \"ORCA\": \".dac\",\n",
-    "            \"PLASMA CAMS\": \".csv\",\n",
+    "            \"PLASMA CAMS\": \".csv\", \n",
     "            \"SCOPE 1\": \".csv\",\n",
     "            \"SCOPE 2\": \".csv\",\n",
     "            \"SCOPE 3\": \".csv\",\n",
@@ -132,7 +120,7 @@
     "            \"SCOPE 1\": (-21, -4),\n",
     "            \"SCOPE 2\": (-21, -4),\n",
     "            \"SCOPE 3\": (-21, -4),\n",
-    "            \"LDV\": None,\n",
+    "            \"LDV\": (-16, -5),\n",
     "    } \n",
     "    \n",
     "}\n",
@@ -142,23 +130,10 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": null,
    "id": "3ac1a0db-e998-43ad-8fa1-ef85e2b0fbfa",
    "metadata": {},
-   "outputs": [
-    {
-     "ename": "ValueError",
-     "evalue": "When specifying shot numbers by timestamps, must pass timestamps as strings.",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
-      "\u001b[0;32m/tmp/ipykernel_15140/3185705747.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m runtime(\n\u001b[0m\u001b[1;32m      2\u001b[0m     \u001b[0minput\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0minput\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m )\n",
-      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/runtime.py\u001b[0m in \u001b[0;36mmain\u001b[0;34m(input)\u001b[0m\n\u001b[1;32m     64\u001b[0m         \u001b[0;32mfor\u001b[0m \u001b[0mshot_no\u001b[0m \u001b[0;32min\u001b[0m \u001b[0minput\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"EXP_SHOT_NOS\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     65\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mtype\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mshot_no\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m!=\u001b[0m \u001b[0mstr\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 66\u001b[0;31m                 \u001b[0;32mraise\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"When specifying shot numbers by timestamps, must pass timestamps as strings.\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     67\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     68\u001b[0m         paths_dict = {timestamp:os.path.join(path, file) for timestamp, file in files_dict_sorted.items()\\\n",
-      "\u001b[0;31mValueError\u001b[0m: When specifying shot numbers by timestamps, must pass timestamps as strings."
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "runtime(\n",
     "    input=input\n",

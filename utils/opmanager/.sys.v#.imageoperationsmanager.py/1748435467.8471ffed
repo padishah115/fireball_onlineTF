@@ -389,7 +389,7 @@ class AndorImageManager(ImageOperationsManager):
         axs[1].set_ylabel("Wavelength / nm")
         if self.std_data is not None:
             # plot the "fill between" showing +- 1 std dev
-            axs[1].fill_betweenx(pixels_x, lower_intensities, upper_intensities, color="blue", alpha=0.2)
+            axs[1].fill_betweenx(pixels_x, lower_intensities, upper_intensities)
         
         fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
         fig.tight_layout()

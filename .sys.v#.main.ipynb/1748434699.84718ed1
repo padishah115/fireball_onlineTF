@@ -2,18 +2,10 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": null,
    "id": "346fa04a-95b2-4726-85d6-fa2e1d3d5e83",
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Executed\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "#MODULE IMPORTS\n",
     "import sys\n",
@@ -26,18 +18,10 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": null,
    "id": "cd278f9a-a0a0-4634-b55c-d17773394ecd",
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Executed\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "# INPUT CONFIGURATION\n",
     "\n",
@@ -84,6 +68,10 @@
     "    #########################\n",
     "    # - Brief details of what analysis we want to see live, but this is largely fixed for the underlying devices.\n",
     "    \"NORM_PLOT\": False,\n",
+    "\n",
+    "    # Want the option to choose whether or not we actually perform the analysis, or whether we just want to show the images\n",
+    "    # Some of the calculations take some time to perform, and we can benefit from switching this off online\n",
+    "    \"PERFORM_ANALYSIS\": True,\n",
     "    \n",
     "    \"OPERATIONS\": {\n",
     "        \"SHOW_SINGLESHOT_PLOTS\": True,\n",
@@ -142,23 +130,10 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": null,
    "id": "3ac1a0db-e998-43ad-8fa1-ef85e2b0fbfa",
    "metadata": {},
-   "outputs": [
-    {
-     "ename": "KeyError",
-     "evalue": "'ANDOR'",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[0;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
-      "\u001b[0;32m/tmp/ipykernel_15892/3185705747.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m runtime(\n\u001b[0m\u001b[1;32m      2\u001b[0m     \u001b[0minput\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0minput\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m )\n",
-      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/runtime.py\u001b[0m in \u001b[0;36mmain\u001b[0;34m(input)\u001b[0m\n\u001b[1;32m     27\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     28\u001b[0m     \u001b[0;31m# INITIALIZE PATH TO THE DEVICE'S DATA, USING CONFIGURATION FILES.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 29\u001b[0;31m     \u001b[0mpath\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mjoin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0minput\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"PARENT_DIR\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0minput\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"FOLDER_NAMES\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0minput\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"DEVICE_NAME\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     30\u001b[0m     \u001b[0;31m# check to make sure it actually exists\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     31\u001b[0m     \u001b[0;32mif\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mexists\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
-      "\u001b[0;31mKeyError\u001b[0m: 'ANDOR'"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "runtime(\n",
     "    input=input\n",

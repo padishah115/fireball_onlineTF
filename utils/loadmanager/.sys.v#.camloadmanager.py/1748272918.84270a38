@@ -164,7 +164,7 @@ class CamLoadManager(LoadManager):
             wavelengths (aka pixels_y) : List
         """
 
-        image = tifffile.imread(path, dtype=np.float32)
+        image = tifffile.imread(path)
 
 
         #EXTRACT THE FIRST COLUMN, WHICH CONTAIN WAVELENGTHS IN NM- this is "pixels_y"
