@@ -415,9 +415,19 @@ class OrcaImageManager(ImageOperationsManager):
         img = self.shot_data["DATA"]
         space_mm_x = self.shot_data["X"]
         time_ns_y = self.shot_data["Y"]
+        lineout_y = np.sum(img, axis=1) # sum along the streak's spatial axis encoding intensity
+
+        normalization_factor = np.max(img) if norm else 1
         
         # ROUND THE TIME VALUES FOR CLEANER PLOTTING
         time_ns_y_rounded = [f"{time:.2f}" for time in time_ns_y]
+
+        # Check for std_data
+        if self.std_data is not None:
+            std_lineout_y = np.sum(self.std_data["DATA"], axis=1)
+            print("ORCA std_lineout_y dtype: ", type(std_lineout_y))
+            upper_lineout = np.divide(np.add(lineout_y, std_lineout_y), normalization_factor)
+            lower_lineout = np.divide(np.subtract(lineout_y, std_lineout_y), normalization_factor)
 
         fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(16,8))
         
@@ -441,12 +451,13 @@ class OrcaImageManager(ImageOperationsManager):
         ###########
         # LINEOUT #
         ###########
-        lineout_y = np.sum(img, axis=1)
         axs[1].plot(lineout_y, time_ns_y)
         axs[1].set_ylabel("Time / ns")
         axs[1].set_xlabel("Summed intensity")
         axs[1].set_title("Lineout (Sum Along Spatial Coords)")
         axs[1].invert_yaxis()
+        if self.std_data is not None:
+            axs[1].fill_betweenx(time_ns_y, lower_lineout, upper_lineout)
 
         ################################
         # FOURIER TRANSFORM OF LINEOUT #
