@@ -2,10 +2,18 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 1,
    "id": "346fa04a-95b2-4726-85d6-fa2e1d3d5e83",
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Executed\n"
+     ]
+    }
+   ],
    "source": [
     "#MODULE IMPORTS\n",
     "import sys\n",
@@ -18,10 +26,19 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 2,
    "id": "cd278f9a-a0a0-4634-b55c-d17773394ecd",
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "ename": "SyntaxError",
+     "evalue": "expression expected after dictionary key and ':' (173539181.py, line 64)",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;36m  File \u001b[0;32m\"/tmp/ipykernel_7507/173539181.py\"\u001b[0;36m, line \u001b[0;32m64\u001b[0m\n\u001b[0;31m    \"HRM3\":,\u001b[0m\n\u001b[0m          ^\u001b[0m\n\u001b[0;31mSyntaxError\u001b[0m\u001b[0;31m:\u001b[0m expression expected after dictionary key and ':'\n"
+     ]
+    }
+   ],
    "source": [
     "# INPUT CONFIGURATION\n",
     "\n",
@@ -34,9 +51,9 @@
     "    # - DEVICE_TYPE type tells us how many channels of data we have/what type of data we're dealing with.\n",
     "    # - DEVICE_SPECIES is a subset of type, and helps us decide how to load different types of data files\n",
     "    #   even if the underlying data type (i.e. \"image\") is the same.\n",
-    "    \"DEVICE_NAME\": \"ANDOR SPECTROMETER\",\n",
+    "    \"DEVICE_NAME\": \"HRM4\",\n",
     "    \"DEVICE_TYPE\": \"CAMERA\",\n",
-    "    \"DEVICE_SPECIES\": \"ANDOR\",\n",
+    "    \"DEVICE_SPECIES\": \"DIGICAM\",\n",
     "\n",
     "    ##################\n",
     "    # Shot Selection #\n",
@@ -47,7 +64,7 @@
     "\n",
     "    # Shots indexed from 0 in reverse chronology. This is easy, and the shots are 0-indexed automatically\n",
     "    # in reverse-chronological order of acquisition.\n",
-    "    \"EXP_SHOT_NOS\": [0, 1, 2], #if timestamps, need to be strings\n",
+    "    \"EXP_SHOT_NOS\": [0], #if timestamps, need to be strings\n",
     "    \"BKG_SHOT_NOS\": [],\n",
     "\n",
     "    # Do we use the timestamps or the relative reverse-chronology method?\n",
@@ -68,10 +85,6 @@
     "    #########################\n",
     "    # - Brief details of what analysis we want to see live, but this is largely fixed for the underlying devices.\n",
     "    \"NORM_PLOT\": False,\n",
-    "\n",
-    "    # Want the option to choose whether or not we actually perform the analysis, or whether we just want to show the images\n",
-    "    # Some of the calculations take some time to perform, and we can benefit from switching this off online\n",
-    "    \"PERFORM_ANALYSIS\": True,\n",
     "    \n",
     "    \"OPERATIONS\": {\n",
     "        \"SHOW_SINGLESHOT_PLOTS\": True,\n",
@@ -88,8 +101,11 @@
     "\n",
     "    \"FOLDER_NAMES\": {\n",
     "            \"ANDOR SPECTROMETER\":\"andor_spectrometer\",\n",
-    "            \"ORCA\":\"orca_streak\",\n",
-    "            \"PLASMA CAMS\":\"plasmacell_cams\",\n",
+    "            \"ORCA STREAK\":\"orca_streak\",\n",
+    "            \"HRM3\":\"chromox_cams/HRM3\",    \n",
+    "            \"HRM4\":\"chromox_cams/HRM4\",\n",
+    "            \"HRM5\":\"chromox_cams/HRM5\",\n",
+    "            \"HRM6\":\"chromox_cams/HRM6\",\n",
     "            \"SCOPE 1\":\"scope_test\",\n",
     "            \"SCOPE 2\":\"scope_test\",\n",
     "            \"SCOPE 3\":\"scope_test\",\n",
@@ -105,7 +121,7 @@
     "    # - TIMESTAMP_SLICE tells us how to slice up the filename strings in order to extract timestamp information.\n",
     "    \"EXTENSION_DICT\" : {\n",
     "            \"ANDOR SPECTROMETER\": \".tif\",\n",
-    "            \"ORCA\": \".dac\",\n",
+    "            \"ORCA STREAK\": \".dac\",\n",
     "            \"PLASMA CAMS\": \".csv\",\n",
     "            \"SCOPE 1\": \".csv\",\n",
     "            \"SCOPE 2\": \".csv\",\n",
@@ -115,7 +131,7 @@
     "\n",
     "    \"TIMESTAMP_SLICE\": {\n",
     "            \"ANDOR SPECTROMETER\": (4, 9),\n",
-    "            \"ORCA\": None,\n",
+    "            \"ORCA STREAK\": None,\n",
     "            \"PLASMA CAMS\": (-20, -4),\n",
     "            \"SCOPE 1\": (-21, -4),\n",
     "            \"SCOPE 2\": (-21, -4),\n",
