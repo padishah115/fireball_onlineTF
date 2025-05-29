@@ -81,7 +81,7 @@ class ProbeOperationsManager(OperationsManager):
             axs2[index_tuple].plot(times, channel_voltage)
             
             #Only calculate statistical information if we don't have things set to plot only
-            if not self.input["PLOT_ONLY"]:
+            if not self.input["PLOT_ONLY"]]:
                 if self.std_data is not None:
                     sigma_v = self.std_data["DATA"]["VOLTAGES"][channel_no]
                     upper_bound = np.add(channel_voltage, sigma_v)

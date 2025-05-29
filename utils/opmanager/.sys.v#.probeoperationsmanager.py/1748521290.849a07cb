@@ -78,19 +78,19 @@ class ProbeOperationsManager(OperationsManager):
             channel_no = channel_nos[i+2]
             channel_voltage = channel_voltages_dict[channel_no]
 
-            axs2[index_tuple].plot(times, channel_voltage)
+            axs2[i, 0].plot(times, channel_voltage)
             
             #Only calculate statistical information if we don't have things set to plot only
-            if not self.input["PLOT_ONLY"]:
+            if not self.input["PLOT_ONLY"]]:
                 if self.std_data is not None:
                     sigma_v = self.std_data["DATA"]["VOLTAGES"][channel_no]
                     upper_bound = np.add(channel_voltage, sigma_v)
                     lower_bound = np.subtract(channel_voltage, sigma_v)
                     axs2[i, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
             
-            axs2[index_tuple].set_ylabel("Amplitude / V")
-            axs2[index_tuple].set_xlabel("Time / s")
-            axs2[index_tuple].set_title(f"Ch {channel_no}")
+            axs2[i, 0].set_ylabel("Amplitude / V")
+            axs2[i, 0].set_xlabel("Time / s")
+            axs2[i, 0].set_title(f"Ch {channel_no}")
             
             if not self.input["PLOT_ONLY"]:
                 freq = rfftfreq(n=N, d=dt)

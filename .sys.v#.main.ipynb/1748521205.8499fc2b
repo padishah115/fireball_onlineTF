@@ -1,0 +1,243 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "346fa04a-95b2-4726-85d6-fa2e1d3d5e83",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Executed\n"
+     ]
+    }
+   ],
+   "source": [
+    "#MODULE IMPORTS\n",
+    "import sys\n",
+    "sys.path.append(\".\")\n",
+    "\n",
+    "#Import main function that calls the whole run\n",
+    "from runtime import main as runtime\n",
+    "print(\"Executed\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "cd278f9a-a0a0-4634-b55c-d17773394ecd",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Executed\n"
+     ]
+    }
+   ],
+   "source": [
+    "# INPUT CONFIGURATION\n",
+    "\n",
+    "input = {\n",
+    "\n",
+    "    #################################\n",
+    "    # Information about the device. #\n",
+    "    #################################\n",
+    "    # - DEVICE_NAME tells us which directory to search in\n",
+    "    # - DEVICE_TYPE type tells us how many channels of data we have/what type of data we're dealing with.\n",
+    "    # - DEVICE_SPECIES is a subset of type, and helps us decide how to load different types of data files\n",
+    "    #   even if the underlying data type (i.e. \"image\") is the same.\n",
+    "    \"DEVICE_NAME\": \"SCOPE 1\",\n",
+    "    \"DEVICE_TYPE\": \"PROBE\",\n",
+    "    \"DEVICE_SPECIES\": \"PROBE\",\n",
+    "\n",
+    "    ##################\n",
+    "    # Shot Selection #\n",
+    "    ##################\n",
+    "    # - Can select from timestamps or from relative shot no., which is a heuristic term that sorts everything\n",
+    "    #   in the target directory by timestamp, then 0-indexes the shot from most recent to most distant.\n",
+    "    # - Can also specify the timestamp specifically. \n",
+    "\n",
+    "    # Shots indexed from 0 in reverse chronology. This is easy, and the shots are 0-indexed automatically\n",
+    "    # in reverse-chronological order of acquisition.\n",
+    "    \"EXP_SHOT_NOS\": [0], #if timestamps, need to be strings\n",
+    "    \"BKG_SHOT_NOS\": [],\n",
+    "\n",
+    "    # Do we use the timestamps or the relative reverse-chronology method?\n",
+    "    \"SCRAPE_FROM_TIMESTAMP\": False,\n",
+    "\n",
+    "    ##########################\n",
+    "    # Background Subtraction #\n",
+    "    ##########################\n",
+    "    # - BKG_NAME tells us how the background will be denoted on-screen during plotting.\n",
+    "    # - BACKGROUND_STATUS tells us whether we want to remove the background or not. If so, bkg is subtracted BEFORE\n",
+    "    #   image averaging.\n",
+    "    # - If more than one background shot was specified, these are averaged before being subtracted from the shot image.\n",
+    "    \"BKG_NAME\": \"DARKFIELD\",\n",
+    "    \"BACKGROUND_STATUS\": \"RAW\",\n",
+    "\n",
+    "    #########################\n",
+    "    # Operations Specifiers #\n",
+    "    #########################\n",
+    "    # - Brief details of what analysis we want to see live, but this is largely fixed for the underlying devices.\n",
+    "    \n",
+    "    \"PLOT_ONLY\": True, # in case we want to just quickly display the image live.\n",
+    "    \n",
+    "    \"NORM_PLOT\": False,\n",
+    "    \n",
+    "    \"OPERATIONS\": {\n",
+    "        \"SHOW_SINGLESHOT_PLOTS\": True,\n",
+    "        \"LINEOUT_BIN_NO\": 100,\n",
+    "        \"SHOW_AVERAGE_SHOTS\": False\n",
+    "    },\n",
+    "\n",
+    "    #########################\n",
+    "    # Directory Information #\n",
+    "    #########################\n",
+    "    # - PARENT_DIR tells us which folder contains all the individual devices' data directories.\n",
+    "    # - FOLDER_NAMES tells us where data has been logged for each of the individual devices.\n",
+    "    \"PARENT_DIR\":\"/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data\",\n",
+    "\n",
+    "    \"FOLDER_NAMES\": {\n",
+    "            \"ANDOR SPECTROMETER\":\"andor_spectrometer\",\n",
+    "            \"ORCA STREAK\":\"orca_streak\",\n",
+    "            \"HRM3\":\"chromox_cameras/HRM3\",    \n",
+    "            \"HRM4\":\"chromox_cameras/HRM4\",\n",
+    "            \"HRM5\":\"chromox_cameras/HRM5\",\n",
+    "            \"HRM6\":\"chromox_cameras/HRM6\",\n",
+    "            \"SCOPE 1\":\"scope_test\",\n",
+    "            \"SCOPE 2\":\"scope_test\",\n",
+    "            \"SCOPE 3\":\"scope_test\",\n",
+    "            \"LDV\":\"ldv_and_strain_gauges/Triggers/2025/05/23\"\n",
+    "\n",
+    "    },\n",
+    "\n",
+    "    ####################\n",
+    "    # File information #\n",
+    "    ####################\n",
+    "    # - EXTENSION_DICT tells us what file extension we are expecting for each of the devices. This is for\n",
+    "    #   exception handling, and tips us off if we are mistaking which device's data we are looking at.\n",
+    "    # - TIMESTAMP_SLICE tells us how to slice up the filename strings in order to extract timestamp information.\n",
+    "    \"EXTENSION_DICT\" : {\n",
+    "            \"ANDOR SPECTROMETER\": \".tif\",\n",
+    "            \"ORCA STREAK\": \".dac\",\n",
+    "            \"HRM3\":\".csv\",    \n",
+    "            \"HRM4\":\".csv\",\n",
+    "            \"HRM5\":\".csv\",\n",
+    "            \"HRM6\":\".csv\",\n",
+    "            \"SCOPE 1\": \".csv\",\n",
+    "            \"SCOPE 2\": \".csv\",\n",
+    "            \"SCOPE 3\": \".csv\",\n",
+    "            \"LDV\": \".tdms\",\n",
+    "        },\n",
+    "\n",
+    "    \"TIMESTAMP_SLICE\": {\n",
+    "            \"ANDOR SPECTROMETER\": (4, 9),\n",
+    "            \"ORCA STREAK\": (5, 12),\n",
+    "            \"HRM3\": (22, 37),    \n",
+    "            \"HRM4\": (22, 37),\n",
+    "            \"HRM5\": (22, 37),\n",
+    "            \"HRM6\": (22, 37),\n",
+    "            \"SCOPE 1\": (-21, -4),\n",
+    "            \"SCOPE 2\": (-21, -4),\n",
+    "            \"SCOPE 3\": (-21, -4),\n",
+    "            \"LDV\": (-16, -5),\n",
+    "    } \n",
+    "    \n",
+    "}\n",
+    "\n",
+    "print(\"Executed\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "3ac1a0db-e998-43ad-8fa1-ef85e2b0fbfa",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Starting run ... \n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/eos/home-i02/h/hramm/fireball_onlineTF/utils/loadmanager/probeloadmanager.py:100: DtypeWarning: Columns (0,1) have mixed types. Specify dtype option on import or set low_memory=False.\n",
+      "  df = pd.read_csv(data_path)\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "selecting appropriate data dictionary ... \n",
+      "\n",
+      "Plot ... \n",
+      "\n"
+     ]
+    },
+    {
+     "ename": "IndexError",
+     "evalue": "too many indices for array: array is 1-dimensional, but 2 were indexed",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mIndexError\u001b[0m                                Traceback (most recent call last)",
+      "\u001b[0;32m/tmp/ipykernel_15733/2695004057.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Starting run ... \"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m runtime(\n\u001b[0m\u001b[1;32m      3\u001b[0m     \u001b[0minput\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0minput\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m )\n",
+      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/runtime.py\u001b[0m in \u001b[0;36mmain\u001b[0;34m(input)\u001b[0m\n\u001b[1;32m     98\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     99\u001b[0m     \u001b[0;31m#Execute the run.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 100\u001b[0;31m     \u001b[0mrun_manager\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mrun\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    101\u001b[0m     \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Run terminated successfully without errors. \\n\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/utils/runmanager/proberunmanager.py\u001b[0m in \u001b[0;36mrun\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m     50\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0moperations\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"SHOW_SINGLESHOT_PLOTS\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     51\u001b[0m             \u001b[0;32mfor\u001b[0m \u001b[0mshot_no\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mshot_nos\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 52\u001b[0;31m                 self._call_operations_manager(\n\u001b[0m\u001b[1;32m     53\u001b[0m                     \u001b[0mshot_no\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mshot_no\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     54\u001b[0m                     \u001b[0mshot_data\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mdata_dict\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mshot_no\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/utils/runmanager/proberunmanager.py\u001b[0m in \u001b[0;36m_call_operations_manager\u001b[0;34m(self, shot_no, shot_data, LABEL, std_data)\u001b[0m\n\u001b[1;32m    102\u001b[0m         \u001b[0;31m# PLOTTING\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    103\u001b[0m         \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Plot ... \\n\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 104\u001b[0;31m         \u001b[0moperations_manager\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mplot\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mnorm\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0minput\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"NORM_PLOT\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/utils/opmanager/probeoperationsmanager.py\u001b[0m in \u001b[0;36mplot\u001b[0;34m(self, norm)\u001b[0m\n\u001b[1;32m     46\u001b[0m             \u001b[0mchannel_no\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mchannel_nos\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     47\u001b[0m             \u001b[0mchannel_voltage\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mchannel_voltages_dict\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mchannel_no\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 48\u001b[0;31m             \u001b[0maxs1\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;36m0\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mplot\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtimes\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mchannel_voltage\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     49\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mstd_data\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     50\u001b[0m                 \u001b[0msigma_v\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mstd_data\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"DATA\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"VOLTAGES\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mchannel_no\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mIndexError\u001b[0m: too many indices for array: array is 1-dimensional, but 2 were indexed"
+     ]
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 1152x648 with 2 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "print(\"Starting run ... \")\n",
+    "runtime(\n",
+    "    input=input\n",
+    ")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

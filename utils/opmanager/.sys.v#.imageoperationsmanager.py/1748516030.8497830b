@@ -448,82 +448,56 @@ class OrcaImageManager(ImageOperationsManager):
         # ROUND THE TIME VALUES FOR CLEANER PLOTTING
         time_ns_y_rounded = [f"{time:.2f}" for time in time_ns_y]
 
-        # WRAP ALL THE ANALYSIS IN HERE SO THAT WE CAN SKIP IT IF WE WANT TO SPEED THINGS UP
-        if not self.input["PLOT_ONLY"]:
-            # Check for std_data
-            if self.std_data is not None:
-                std_lineout_y = np.sum(self.std_data["DATA"], axis=1)
-                print("ORCA std_lineout_y dtype: ", type(std_lineout_y))
-                upper_lineout = np.divide(np.add(lineout_y, std_lineout_y), normalization_factor)
-                lower_lineout = np.divide(np.subtract(lineout_y, std_lineout_y), normalization_factor)
-    
-            fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(16,8))
-            
-            x_ticks_pos = np.arange(0, len(space_mm_x), step=step)
-            y_ticks_pos = np.arange(0, len(time_ns_y), step=step)
-            x_ticks = space_mm_x[::step]
-            y_ticks = time_ns_y_rounded[::step]
-    
-            ##################
-            # PLOT THE IMAGE #
-            ##################
-            axs[0].imshow(img, aspect='auto')
-            axs[0].set_xlabel("Distance / mm")
-            axs[0].set_ylabel("Time / ns")
-            axs[0].set_yticks(y_ticks_pos)
-            axs[0].set_yticklabels(y_ticks)
-            axs[0].set_xticks(x_ticks_pos)
-            axs[0].set_xticklabels(x_ticks, rotation=90)
-            axs[0].set_title("Image")
-    
-            ###########
-            # LINEOUT #
-            ###########
-            axs[1].plot(lineout_y, time_ns_y)
-            axs[1].set_ylabel("Time / ns")
-            axs[1].set_xlabel("Summed intensity")
-            axs[1].set_title("Lineout (Sum Along Spatial Coords)")
-            axs[1].invert_yaxis()
-            if self.std_data is not None:
-                axs[1].fill_betweenx(time_ns_y, lower_lineout, upper_lineout)
-    
-            ################################
-            # FOURIER TRANSFORM OF LINEOUT #
-            ################################ 
-            N = len(lineout_y)
-            dt = time_ns_y[1] - time_ns_y[0]
-            freq = rfftfreq(N, d=dt)
-            intensity = np.abs(rfft(lineout_y))
-            axs[2].plot(intensity, freq)
-            axs[2].set_ylabel("Freq / GHz")
-            axs[2].set_xlabel("Intensity")
-            axs[2].set_title("Fourier Transform of Lineout")
-            axs[2].invert_yaxis()
-            
-            fig.suptitle(f"Data from {self.DEVICE_NAME}, Shot No {self.shot_no}, \n{self.label}")
-            fig.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at the top (5%)
-            plt.show()
+        # Check for std_data
+        if self.std_data is not None:
+            std_lineout_y = np.sum(self.std_data["DATA"], axis=1)
+            print("ORCA std_lineout_y dtype: ", type(std_lineout_y))
+            upper_lineout = np.divide(np.add(lineout_y, std_lineout_y), normalization_factor)
+            lower_lineout = np.divide(np.subtract(lineout_y, std_lineout_y), normalization_factor)
 
-        else:
-            fig, axs = plt.subplots(figsize=(16,8))
-            
-            x_ticks_pos = np.arange(0, len(space_mm_x), step=step)
-            y_ticks_pos = np.arange(0, len(time_ns_y), step=step)
-            x_ticks = space_mm_x[::step]
-            y_ticks = time_ns_y_rounded[::step]
-    
-            ##################
-            # PLOT THE IMAGE #
-            ##################
-            axs.imshow(img, aspect='auto')
-            axs.set_xlabel("Distance / mm")
-            axs.set_ylabel("Time / ns")
-            axs.set_yticks(y_ticks_pos)
-            axs.set_yticklabels(y_ticks)
-            axs.set_xticks(x_ticks_pos)
-            axs.set_xticklabels(x_ticks, rotation=90)
-            axs.set_title("Image")
+        fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(16,8))
+        
+        x_ticks_pos = np.arange(0, len(space_mm_x), step=step)
+        y_ticks_pos = np.arange(0, len(time_ns_y), step=step)
+        x_ticks = space_mm_x[::step]
+        y_ticks = time_ns_y_rounded[::step]
 
-            fig.suptitle(f"Data from {self.DEVICE_NAME}, Shot No {self.shot_no}, \n{self.label}")
-            plt.show()
-            
+        ######################
+        # PLOT THE RAW IMAGE #
+        ######################
+        axs[0].imshow(img, aspect='auto')
+        axs[0].set_xlabel("Distance / mm")
+        axs[0].set_ylabel("Time / ns")
+        axs[0].set_yticks(y_ticks_pos)
+        axs[0].set_yticklabels(y_ticks)
+        axs[0].set_xticks(x_ticks_pos)
+        axs[0].set_xticklabels(x_ticks, rotation=90)
+        axs[0].set_title("Raw Image")
+
+        ###########
+        # LINEOUT #
+        ###########
+        axs[1].plot(lineout_y, time_ns_y)
+        axs[1].set_ylabel("Time / ns")
+        axs[1].set_xlabel("Summed intensity")
+        axs[1].set_title("Lineout (Sum Along Spatial Coords)")
+        axs[1].invert_yaxis()
+        if self.std_data is not None:
+            axs[1].fill_betweenx(time_ns_y, lower_lineout, upper_lineout)
+
+        ################################
+        # FOURIER TRANSFORM OF LINEOUT #
+        ################################ 
+        N = len(lineout_y)
+        dt = time_ns_y[1] - time_ns_y[0]
+        freq = rfftfreq(N, d=dt)
+        intensity = np.abs(rfft(lineout_y))
+        axs[2].plot(intensity, freq)
+        axs[2].set_ylabel("Freq / GHz")
+        axs[2].set_xlabel("Intensity")
+        axs[2].set_title("Fourier Transform of Lineout")
+        axs[2].invert_yaxis()
+        
+        fig.suptitle(f"Data from {self.DEVICE_NAME}, Shot No {self.shot_no}, \n{self.label}")
+        fig.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at the top (5%)
+        plt.show()
