@@ -2,6 +2,7 @@ from utils.stats.stats import img_arrays_stats
 from utils.loadmanager.loadmanager import LoadManager
 from typing import Dict, Tuple, List
 import numpy as np
+import tifffile
 
 class CamLoadManager(LoadManager):
     def load(self)->Tuple[Dict[int, np.ndarray], Dict[int, np.ndarray], Dict[int, np.ndarray]]:
@@ -163,7 +164,7 @@ class CamLoadManager(LoadManager):
             wavelengths (aka pixels_y) : List
         """
 
-        image = np.genfromtxt(path, delimiter=',', dtype=np.float32, skip_footer=41)
+        image = np.genfromtxt(path, dtype=np.float32)
 
 
         #EXTRACT THE FIRST COLUMN, WHICH CONTAIN WAVELENGTHS IN NM- this is "pixels_y"

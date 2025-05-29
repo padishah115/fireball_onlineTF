@@ -368,6 +368,8 @@ class AndorImageManager(ImageOperationsManager):
 
         # Initialise normalization factor
         normalization_factor = np.max(img) if norm else 1.0
+        print("Image dtype:", type(img))
+        print("Norm factor dtype:", type(normalization_factor))
         img = np.divide(img, normalization_factor)
 
         # Wrap all the analysis in here in case we just want to speed things up

@@ -49,7 +49,7 @@ class FileManager:
         # make sure that we are not asking for a larger number of shots than actually exist ...
         if len(self.input["EXP_SHOT_NOS"]) > len(files_dict_sorted.values()):
             no_of_req_shots = len(self.input["EXP_SHOT_NOS"])
-            no_of_files = len(files_dict_sorted)
+            no_of_files = len(files)
             raise ValueError(f"Error: requested {no_of_req_shots} shots, but only {no_of_files} were found.")
 
         return files_dict_sorted

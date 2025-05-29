@@ -368,12 +368,12 @@ class AndorImageManager(ImageOperationsManager):
 
         # Initialise normalization factor
         normalization_factor = np.max(img) if norm else 1.0
+        print("Image dtype:", type(img))
+        print("Norm factor dtype:", type(normalization_factor))
         img = np.divide(img, normalization_factor)
 
         # Wrap all the analysis in here in case we just want to speed things up
         if not self.input["PLOT_ONLY"]:
-            # NEED TO USE NANSUM TO ENSURE THAT THE IMAGE LINEOUT IS DONE CORRECTLY
-            
             # Sum along x-axis to produce fourier transformation.
             intensities = np.nansum(img, axis=1)
 
