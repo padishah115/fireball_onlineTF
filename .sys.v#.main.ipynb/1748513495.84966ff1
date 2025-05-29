@@ -133,7 +133,7 @@
     "\n",
     "    \"TIMESTAMP_SLICE\": {\n",
     "            \"ANDOR SPECTROMETER\": (4, 9),\n",
-    "            \"ORCA STREAK\": (5, 12),\n",
+    "            \"ORCA STREAK\": None,\n",
     "            \"HRM3\": (-20, -4),    \n",
     "            \"HRM4\": (-20, -4),\n",
     "            \"HRM5\": (-20, -4),\n",
