@@ -48,7 +48,7 @@ def main(input):
     ##########################################################################################
     
     # If specifying by relative shot number (reverse chronological order)
-    if input["SPECIFY_TIMESTAMP"] == False:
+    if input["SCRAPE_FROM_TIMESTAMP"] == False:
         files = [f for f in files_dict_sorted.values()]
         # initialise path dictionary.
         paths_dict = {
@@ -56,7 +56,7 @@ def main(input):
         }
     
     # if specifying by timestamp rather than relative shot number.
-    elif input["SPECIFY_TIMESTAMP"] == True:
+    elif input["SCRAPE_FROM_TIMESTAMP"] == True:
 
         # Check to make sure that we have a prescription for extracting timestamp data from the filename
         if input["TIMESTAMP_SLICE"] is None:
@@ -71,7 +71,7 @@ def main(input):
 
     # Check to make sure that the user hasn't specified something other than true or false for SCRAPE_FROM_TIMESTAMP
     else:
-        raise ValueError(f"Error: value {input['SPECIFY_TIMESTAMP']} for SCRAPE_FROM_TIMESTAMP is not valid.")        
+        raise ValueError(f"Error: value {input['SCRAPE_FROM_TIMESTAMP']} for SCRAPE_FROM_TIMESTAMP is not valid.")        
     
     if not paths_dict:
         raise FileNotFoundError(f"Warning: paths dictionary is empty.")

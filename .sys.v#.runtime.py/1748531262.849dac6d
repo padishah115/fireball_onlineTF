@@ -76,6 +76,8 @@ def main(input):
     if not paths_dict:
         raise FileNotFoundError(f"Warning: paths dictionary is empty.")
 
+    print(paths_dict.values())
+
 
     #######
     # RUN #

@@ -35,8 +35,6 @@ class LDVOperationsManager(OperationsManager):
         """Produces plots for LDV data- this includes the position and velocity of the LDV data as a function of time, as well as upstream           and central strain gauge readings. We produce these as 2x2 plots."""
 
         plot_only = self.input["PLOT_ONLY"]
-        if plot_only:
-            print("Plot only")
         
         # Configure plots
         nrows = 4
@@ -60,47 +58,40 @@ class LDVOperationsManager(OperationsManager):
             axs[0, 1].grid()
 
         # LDV SPEED VS TIME
-        vel_axs_tuple = (1) if plot_only else (1, 0)
-        axs[vel_axs_tuple].plot(self.times, self.ldv_speed)
-        axs[vel_axs_tuple].set_title("LDV Velocity")
-        axs[vel_axs_tuple].set_xlabel("Time / s")
-        axs[vel_axs_tuple].set_ylabel("Velocity / mm s^-1")
-        axs[vel_axs_tuple].grid()
+        vel_axs_typle = (0, 1) if plot_only else (0, 1)
+        axs[1, 0].plot(self.times, self.ldv_speed)
+        axs[1, 0].set_title("LDV Velocity")
+        axs[1, 0].set_xlabel("Time / s")
+        axs[1, 0].set_ylabel("Velocity / mm s^-1")
+        axs[1, 0].grid()
 
-        if not plot_only:
-            axs[1,1].axis("off")
+        axs[1,1].axis("off")
         
         # CENTRAL GAUGE POSITION VS TIME
-        cgauge_axs_tuple = (2) if plot_only else (2, 0)
-        axs[cgauge_axs_tuple].plot(self.times, self.strain_gauge_center)
-        axs[cgauge_axs_tuple].set_title("Strain Gauge (Center)")
-        axs[cgauge_axs_tuple].set_xlabel("Time / s")
-        axs[cgauge_axs_tuple].set_ylabel("Strain / ppm")
-        axs[cgauge_axs_tuple].grid()
-        
+        axs[2, 0].plot(self.times, self.strain_gauge_center)
+        axs[2, 0].set_title("Strain Gauge (Center)")
+        axs[2, 0].set_xlabel("Time / s")
+        axs[2, 0].set_ylabel("Strain / ppm")
+        axs[2, 0].grid()
         # FT OF CENTRAL GAUGE
-        if not plot_only:
-            axs[2, 1].plot(self.strain_gauge_center_freq, self.strain_gauge_center_ftransform)
-            axs[2, 1].set_title("Strain Gauge (Center) Fourier Transform")
-            axs[2, 1].set_xlabel("Frequency / Hz")
-            axs[2, 1].set_ylabel("Fourier Amplitude")
-            axs[2, 1].grid()
+        axs[2, 1].plot(self.strain_gauge_center_freq, self.strain_gauge_center_ftransform)
+        axs[2, 1].set_title("Strain Gauge (Center) Fourier Transform")
+        axs[2, 1].set_xlabel("Frequency / Hz")
+        axs[2, 1].set_ylabel("Fourier Amplitude")
+        axs[2, 1].grid()
         
         # DOWNSTREAM GAUGE POSITION VS TIME
-        dgauge_axs_tuple = (3) if plot_only else (3, 0)
-        axs[dgauge_axs_tuple].plot(self.times, self.strain_gauge_downstream)
-        axs[dgauge_axs_tuple].set_title("Strain Gauge (Downstream)")
-        axs[dgauge_axs_tuple].set_xlabel("Time / s")
-        axs[dgauge_axs_tuple].set_ylabel("Strain / ppm")
-        axs[dgauge_axs_tuple].grid()
-        
+        axs[3, 0].plot(self.times, self.strain_gauge_downstream)
+        axs[3, 0].set_title("Strain Gauge (Downstream)")
+        axs[3, 0].set_xlabel("Time / s")
+        axs[3, 0].set_ylabel("Strain / ppm")
+        axs[3, 0].grid()
         # FT OF DOWNSTREAM GAUGE
-        if not plot_only:
-            axs[3, 1].plot(self.strain_gauge_center_freq, self.strain_gauge_center_ftransform)
-            axs[3, 1].set_title("Strain Gauge (Downstream) Fourier Transform")
-            axs[3, 1].set_xlabel("Frequency / Hz")
-            axs[3, 1].set_ylabel("Fourier Amplitude")
-            axs[3, 1].grid()
+        axs[3, 1].plot(self.strain_gauge_center_freq, self.strain_gauge_center_ftransform)
+        axs[3, 1].set_title("Strain Gauge (Downstream) Fourier Transform")
+        axs[3, 1].set_xlabel("Frequency / Hz")
+        axs[3, 1].set_ylabel("Fourier Amplitude")
+        axs[3, 1].grid()
 
         fig.suptitle(f"LDV and String Gauge Data, Shot No {self.shot_no}")
         fig.tight_layout()

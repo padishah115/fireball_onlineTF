@@ -48,7 +48,7 @@ def main(input):
     ##########################################################################################
     
     # If specifying by relative shot number (reverse chronological order)
-    if input["SPECIFY_TIMESTAMP"] == False:
+    if input["SCRAPE_FROM_TIMESTAMP"] == False:
         files = [f for f in files_dict_sorted.values()]
         # initialise path dictionary.
         paths_dict = {
@@ -75,6 +75,8 @@ def main(input):
     
     if not paths_dict:
         raise FileNotFoundError(f"Warning: paths dictionary is empty.")
+
+    print(paths_dict.values())
 
 
     #######

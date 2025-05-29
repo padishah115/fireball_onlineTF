@@ -35,8 +35,6 @@ class LDVOperationsManager(OperationsManager):
         """Produces plots for LDV data- this includes the position and velocity of the LDV data as a function of time, as well as upstream           and central strain gauge readings. We produce these as 2x2 plots."""
 
         plot_only = self.input["PLOT_ONLY"]
-        if plot_only:
-            print("Plot only")
         
         # Configure plots
         nrows = 4
@@ -60,7 +58,7 @@ class LDVOperationsManager(OperationsManager):
             axs[0, 1].grid()
 
         # LDV SPEED VS TIME
-        vel_axs_tuple = (1) if plot_only else (1, 0)
+        vel_axs_typle = (1) if plot_only else (1, 0)
         axs[vel_axs_tuple].plot(self.times, self.ldv_speed)
         axs[vel_axs_tuple].set_title("LDV Velocity")
         axs[vel_axs_tuple].set_xlabel("Time / s")
