@@ -1,0 +1,116 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "3fb37b9b-8662-49b9-a6c6-7baef805ebbb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import os\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "3075e964-cce7-48d1-b7ad-f1369563b56d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def _load_ANDOR_image(self, path:str, skipfooter:int=41)->tuple[np.ndarray, list, list]:\n",
+    "        \"\"\"Loads an image produced by the ANDOR synchrotron spectroscopy camera from some specified\n",
+    "        path location.\n",
+    "        \n",
+    "        Parameters\n",
+    "        ----------\n",
+    "            path : str\n",
+    "                The path to the image data.\n",
+    "            skipfooter : int = 41\n",
+    "                The number of rows at the bottom of the andor .asc file which we have to skip over\n",
+    "\n",
+    "        Returns\n",
+    "        -------\n",
+    "            img : np.ndarray\n",
+    "            pixels_x : List\n",
+    "            wavelengths (aka pixels_y) : List\n",
+    "        \"\"\"\n",
+    "\n",
+    "        image = np.genfromtxt(path, delimiter=',', dtype=np.float32, skip_footer=41)\n",
+    "\n",
+    "\n",
+    "        #EXTRACT THE FIRST COLUMN, WHICH CONTAIN WAVELENGTHS IN NM- this is \"pixels_y\"\n",
+    "        wavelengths = image[:, 0]\n",
+    "\n",
+    "        #Index the pixels from 0 to the length of the x axis\n",
+    "        pixels_x = np.arange(0, len(image[0]))\n",
+    "\n",
+    "        # trim away the first column to remove wavelength data\n",
+    "        image = image[:, 1:]\n",
+    "\n",
+    "        return image, pixels_x, wavelengths"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "acb73e89-7c24-4ad8-93be-b142a04a7bef",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "KeyboardInterrupt",
+     "evalue": "",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)",
+      "\u001b[0;32m/tmp/ipykernel_505/881419009.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      6\u001b[0m \u001b[0mfile_list\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mlistdir\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      7\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 8\u001b[0;31m file_list_unix = {\n\u001b[0m\u001b[1;32m      9\u001b[0m     \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mstat\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mjoin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mfile\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mfile\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mfile\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mfile_list\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     10\u001b[0m }\n",
+      "\u001b[0;32m/tmp/ipykernel_505/881419009.py\u001b[0m in \u001b[0;36m<dictcomp>\u001b[0;34m(.0)\u001b[0m\n\u001b[1;32m      7\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      8\u001b[0m file_list_unix = {\n\u001b[0;32m----> 9\u001b[0;31m     \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mstat\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mjoin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mfile\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mfile\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mfile\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mfile_list\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     10\u001b[0m }\n",
+      "\u001b[0;31mKeyboardInterrupt\u001b[0m: "
+     ]
+    }
+   ],
+   "source": [
+    "parent_dir = \"/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data/chromox_cameras\"\n",
+    "folder_name = \"HRM3\"\n",
+    "path = os.path.join(parent_dir, folder_name)\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0e4034de-8e83-48ed-b463-89d51f137585",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "file_list = os.listdir(path)\n",
+    "\n",
+    "file_list_unix = {\n",
+    "    os.stat(os.path.join(path, file)): file for file in file_list\n",
+    "}"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

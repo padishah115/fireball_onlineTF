@@ -2,15 +2,19 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": 15,
+   "execution_count": 14,
    "id": "cd278f9a-a0a0-4634-b55c-d17773394ecd",
    "metadata": {},
    "outputs": [
     {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Executed\n"
+     "ename": "NameError",
+     "evalue": "name 'OD0_1_10000_1748456899532640_1748456899335000_BG' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m/tmp/ipykernel_475/890475319.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      9\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mruntime\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mmain\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mruntime\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     10\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 11\u001b[0;31m \u001b[0mOD0_1_10000_1748456899532640_1748456899335000_BG\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     12\u001b[0m \u001b[0mtimestamps_rough\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;36m1748458080\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;36m1748539080\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     13\u001b[0m \u001b[0mbuffer\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;36m60\u001b[0m \u001b[0;31m# 1 minute in unix\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'OD0_1_10000_1748456899532640_1748456899335000_BG' is not defined"
      ]
     }
    ],
@@ -156,7 +160,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 16,
+   "execution_count": 13,
    "id": "3ac1a0db-e998-43ad-8fa1-ef85e2b0fbfa",
    "metadata": {},
    "outputs": [

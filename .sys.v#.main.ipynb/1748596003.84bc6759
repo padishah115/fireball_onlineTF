@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": 15,
+   "execution_count": 12,
    "id": "cd278f9a-a0a0-4634-b55c-d17773394ecd",
    "metadata": {},
    "outputs": [
@@ -25,6 +25,7 @@
     "importlib.reload(runtime)\n",
     "from runtime import main as runtime\n",
     "\n",
+    "OD0_1_10000_1748456899532640_1748456899335000_BG\n",
     "timestamps_rough = [1748458080, 1748539080]\n",
     "buffer = 60 # 1 minute in unix \n",
     "timestamps = []\n",
@@ -138,10 +139,10 @@
     "    \"TIMESTAMP_SLICE\": {\n",
     "            \"ANDOR SPECTROMETER\": (18, 24),\n",
     "            \"ORCA STREAK\": (5, 12),\n",
-    "            \"HRM3\": (22, 31),    \n",
-    "            \"HRM4\": (22, 31),\n",
-    "            \"HRM5\": (22, 31),\n",
-    "            \"HRM6\": (22, 31),\n",
+    "            \"HRM3\": (22, 37),    \n",
+    "            \"HRM4\": (22, 37),\n",
+    "            \"HRM5\": (22, 37),\n",
+    "            \"HRM6\": (22, 37),\n",
     "            \"SCOPE 1\": (-21, -4),\n",
     "            \"SCOPE 2\": (-21, -4),\n",
     "            \"SCOPE 3\": (-21, -4),\n",
@@ -156,7 +157,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 16,
+   "execution_count": 13,
    "id": "3ac1a0db-e998-43ad-8fa1-ef85e2b0fbfa",
    "metadata": {},
    "outputs": [

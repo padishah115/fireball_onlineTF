@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": 15,
+   "execution_count": 12,
    "id": "cd278f9a-a0a0-4634-b55c-d17773394ecd",
    "metadata": {},
    "outputs": [
@@ -24,6 +24,7 @@
     "#Import main function that calls the whole run\n",
     "importlib.reload(runtime)\n",
     "from runtime import main as runtime\n",
+    "\n",
     "\n",
     "timestamps_rough = [1748458080, 1748539080]\n",
     "buffer = 60 # 1 minute in unix \n",
@@ -138,10 +139,10 @@
     "    \"TIMESTAMP_SLICE\": {\n",
     "            \"ANDOR SPECTROMETER\": (18, 24),\n",
     "            \"ORCA STREAK\": (5, 12),\n",
-    "            \"HRM3\": (22, 31),    \n",
-    "            \"HRM4\": (22, 31),\n",
-    "            \"HRM5\": (22, 31),\n",
-    "            \"HRM6\": (22, 31),\n",
+    "            \"HRM3\": (22, 37),    \n",
+    "            \"HRM4\": (22, 37),\n",
+    "            \"HRM5\": (22, 37),\n",
+    "            \"HRM6\": (22, 37),\n",
     "            \"SCOPE 1\": (-21, -4),\n",
     "            \"SCOPE 2\": (-21, -4),\n",
     "            \"SCOPE 3\": (-21, -4),\n",
@@ -156,7 +157,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 16,
+   "execution_count": null,
    "id": "3ac1a0db-e998-43ad-8fa1-ef85e2b0fbfa",
    "metadata": {},
    "outputs": [
@@ -165,21 +166,6 @@
      "output_type": "stream",
      "text": [
       "Starting run ... \n"
-     ]
-    },
-    {
-     "ename": "KeyError",
-     "evalue": "1748458020",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[0;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
-      "\u001b[0;32m/tmp/ipykernel_475/2695004057.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Starting run ... \"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m runtime(\n\u001b[0m\u001b[1;32m      3\u001b[0m     \u001b[0minput\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0minput\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m )\n",
-      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/runtime.py\u001b[0m in \u001b[0;36mmain\u001b[0;34m(input)\u001b[0m\n\u001b[1;32m     98\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     99\u001b[0m     \u001b[0;31m#Execute the run.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 100\u001b[0;31m     \u001b[0mrun_manager\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mrun\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    101\u001b[0m     \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Run terminated successfully without errors. \\n\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
-      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/utils/runmanager/camrunmanager.py\u001b[0m in \u001b[0;36mrun\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m     61\u001b[0m         \u001b[0;31m# DICTIONARIES OF FORM {SHOT NO : {\"DATA\": [], \"X\": [], \"Y\": []}} FOR IMAGES\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     62\u001b[0m         \u001b[0;31m# AND OF FORM {SHOT NO : { \"DATA\": { \"VOLTAGES\":[], \"TIMES\":[] } } } FOR PROBES\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 63\u001b[0;31m         \u001b[0mraw_data_dict\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mbkg_data_dict\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mcorrected_data_dict\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mload_manager\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mload\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     64\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     65\u001b[0m         \u001b[0;31m##############################\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
-      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/utils/loadmanager/camloadmanager.py\u001b[0m in \u001b[0;36mload\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m     25\u001b[0m         \"\"\"\n\u001b[1;32m     26\u001b[0m         \u001b[0;31m#IF IMAGE, THEN HAVE TO DEAL WITH 2D DATA\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 27\u001b[0;31m         exp_data_dict : Dict = self.IMAGE_load_shots(shot_nos=self.exp_shot_nos, \n\u001b[0m\u001b[1;32m     28\u001b[0m                                                 \u001b[0mdata_paths_dict\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata_paths_dict\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     29\u001b[0m                                                 camera_type=self.input[\"DEVICE_SPECIES\"])\n",
-      "\u001b[0;32m/eos/home-i02/h/hramm/fireball_onlineTF/utils/loadmanager/camloadmanager.py\u001b[0m in \u001b[0;36mIMAGE_load_shots\u001b[0;34m(self, shot_nos, data_paths_dict, camera_type)\u001b[0m\n\u001b[1;32m    223\u001b[0m         \u001b[0;32mfor\u001b[0m \u001b[0mshot_no\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mshot_nos\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    224\u001b[0m             \u001b[0;31m#LOCATE SHOT'S DATA PATH FROM THE DATA_PATHS_DICT\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 225\u001b[0;31m             \u001b[0mdata_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mdata_paths_dict\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mshot_no\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    226\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    227\u001b[0m             \u001b[0;31m# STORE THE DATA ITSELF FOR EACH SHOT IN THE IMAGE_DICT ARRAY\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
-      "\u001b[0;31mKeyError\u001b[0m: 1748458020"
      ]
     }
    ],
