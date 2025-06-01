@@ -402,6 +402,7 @@ class AndorImageManager(ImageOperationsManager):
             axs[1].invert_yaxis()
             axs[1].set_xlabel("Intensity")
             axs[1].set_ylabel("Wavelength / nm")
+            axs[1].set_ylim(max(y_tick_loc), min(y_tick_loc))
             if self.std_data is not None:
                 # plot the "fill between" showing +- 1 std dev
                 axs[1].fill_betweenx(pixels_x, lower_intensities, upper_intensities, color="blue", alpha=0.2)
