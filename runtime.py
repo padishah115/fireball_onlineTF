@@ -47,37 +47,29 @@ def main(input):
     # INITIALIZE PATH DICTIONARY BASED ON WHETHER USER WANTS TO SCRAPE FROM TIMESTAMP OR NOT #
     ##########################################################################################
     
-    # If specifying by relative shot number (reverse chronological order)
-    if input["SPECIFY_TIMESTAMP"] == False:
-        files = [f for f in files_dict_sorted.values()]
-        # initialise path dictionary.
-        paths_dict = {
-            i:os.path.join(path, file) for i, file in enumerate(files)
-        }
+
+    # Check to make sure that we have a prescription for extracting timestamp data from the filename
+    if input["TIMESTAMP_SLICE"] is None:
+        raise ValueError(f"Error: device {input['DEVICE_NAME']} does not have any timestamp or cyclestamp naming implemented.")
+
+    # If we were using relative indexing, need to convert the shots indices to timestamps
+    timestamps = [timestamp for timestamp in files_dict_sorted.keys()]
+    if input["SPECIFY_TIMESTAMP_EXP"] == False:
+        input["EXP_SHOT_NOS"] = [timestamps[i] for i in input["EXP_SHOT_NOS"]]
+
+    if input["SPECIFY_TIMESTAMP_BKG"] == False:
+        input["BKG_SHOT_NOS"] = [timestamps[j] for j in input["BKG_SHOT_NOS"]]
+
+    paths_dict = {timestamp:os.path.join(path, file) for timestamp, file in files_dict_sorted.items()\
+                  if timestamp in input["EXP_SHOT_NOS"] or timestamp in input["BKG_SHOT_NOS"]
+    }
     
-    # if specifying by timestamp rather than relative shot number.
-    elif input["SPECIFY_TIMESTAMP"] == True:
-
-        # Check to make sure that we have a prescription for extracting timestamp data from the filename
-        if input["TIMESTAMP_SLICE"] is None:
-            raise ValueError(f"Error: device {input['DEVICE_NAME']} does not have any timestamp or cyclestamp naming implemented.")
-        for shot_no in input["EXP_SHOT_NOS"]:
-            if type(shot_no) != str:
-                raise ValueError("When specifying shot numbers by timestamps, must pass timestamps as strings.")
-        for shot_no in input["BKG_SHOT_NOS"]:
-            if type(shot_no) != str:
-                raise ValueError("When specifying shot numbers by timestamps, must pass timestamps as strings.")
-
-        paths_dict = {timestamp:os.path.join(path, file) for timestamp, file in files_dict_sorted.items()\
-                      if timestamp in input["EXP_SHOT_NOS"] or timestamp in input["BKG_SHOT_NOS"]
-        }
-
-    # Check to make sure that the user hasn't specified something other than true or false for SCRAPE_FROM_TIMESTAMP
-    else:
-        raise ValueError(f"Error: value {input['SPECIFY_TIMESTAMP']} for SCRAPE_FROM_TIMESTAMP is not valid.")        
     
     if not paths_dict:
         raise FileNotFoundError(f"Warning: paths dictionary is empty.")
+
+
+    
 
 
     #######

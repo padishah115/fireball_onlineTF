@@ -15,8 +15,6 @@ class TempRunManager(RunManager):
 
         # RETURN A DICTIONARY OF FORM {SHOT NO : DATA}        
         data_dict = loadmanager.load()
-        shot_nos = data_dict.keys()
-        print(shot_nos)
 
         LABEL = None
 
