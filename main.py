@@ -1,99 +1,129 @@
 #MODULE IMPORTS
 import sys
-import json
-import os
+import numpy as np
 sys.path.append(".")
+import importlib
+import runtime
+#Import main function that calls the whole run
+importlib.reload(runtime)
+from runtime import main as runtime
 
-from typing import Dict, Type
-from utils.runmanager.runmanager import RunManager
-from utils.runmanager.camrunmanager import CamRunManager 
-from utils.runmanager.proberunmanager import ProbeRunManager
-from utils.runmanager.temprunmanager import TempRunManager
-from utils.runmanager.ldvrunmanager import LDVRunManager
+# INPUT CONFIGURATION
 
+input = {
 
-from utils.dictmanager.dictmanager import DictManager
+    #################################
+    # Information about the device. #
+    #################################
+    # - DEVICE_NAME tells us which directory to search in
+    # - DEVICE_TYPE type tells us how many channels of data we have/what type of data we're dealing with.
+    # - DEVICE_SPECIES is a subset of type, and helps us decide how to load different types of data files
+    #   even if the underlying data type (i.e. "image") is the same.
+    "DEVICE_NAME": "LDV",
+    "DEVICE_TYPE": "LDV",
+    "DEVICE_SPECIES": "LDV",
 
-# IMPLEMENT LATER...
-#from utils.dictmanager import DictManager
+    ##################
+    # Shot Selection #
+    ##################
+    # - Can select from timestamps or from relative shot no., which is a heuristic term that sorts everything
+    #   in the target directory by timestamp, then 0-indexes the shot from most recent to most distant.
+    # - Can also specify the timestamp specifically. 
 
-def main(
-        data_json_path="./paths.json",
-        input_json_path="./input.json"
-    ):
+    # Shots indexed from 0 in reverse chronology. This is easy, and the shots are 0-indexed automatically
+    # in reverse-chronological order of acquisition.
+    "EXP_SHOT_NOS": [0], #if timestamps, need to be strings
+    "BKG_SHOT_NOS": [],
 
-    with open(input_json_path) as jsfile:
-        input = json.load(jsfile)
+    # Do we use the timestamps or the relative reverse-chronology method?
+    "SPECIFY_TIMESTAMP_EXP": False,
+    "SPECIFY_TIMESTAMP_BKG": False,
 
-    #######################################
-    # DICTIONARY MANAGER- IMPLEMENT LATER #
-    #######################################
+    ##########################
+    # Background Subtraction #
+    ##########################
+    # - BKG_NAME tells us how the background will be denoted on-screen during plotting.
+    # - BACKGROUND_STATUS tells us whether we want to remove the background or not. If so, bkg is subtracted BEFORE
+    #   image averaging.
+    # - If more than one background shot was specified, these are averaged before being subtracted from the shot image.
+    "BKG_NAME": "DARKFIELD",
+    "BACKGROUND_STATUS": "RAW",
+
+    #########################
+    # Operations Specifiers #
+    #########################
+    # - Brief details of what analysis we want to see live, but this is largely fixed for the underlying devices.
     
-    with open(data_json_path) as jsfile:
-        paths = json.load(jsfile)
-
-    # INITIALIZE THE DICTIONARY MANAGER
-    dict_manager = DictManager(
-        shot_nos=input["EXP_SHOT_NOS"],
-        path = os.path.join(paths["PARENT_PATH_LOCAL"], paths[input["DEVICE_NAME"]])
-    )
-
-    # Create the correct data path dictionary.
-    data_paths_dict = dict_manager.get_data_paths_dict()
-    print(data_paths_dict)
-
-    digicam3_paths_dict = {
-        1:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
-        2:"./example_data/data/HRM3.DigiCam_OD0_1714383312791697_1714383306135000.csv",
-        3:"./example_data/data/HRM3.DigiCam_OD1_1714604587992043_1714604581335000.csv",
-        4:"./example_data/data/BG_HRM3.DigiCam_OD0_1714407435191489_1714407428535000.csv",
-        5:"./example_data/data/HRM3.DigiCam_OD2_1684845285167029_1684845278535000.csv"
-    }
-
-    andor_paths_dict = {
-        1:'./example_data/data/andor.asc'
-    }
-
-    orca_paths_dict = {
-        1:'./example_data/data/1ns_test.dac'
-    }
-
-    probe_paths_dict = {
-        1:"/Users/hayden/Desktop/FIREBALL/HRMT68_data/scope_test/FastScope_TestSave_ALL_20250520173102723.csv",
-        2:"/Users/hayden/Desktop/FIREBALL/HRMT68_data/scope_test/FastScope_TestSave_ALL_20250520173522578.csv",
-        3:"/Users/hayden/Desktop/FIREBALL/HRMT68_data/scope_test/FastScope_TestSave_ALL_20250520173527657.csv"
-    }
-
-    pt100_paths_dict = {
-        1:"/Users/hayden/Desktop/FIREBALL/HRMT68_data/temperatures/hrmt64_temperatures.csv"
-    }
-
-    ldv_paths_dict = {
-        1:"/Users/hayden/Desktop/FIREBALL/HRMT68_data/ldv_and_strain_gauges/Triggers/2025/05/13/2025-05-13T180531_0200.tdms"
-    }
-
-    #######
-    # RUN #
-    #######
+    "PLOT_ONLY": False, # in case we want to just quickly display the image live.
     
-    # Initialise the runmanager as appropriate for each device.
-    runmanagerdict : Dict[str, Type[RunManager]]= {
-        "PROBE":ProbeRunManager, 
-        "CAMERA": CamRunManager,
-        "PT100": TempRunManager,
-        "LDV": LDVRunManager,
-    }
+    "NORM_PLOT": False,
     
-    # INITIALIZE THE APPROPRIATE RUN MANAGER
-    run_manager = runmanagerdict[input["DEVICE_TYPE"]](
-        input=input, # input configuration
-        #data_paths_dict=data_paths_dict # select appropriate dictionary from the dict_of_dicts variable.
-        data_paths_dict=andor_paths_dict
-    )
+    "OPERATIONS": {
+        "SHOW_SINGLESHOT_PLOTS": True,
+        "LINEOUT_BIN_NO": 100,
+        "SHOW_AVERAGE_SHOTS": True,
+    },
 
-    #Execute the run.
-    run_manager.run()
-    print("Run terminated successfully without errors. \n")
+    #########################
+    # Directory Information #
+    #########################
+    # - PARENT_DIR tells us which folder contains all the individual devices' data directories.
+    # - FOLDER_NAMES tells us where data has been logged for each of the individual devices.
+    #"PARENT_DIR":r"/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data",
+    "PARENT_DIR" : "./example_data/",
 
-if __name__ == "__main__":
-    main()
+    "FOLDER_NAMES": {
+            "ANDOR SPECTROMETER":"andor_spectrometer_contingency/tagged_files",
+            "ORCA STREAK":"orca_streak/tagged_files",
+            "HRM3":"chromox_cameras/HRM3",    
+            "HRM4":"chromox_cameras/HRM4",
+            "HRM5":"chromox_cameras/HRM5",
+            "HRM6":"chromox_cameras/HRM6",
+            "SCOPE 1":"scope_test",
+            "SCOPE 2":"scope_test",
+            "SCOPE 3":"scope_test",
+            "LDV":"enrica",
+            "PT100":"temperatures",
+
+    },
+
+    ####################
+    # File information #
+    ####################
+    # - EXTENSION_DICT tells us what file extension we are expecting for each of the devices. This is for
+    #   exception handling, and tips us off if we are mistaking which device's data we are looking at.
+    # - TIMESTAMP_SLICE tells us how to slice up the filename strings in order to extract timestamp information.
+    "EXTENSION_DICT" : {
+            "ANDOR SPECTROMETER": ".asc",
+            "ORCA STREAK": ".dac",
+            "HRM3":".csv",    
+            "HRM4":".csv",
+            "HRM5":".csv",
+            "HRM6":".csv",
+            "SCOPE 1": ".csv",
+            "SCOPE 2": ".csv",
+            "SCOPE 3": ".csv",
+            "LDV": ".tdms",
+            "PT100": ".csv",
+        },
+
+    "TIMESTAMP_SLICE": {
+            "ANDOR SPECTROMETER": (23, 39),
+            "ORCA STREAK": (21, 37),
+            "HRM3": (22, 31),    
+            "HRM4": (22, 31),
+            "HRM5": (22, 31),
+            "HRM6": (22, 31),
+            "SCOPE 1": (-21, -4),
+            "SCOPE 2": (-21, -4),
+            "SCOPE 3": (-21, -4),
+            "LDV": (-16, -5),
+            "PT100":None,
+    } 
+    
+}
+
+print("Starting runtime ... ")
+runtime(
+    input=input
+)

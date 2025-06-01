@@ -41,7 +41,7 @@ class LDVLoadManager(LoadManager):
         )
         first_window_high_freq = trigger_dataframes[0]
 
-        shot_data_dict["PRETRIGGER_DF"] = trigger_dataframes
+        shot_data_dict["PRETRIGGER_DF"] = pretrigger_df
         shot_data_dict["DF_IN_S"] = df_in_s
         shot_data_dict["TRIGGER_DATAFRAMES"] = trigger_dataframes
         shot_data_dict["FIRST_WINDOW_HIGH_FREQ"] = first_window_high_freq
@@ -68,6 +68,12 @@ class TdmsDataManager():
         #Initialize the tdms file object inside the datamanager class
         self.tdms_path = tdms_path
         self.df = self.tdms_to_dataframe()
+
+        self.displacement_range = []
+        self.velocity_range = []
+        self.elongation_range = ['20', 'um'] # Default range for strain gauges in um
+        self.strain_voltage_to_elongation_gain = 2  # Gain for the strain gauge voltage to elongation conversion [um/V]
+
    
         
 
@@ -80,7 +86,7 @@ class TdmsDataManager():
         """
 
         with TdmsFile.open(self.tdms_path) as tdms_file:
-            tdms_group = tdmsfile["LDV_SG"]
+            tdms_group = tdms_file["LDV_SG"]
     
             # Displacement and velocity ranges
             self.displacement_range = tdms_group["ranges"].properties["Displacement Range"].split(" ")
@@ -110,7 +116,7 @@ class TdmsDataManager():
     
             #Wrap everything i
             columns = ["timestamp", "displacement", "velocity", "elongation_center", "elongation_downstream"]
-            data_tuples = list(zip(timestamp_data, displacement_data, speed_data, elongation_center_data, elongation_downstream_data))
+            data_tuples = list(zip(self.timestamp_data, self.displacement_data, self.speed_data, self.elongation_center_data, self.elongation_downstream_data))
             df = pd.DataFrame(data_tuples, columns=columns)
 
         return df
@@ -162,7 +168,7 @@ class TdmsDataManager():
 
         return trigger_df, pretrigger_df
 
-    def add_dt_column(self, dataframe):
+    def add_time_difference_column(self, dataframe):
         """Appends a new column to the dataframe which encodes timestep information, which is important when filtering for important frequencies.
         
         Parameters
@@ -182,6 +188,22 @@ class TdmsDataManager():
         dataframe_copy.loc[:, "time_diff"] = time_difference
 
         return dataframe_copy
+    
+    def remove_rows_with_time_diff(self, dataframe, time_diff):
+        """Takes the given dataframe and keeps all the lines with a time difference different from the one that needs to be filtered out.
+
+        :param dataframe: The target dataframe
+        :type dataframe: dataframe
+        :param time_diff: The unwanted time difference. Corresponds to a low-freq acquisition.
+        :type time_diff: int
+        :return: A dataframe without the unwanted samples.
+        :rtype: dataframe
+        """
+        # Filter out rows where 'time_diff' column is equal to time_diff
+        filtered_dataframe = dataframe[dataframe['time_diff'] != time_diff]
+
+        return filtered_dataframe
+
 
     def slice_dataframes_by_time_diff(self, dataframe, time_diff):
         """Takes the given dataframe and slices it with the given time difference threshold.
@@ -291,7 +313,7 @@ class TdmsDataManager():
         """
         full_df = self.tdms_to_dataframe()
         full_df = self.scale_volts_to_units(full_df)
-        df_in_s = self.substract_epoc(full_df)
+        df_in_s = self.subtract_epoch(full_df)
         trigger_df, pretrigger_df = self.slice_data_by_trigger(df_in_s, acq_duration_s, pre_trigger_duration_s)
         trigger_df = self.add_time_difference_column(trigger_df)
         trigger_df = self.remove_rows_with_time_diff(trigger_df, remove_period_s)
