@@ -40,6 +40,7 @@ class FileManager:
             files_dict = {f[timestamp_slice[0]:timestamp_slice[1]]:f for f in os.listdir(self.path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.path, f))}
         else:
+            print(f"Warning: no timestamp slice provided for {self.input["DEVICE_NAME"]}")
             files_dict = {os.stat(os.path.join(self.path, f)).st_mtime:f for f in os.listdir(self.path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.path, f))}
 
