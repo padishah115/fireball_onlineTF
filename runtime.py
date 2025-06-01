@@ -24,7 +24,7 @@ def main(input):
     ################
     # PATH LOADING #
     ################
-    
+    print("Loading paths...") 
     # INITIALIZE PATH TO THE DEVICE'S DATA, USING CONFIGURATION FILES.
     path = os.path.join(input["PARENT_DIR"], input["FOLDER_NAMES"][input["DEVICE_NAME"]])
     # check to make sure it actually exists
@@ -80,7 +80,7 @@ def main(input):
     #######
     # RUN #
     #######
-    
+    print("Starting runs...") 
     # Initialise the runmanager as appropriate for each device.
     runmanagerdict : dict[str, type[RunManager]]= {
         "PROBE":ProbeRunManager, 
