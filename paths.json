@@ -1,0 +1,23 @@
+{
+
+    "PARENT_PATH": "/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data",
+    "PARENT_PATH_LOCAL": "../HRMT68_data",
+
+    "ANDOR": "andor_spectrometer",
+    "ORCA": "orca_streak",
+    "HRM3": "plasmacell_cams",
+    "HRM4": "plasmacell_cams",
+    "HRM5": "spectrometer_cams",
+    "HRM6": "spectrometer_cams",
+    "BDOT1": false,
+    "BDOT2": false,
+    "FARADAY PROBE": "scope_test",
+
+    "PT100":"temperatures",
+    "LDV":"ldv_and_strain_gauges/Triggers/2025/05/13/"
+
+
+
+
+
+}
