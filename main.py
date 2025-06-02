@@ -129,8 +129,9 @@ input = {
     
 }
 
-print("Starting runtime ... \n")
-runtime(
-    input=input
-)
-print("Ending runtime ...\n")
+if __name__ == "__main__":
+    print("Starting runtime ... \n")
+    runtime(
+        input=input
+    )
+    print("Ending runtime ...\n")

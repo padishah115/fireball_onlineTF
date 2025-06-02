@@ -46,19 +46,6 @@ class FileManager:
             print(f"Warning: no timestamp slice provided for {self.input['DEVICE_NAME']}")
             files_dict = {str(int(os.stat(os.path.join(self.all_data_path, f)).st_mtime)):f for f in os.listdir(self.all_data_path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.all_data_path, f))}
-            
-        print(f"File dictionary: {files_dict}\n")
-
-        #######################################
-        # Maintain a SHOT LOG of all devices. #
-        #######################################
-        if not os.path.exists(self.input["LOG_PATH"]):
-            os.makedirs(self.input["LOG_PATH"], exist_ok=True)
-        
-        times = [datetime.datetime.fromtimestamp(int(timestamp)) for timestamp in files_dict.keys()]
-        
-        df = pd.DataFrame({"TIMESTAMPS": files_dict.keys(), "TIMES": times, "FILES": files_dict.values()})
-        df.to_csv(os.path.join(self.input["LOG_PATH"], self.input["DEVICE_NAME"] + ".csv"), index=False)
         
 
         # Sort the files in reverse order to their timestamps (i.e. most recent files are earlier in the list)
