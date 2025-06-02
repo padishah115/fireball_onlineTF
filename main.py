@@ -22,9 +22,9 @@ background_shots = {
 }
 
 device_info = {
-    "DEVICE_NAME": "CHROMOX TEST",
+    "DEVICE_NAME": "ORCA STREAK",
     "DEVICE_TYPE": "CAMERA",
-    "DEVICE_SPECIES": "DIGICAM",
+    "DEVICE_SPECIES": "ORCA",
 }
 
 input = {
@@ -32,7 +32,7 @@ input = {
     ##################
     # Shot Selection #
     ##################
-    "EXP_SHOT_NOS": [0,], #if timestamps, need to be strings
+    "EXP_SHOT_NOS": [1,], #if timestamps, need to be strings
     "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_info["DEVICE_NAME"]]],
 
     "SPECIFY_TIMESTAMP_EXP": False,

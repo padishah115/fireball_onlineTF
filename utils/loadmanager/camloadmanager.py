@@ -2,8 +2,13 @@ from utils.stats.stats import img_arrays_stats
 from utils.loadmanager.loadmanager import LoadManager
 from typing import Dict, Tuple, List
 import numpy as np
+import os
+import pandas as pd
 
 class CamLoadManager(LoadManager):
+    def __init__(self, input, data_paths_dict):
+        super().__init__(input, data_paths_dict)
+
     def load(self)->Tuple[Dict[int, np.ndarray], Dict[int, np.ndarray], Dict[int, np.ndarray]]:
         """Loads dictionaries of indexed experimental, background, and background-corrected data. Each of these
         three dictionaries returned by the function is of the form {SHOT NO : np.ndarray}, where the
@@ -100,7 +105,7 @@ class CamLoadManager(LoadManager):
     # this is where we HARDCODE all the lovely, idiosyncratic ways in which different cameras store
     # image data.
     
-    def _load_digicam_image(self, path:str)->Tuple[np.ndarray, List, List]:
+    def _load_digicam_image(self, path:str, shot_no)->Tuple[np.ndarray, List, List]:
         """Loads image object from .csv given by DigiCam. Due to the way that the DigiCams store image data,
         the first column and first row have to be removed, as these contain coordinate information about the
         pixels.
@@ -133,9 +138,8 @@ class CamLoadManager(LoadManager):
             ValueError(f"Error: DIGICAM image generation from {path} failed. {e}")
         
         
-        
     
-    def _load_ORCA_image(self, path:str):
+    def _load_ORCA_image(self, path:str, shot_no):
         """Loads image from ORCA camera, which images OTR. The x dimension
         encodes spatial position in mm, whereas the y dimension gives time in ns."""
         
@@ -146,6 +150,16 @@ class CamLoadManager(LoadManager):
 
             #y axis encodes information about time in ns
             time_ns_y = img[1:, 0]
+            print(time_ns_y)
+            time_resolution = (time_ns_y[-1]-time_ns_y[0])/(len(time_ns_y)-1)
+            print(time_resolution)
+
+
+            save_path = os.path.join(self.input["LOG_PATH"], "ORCA-RESOLUTION-NS")
+            if not os.path.exists(save_path):
+                os.makedirs(save_path, exist_ok=True)
+            
+            np.savetxt(os.path.join(save_path,  f"{shot_no}.txt"), X=[time_resolution])
             img = img[1:, 1:]
 
             return img, space_mm_x, time_ns_y
@@ -155,7 +169,7 @@ class CamLoadManager(LoadManager):
 
     
 
-    def _load_ANDOR_image(self, path:str, skip_footer:int=41)->Tuple[np.ndarray, List, List]:
+    def _load_ANDOR_image(self, path:str, shot_no, skip_footer:int=41)->Tuple[np.ndarray, List, List]:
         """Loads an image produced by the ANDOR synchrotron spectroscopy camera from some specified
         path location.
         
@@ -164,7 +178,9 @@ class CamLoadManager(LoadManager):
             path : str
                 The path to the image data.
             skipfooter : int = 41
-                The number of rows at the bottom of the andor .asc file which we have to skip over
+                The number of rows at the bottom of the andor .asc file which contain metadata
+            skipheader : int = 1026
+                The number of rows we want to skip to omit blank spaces and the image data.
 
         Returns
         -------
@@ -174,13 +190,36 @@ class CamLoadManager(LoadManager):
         """
 
         try:
+            
+            # Extract the image from the spectrometer
             image = np.genfromtxt(path, delimiter=',', dtype=np.float32, skip_footer=skip_footer)
+            
+            # Extract metadata about the shot
+            metadata = {0:[], 1:[]}
+            with open(path, 'r', encoding='utf8', errors='ignore') as f:
+                lines = f.readlines()[-skip_footer:]
+                for i, line in enumerate(lines):
+                    metadata[i%2].append(line)
+
+
+            save_path = os.path.join(self.input["LOG_PATH"], "ANDOR-METADATA")
+            if not os.path.exists(save_path):
+                os.makedirs(save_path, exist_ok=True)
+
+            fpath = os.path.join(save_path, f"{shot_no}.csv")
+            # Pad the lists to the same length for DataFrame
+            max_len = max(len(metadata[0]), len(metadata[1]))
+            for k in metadata:
+                metadata[k] += [None] * (max_len - len(metadata[k]))
+            metadata_dict = {"0": metadata[0], "1": metadata[1]}
+            df = pd.DataFrame(metadata_dict)
+            df.to_csv(fpath, index=False)
 
             #EXTRACT THE FIRST COLUMN, WHICH CONTAIN WAVELENGTHS IN NM- this is "pixels_y"
             wavelengths = image[:, 0]
 
             #Index the pixels from 0 to the length of the x axis
-            pixels_x = np.arange(0, len(image[0]))
+            pixels_x = np.arange(0, len(image[1]))
 
             # trim away the first column to remove wavelength data
             image = image[:, 1:]
@@ -242,7 +281,7 @@ class CamLoadManager(LoadManager):
             # WARNING- WANT TO UPGRADE THIS TO ACCOUNT FOR DIFFERENT CAMERA TYPES
             image_dict[shot_no] = {}
             image_dict[shot_no]["DATA"], image_dict[shot_no]["X"], image_dict[shot_no]["Y"] = \
-                image_loader_function_dict[camera_type](data_path)
+                image_loader_function_dict[camera_type](data_path, shot_no)
             
 
 
