@@ -99,13 +99,18 @@ class ProbeLoadManager(LoadManager):
         # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME
         df = pd.read_csv(data_path)
         
-        N = int(
-            df[df.columns.values[1]].iloc[6]
-        )
+        # Make sure that the N and dt values are legit- otherwise it's reading from a LeCroy scope.
+        try:
+            N = int(
+                df[df.columns.values[1]].iloc[6]
+            )
+            
+            dt = float(
+                df[df.columns.values[1]].iloc[5]
+            )
         
-        dt = float(
-            df[df.columns.values[1]].iloc[5]
-        )
+        except Exception as e:
+            raise ValueError(f"Error when reading time data from {data_path}- potentially LeCroy data. {e}")
 
         # READ AND RETURN TIMES FROM APPROPRIATE COLUMN IN PANDAS DATAFRAME, this time skipping the rows
         df = pd.read_csv(data_path, skiprows=skiprows)

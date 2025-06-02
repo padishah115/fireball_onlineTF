@@ -23,6 +23,22 @@ class ProbeOperationsManager(OperationsManager):
                 Whether or not we want to normalize the 
         """
 
+        # Little modifications required to cater to what the two different scopes are doing
+        if self.input["DEVICE_NAME"] == "SCOPE 1":
+            ch1_label = "Diamond BLM, 6 dB Attenuation"
+            ch2_label = "Upstream BDot Azimuthal Line 1"
+            ch3_label = "Upstream BDot Azimuthal Line 2"
+            ch4_label = "Downstream BDot Longitudinal Line 1"
+
+        elif self.input["DEVICE_NAME"] == "SCOPE 2":
+            ch1_label = "Downstream BDot Longitudinal Line 2"
+            ch2_label = "(Unconnected)"
+            ch3_label = "Downstream BDot Azimuthal Line 1"
+            ch4_label = "Downstream BDot Azimuthal Line 1"
+
+        else:
+            raise ValueError(f"Error: unrecognised scope, {self.input['DEVICE_NAME']}")
+
         channel_nos = ["1", "2", "3", "4"]
 
         #2x2 grid of plots, figsize is 16x9.
@@ -43,6 +59,7 @@ class ProbeOperationsManager(OperationsManager):
         for i in range(2):
 
             index_tuple = (i) if self.input["PLOT_ONLY"] else (i, 0)
+            ch_label = ch1_label if i == 0 else ch2_label
             
             # REAL-SPACE VOLTAGE VS TIME PLOT
             channel_no = channel_nos[i]
@@ -55,7 +72,7 @@ class ProbeOperationsManager(OperationsManager):
                 axs1[i, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
             axs1[index_tuple].set_ylabel("Amplitude / V")
             axs1[index_tuple].set_xlabel("Time / s")
-            axs1[index_tuple].set_title(f"Ch {channel_no}")
+            axs1[index_tuple].set_title(f"{ch_label}")
 
             # Only perform fourier transforms if we don't have the input set to plot only
             if not self.input["PLOT_ONLY"]:
@@ -65,7 +82,7 @@ class ProbeOperationsManager(OperationsManager):
                 axs1[i,1].plot(freq, fftvol)
                 axs1[i,1].set_ylabel("Fourier Amplitude")
                 axs1[i,1].set_xlabel("Freq / Hz")
-                axs1[i,1].set_title(f"Ch {channel_no} Fourier Transform")
+                axs1[i,1].set_title(f"Fourier Transform")
 
         ####################
         # CHANNELS 3 AND 4 #
@@ -74,6 +91,7 @@ class ProbeOperationsManager(OperationsManager):
         for i in range(2):
 
             index_tuple = (i) if self.input["PLOT_ONLY"] else (i, 0)
+            ch_label = ch3_label if i == 0 else ch4_label
             
             channel_no = channel_nos[i+2]
             channel_voltage = channel_voltages_dict[channel_no]
@@ -90,7 +108,7 @@ class ProbeOperationsManager(OperationsManager):
             
             axs2[index_tuple].set_ylabel("Amplitude / V")
             axs2[index_tuple].set_xlabel("Time / s")
-            axs2[index_tuple].set_title(f"Ch {channel_no}")
+            axs2[index_tuple].set_title(f"{ch_label}")
             
             if not self.input["PLOT_ONLY"]:
                 freq = rfftfreq(n=N, d=dt)
@@ -98,7 +116,7 @@ class ProbeOperationsManager(OperationsManager):
                 axs2[i,1].plot(freq, fftvol)
                 axs2[i,1].set_ylabel("Fourier Amplitude")
                 axs2[i,1].set_xlabel("Freq / Hz")
-                axs2[i,1].set_title(f"Ch {channel_no} Fourier Transform")
+                axs2[i,1].set_title(f"Fourier Transform")
 
         fig1.suptitle(f'Probe Data from {self.input["DEVICE_NAME"]}, Shot {self.shot_no}')
         fig1.tight_layout()
