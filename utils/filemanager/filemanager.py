@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 
 class FileManager:
     """Class which is responsible for handling files for a device at some specified location."""
@@ -39,11 +40,17 @@ class FileManager:
         if timestamp_slice is not None:
             files_dict = {f[timestamp_slice[0]:timestamp_slice[1]]:f for f in os.listdir(self.path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.path, f))}
-            print(files_dict)
         else:
             print(f"Warning: no timestamp slice provided for {self.input['DEVICE_NAME']}")
-            files_dict = {os.stat(os.path.join(self.path, f)).st_mtime:f for f in os.listdir(self.path) if f.endswith(extension)\
+            files_dict = {str(int(os.stat(os.path.join(self.path, f)).st_mtime)):f for f in os.listdir(self.path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.path, f))}
+
+        # Maintain a shot log of all devices.
+        log_path = os.path.join(self.input["LOG_PATH"], self.input["DEVICE_NAME"])
+        if not os.path.exists(log_path):
+            os.makedirs(log_path, exist_ok=True)
+        df = pd.DataFrame({"TIMESTAMPS": files_dict.keys(), "FILES": files_dict.values()})
+        df.to_csv(log_path)
 
         # Sort the files in reverse order to their timestamps (i.e. most recent files are earlier in the list)
         files_dict_sorted = dict(sorted(files_dict.items(), key=lambda item : item[0], reverse=True))

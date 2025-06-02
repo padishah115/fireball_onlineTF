@@ -75,14 +75,15 @@ input = {
     # - FOLDER_NAMES tells us where data has been logged for each of the individual devices.
     #"PARENT_DIR":r"/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data",
     "PARENT_DIR":r"\\eosproject-smb\eos\project\h\hiradmat\HRMT Experiments\2025\HRMT68 - FIREBALL 3\FB3 repository\HRMT68_data",
+    "LOG_PATH":'shot-logs',
 
     "FOLDER_NAMES": {
-            "ANDOR SPECTROMETER":"andor_spectrometer_contingency/original_files",
-            "ORCA STREAK":"orca_streak/original_files",
-            "HRM3":"chromox_cameras/HRM3",    
-            "HRM4":"chromox_cameras/HRM4",
-            "HRM5":"chromox_cameras/HRM5",
-            "HRM6":"chromox_cameras/HRM6",
+            "ANDOR SPECTROMETER":"andor_spectrometer_contingency\\original_files",
+            "ORCA STREAK":"orca_streak\\original_files",
+            "HRM3":"chromox_cameras\\HRM3",    
+            "HRM4":"chromox_cameras\\HRM4",
+            "HRM5":"chromox_cameras\\HRM5",
+            "HRM6":"chromox_cameras\\HRM6",
             "SCOPE 1":"scope_test",
             "SCOPE 2":"scope_test",
             "SCOPE 3":"scope_test",
@@ -113,7 +114,7 @@ input = {
 
     "TIMESTAMP_SLICE": {
             "ANDOR SPECTROMETER": (23, 39),
-            "ORCA STREAK": (21, 37),
+            "ORCA STREAK": None,
             "HRM3": (22, 31),    
             "HRM4": (22, 31),
             "HRM5": (22, 31),
@@ -122,7 +123,7 @@ input = {
             "SCOPE 2": (-21, -4),
             "SCOPE 3": (-21, -4),
             "LDV": (-16, -5),
-            "PT100":None,
+            "PT100": None,
     } 
     
 }
