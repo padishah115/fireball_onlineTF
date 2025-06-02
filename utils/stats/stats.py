@@ -26,7 +26,11 @@ def img_arrays_stats(data_dict_list:list[dict])->tuple[dict, dict]:
     # Expand all of the arrays along a new dimension, 0, which will serve to index the 
     # different shot nos' arrays
     stack_list = [np.expand_dims(d["DATA"], axis=0) for d in data_dict_list]
-    stack = np.concatenate(stack_list, axis=0) #join along 0 axis
+
+    try:
+        stack = np.concatenate(stack_list, axis=0) #join along 0 axis
+    except:
+        ValueError("Error: trying to concatenate arrays of incompatible dimension. Was data acquisition completed correctly?")
 
     #Array of mean values, produced by calculating mean across axis 0
     mean_arr = np.mean(stack, axis=0)

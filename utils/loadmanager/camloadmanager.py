@@ -122,30 +122,40 @@ class CamLoadManager(LoadManager):
         """
         
         #Remove top row and first column, as this is coordinate data
-        img = np.genfromtxt(path, delimiter=',')
-        x_coords = img[0, 1:]
-        y_coords = img[1:, 0]
-        img = img[1:, 1:]
+        try:
+            img = np.genfromtxt(path, delimiter=',')
+            x_coords = img[0, 1:]
+            y_coords = img[1:, 0]
+            img = img[1:, 1:]
+            return img, x_coords, y_coords
         
-        return img, x_coords, y_coords
+        except Exception as e:
+            ValueError(f"Error: DIGICAM image generation from {path} failed. {e}")
+        
+        
+        
     
     def _load_ORCA_image(self, path:str):
         """Loads image from ORCA camera, which images OTR. The x dimension
         encodes spatial position in mm, whereas the y dimension gives time in ns."""
         
-        img = np.genfromtxt(path)
+        try:
+            img = np.genfromtxt(path)
+            #x axis encodes information about space in mm
+            space_mm_x = img[0, 1:]
 
-        #x axis encodes information about space in mm
-        space_mm_x = img[0, 1:]
+            #y axis encodes information about time in ns
+            time_ns_y = img[1:, 0]
+            img = img[1:, 1:]
 
-        #y axis encodes information about time in ns
-        time_ns_y = img[1:, 0]
-        img = img[1:, 1:]
+            return img, space_mm_x, time_ns_y
+        
+        except Exception as e:
+            raise ValueError(f"Error: ORCA image generation from {path} failed. {e}")
 
-        return img, space_mm_x, time_ns_y
+    
 
-
-    def _load_ANDOR_image(self, path:str, skipfooter:int=41)->Tuple[np.ndarray, List, List]:
+    def _load_ANDOR_image(self, path:str, skip_footer:int=41)->Tuple[np.ndarray, List, List]:
         """Loads an image produced by the ANDOR synchrotron spectroscopy camera from some specified
         path location.
         
@@ -163,19 +173,22 @@ class CamLoadManager(LoadManager):
             wavelengths (aka pixels_y) : List
         """
 
-        image = np.genfromtxt(path, delimiter=',', dtype=np.float32, skip_footer=41)
+        try:
+            image = np.genfromtxt(path, delimiter=',', dtype=np.float32, skip_footer=skip_footer)
 
+            #EXTRACT THE FIRST COLUMN, WHICH CONTAIN WAVELENGTHS IN NM- this is "pixels_y"
+            wavelengths = image[:, 0]
 
-        #EXTRACT THE FIRST COLUMN, WHICH CONTAIN WAVELENGTHS IN NM- this is "pixels_y"
-        wavelengths = image[:, 0]
+            #Index the pixels from 0 to the length of the x axis
+            pixels_x = np.arange(0, len(image[0]))
 
-        #Index the pixels from 0 to the length of the x axis
-        pixels_x = np.arange(0, len(image[0]))
+            # trim away the first column to remove wavelength data
+            image = image[:, 1:]
 
-        # trim away the first column to remove wavelength data
-        image = image[:, 1:]
-
-        return image, pixels_x, wavelengths
+            return image, pixels_x, wavelengths
+    
+        except Exception as e:
+                raise ValueError(f"Error: ANDOR image generation from {path} failed. {e}")
 
     ##################################################################
     # WRAPPER METHODS FOR LOADING SEVERAL SHOTS' DATA SIMULTANEOUSLY #

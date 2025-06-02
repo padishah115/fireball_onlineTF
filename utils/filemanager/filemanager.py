@@ -48,12 +48,10 @@ class FileManager:
         print(files_dict)
 
         # Maintain a shot log of all devices.
-        log_path = os.path.join(self.input["LOG_PATH"], self.input["DEVICE_NAME"])
-        if not os.path.exists(log_path):
-            os.makedirs(log_path, exist_ok=True)
+        if not os.path.exists(self.input["LOG_PATH"]):
+            os.makedirs(self.input["LOG_PATH"], exist_ok=True)
         df = pd.DataFrame({"TIMESTAMPS": files_dict.keys(), "FILES": files_dict.values()})
-        df.to_csv(log_path)
-
+        df.to_csv(os.path.join(self.input["LOG_PATH"], self.input["DEVICE_NAME"] + ".csv"), index=False)
         # Sort the files in reverse order to their timestamps (i.e. most recent files are earlier in the list)
         files_dict_sorted = dict(sorted(files_dict.items(), key=lambda item : item[0], reverse=True))
 

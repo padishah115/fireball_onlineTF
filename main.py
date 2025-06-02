@@ -36,7 +36,7 @@ input = {
 
     # Shots indexed from 0 in reverse chronology. This is easy, and the shots are 0-indexed automatically
     # in reverse-chronological order of acquisition.
-    "EXP_SHOT_NOS": [0], #if timestamps, need to be strings
+    "EXP_SHOT_NOS": [1, 2], #if timestamps, need to be strings
     "BKG_SHOT_NOS": [],
 
     # Do we use the timestamps or the relative reverse-chronology method?
@@ -75,7 +75,7 @@ input = {
     # - FOLDER_NAMES tells us where data has been logged for each of the individual devices.
     #"PARENT_DIR":r"/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data",
     "PARENT_DIR":r"\\eosproject-smb\eos\project\h\hiradmat\HRMT Experiments\2025\HRMT68 - FIREBALL 3\FB3 repository\HRMT68_data",
-    "LOG_PATH":'shot-logs',
+    "LOG_PATH":r"H:\user\h\hramm\shot-log",
 
     "FOLDER_NAMES": {
             "ANDOR SPECTROMETER":"andor_spectrometer_contingency\\original_files",
@@ -132,3 +132,4 @@ print("Starting runtime ... ")
 runtime(
     input=input
 )
+print("Ending runtime ...")
