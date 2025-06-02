@@ -77,8 +77,8 @@ input = {
     "PARENT_DIR":r"\\eosproject-smb\eos\project\h\hiradmat\HRMT Experiments\2025\HRMT68 - FIREBALL 3\FB3 repository\HRMT68_data",
 
     "FOLDER_NAMES": {
-            "ANDOR SPECTROMETER":"andor_spectrometer_contingency/tagged_files",
-            "ORCA STREAK":"orca_streak/tagged_files",
+            "ANDOR SPECTROMETER":"andor_spectrometer_contingency/original_files",
+            "ORCA STREAK":"orca_streak/original_files",
             "HRM3":"chromox_cameras/HRM3",    
             "HRM4":"chromox_cameras/HRM4",
             "HRM5":"chromox_cameras/HRM5",

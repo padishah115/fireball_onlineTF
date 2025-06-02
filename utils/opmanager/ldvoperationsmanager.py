@@ -1,14 +1,10 @@
 from utils.opmanager.operationsmanager import OperationsManager
-from nptdms import TdmsFile
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.fft import rfftfreq, rfft
-from functools import wraps
-from time import time
-import os.path
 import scipy
 import pywt
 import numpy as np
+from utils.opmanager.ldv_filters import butter_bandpass, butter_bandpass_filter
 
 
 class LDVOperationsManager(OperationsManager):
@@ -18,18 +14,23 @@ class LDVOperationsManager(OperationsManager):
         
 
     def plot(self):
-        """Produces plots for LDV data- this includes the position and velocity of the LDV data as a function of time, as well as upstream           and central strain gauge readings. We produce these as 2x2 plots."""
+        """Produces plots for LDV data- this includes the position and velocity of the LDV data as a function of time, as well as upstream and central strain gauge readings. We produce these as 2x2 plots."""
         
+        # Dataframe for the LDV data before the trigger.
         pretrigger_df = self.shot_data["PRETRIGGER_DF"]
+
+        #Dataframe after conversion of time units to seconds
         df_in_s = self.shot_data["DF_IN_S"]
+
+        # Ranges of displacement, velocity, elongation 
         displacement_range = self.shot_data["DISPLACEMENT_RANGE"]
         velocity_range = self.shot_data["VELOCITY_RANGE"]
         elongation_range = self.shot_data["ELONGATION_RANGE"]
+        
         first_window_high_freq = self.shot_data["FIRST_WINDOW_HIGH_FREQ"]
 
-        analysis = LogAnalysis()
 
-        analysis.plot_pre_post_trigger(
+        self.plot_pre_post_trigger(
             pretrigger_df, 
             first_window_high_freq,
             displacement_range=displacement_range,
@@ -37,7 +38,7 @@ class LDVOperationsManager(OperationsManager):
             elongation_range=elongation_range
         )
 
-        analysis.plot_data(
+        self.plot_data(
             df_in_s, 
             "Global",
             displacement_range, 
@@ -45,7 +46,7 @@ class LDVOperationsManager(OperationsManager):
             elongation_range,
         )
 
-        analysis.perform_fft_filtered(
+        self.perform_fft_filtered(
             first_window_high_freq,
             "velocity",
             4e6,
@@ -53,51 +54,6 @@ class LDVOperationsManager(OperationsManager):
             "FFT filtered signal"
         )
         
-
-
-def butter_bandpass(low_cut, high_cut, fs, order=5):
-    """Creates a Butterworth bandpass filter.
-    :param low_cut: The lower cutoff frequency
-    :type low_cut: float
-    :param high_cut: The higher cutoff frequency
-    :type high_cut: float
-    :param fs: The sampling frequency
-    :type fs: float
-    :param order: The order of the filter
-    :type order: int
-    :return: The filter coefficients (b, a)
-    :rtype: tuple
-    """
-
-    return scipy.signal.butter(order, [low_cut, high_cut], fs=fs, btype='band')
-
-
-def butter_bandpass_filter(data, low_cut, high_cut, fs, order=5):
-    """Applies a Butterworth bandpass filter to the given data.
-    :param data: The data to be filtered
-    :type data: array-like
-    :param low_cut: The lower cutoff frequency
-    :type low_cut: float
-    :param high_cut: The higher cutoff frequency
-    :type high_cut: float
-    :param fs: The sampling frequency
-    :type fs: float
-    :param order: The order of the filter
-    :type order: int
-    :return: The filtered data
-    :rtype: array-like
-    """
-    b, a = butter_bandpass(low_cut, high_cut, fs, order=order)
-    y = scipy.signal.lfilter(b, a, data)
-    return y
-    
-    
-class LogAnalysis:
-    """Relevant methods for the analysis of the acquired data.
-    """
-
-    def __init__(self):
-        self.dataframe = []
 
     def plot_data(self, dataframe, title, displacement_range, velocity_range, elongation_range):
         """Plots the given data over time, splitting the data by parameter. Includes lines to indicate selected range.
@@ -113,9 +69,14 @@ class LogAnalysis:
         :param elongation_range: The chosen elongation range
         :type elongation_range: list of strings (number, units)
         """
+        
+        time = dataframe["time (s)"]
+        displacement = dataframe["displacement"]
+        
         fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(20, 5), sharex=True)
 
-        ax1.plot(dataframe["time (s)"], dataframe["displacement"])
+        # Displacement vs time plot
+        ax1.plot(time, displacement)
         ax1.axhline(float(displacement_range[0]), color='red', linestyle='--',
                     label=(displacement_range[0] + " " + displacement_range[1]))
         ax1.axhline(-float(displacement_range[0]), color='red', linestyle='--',
@@ -124,7 +85,9 @@ class LogAnalysis:
         ax1.set_ylabel('Displacement' + " " + "(" + displacement_range[1] + ")")
         ax1.grid(alpha=0.2, ls='dashed')
         ax1.legend()
-        ax2.plot(dataframe["time (s)"], dataframe["velocity"])
+        
+        # Velocity vs time 
+        ax2.plot(time, dataframe["velocity"])
         ax2.axhline(float(velocity_range[0]), color='red', linestyle='--',
                     label=(velocity_range[0] + " " + velocity_range[1]))
         ax2.axhline(-float(velocity_range[0]), color='red', linestyle='--',
@@ -133,7 +96,7 @@ class LogAnalysis:
         ax2.set_ylabel('Velocity' + " " + "(" + velocity_range[1] + ")")
         ax2.grid(alpha=0.2, ls='dashed')
         ax2.legend()
-        ax3.plot(dataframe["time (s)"], dataframe["elongation_center"])
+        ax3.plot(time, dataframe["elongation_center"])
         ax3.axhline(float(elongation_range[0]), color='red', linestyle='--',
                     label=(elongation_range[0] + " " + elongation_range[1]))
         ax3.axhline(-float(elongation_range[0]), color='red', linestyle='--',
@@ -142,7 +105,7 @@ class LogAnalysis:
         ax3.set_ylabel('Elongation ' + "(" + elongation_range[1] + ")")
         ax3.grid(alpha=0.2, ls='dashed')
         ax3.legend()
-        ax4.plot(dataframe["time (s)"], dataframe["elongation_downstream"])
+        ax4.plot(time, dataframe["elongation_downstream"])
         ax4.axhline(float(elongation_range[0]), color='red', linestyle='--',
                     label=(elongation_range[0] + " " + elongation_range[1]))
         ax4.axhline(-float(elongation_range[0]), color='red', linestyle='--',

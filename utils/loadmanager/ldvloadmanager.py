@@ -28,13 +28,22 @@ class LDVLoadManager(LoadManager):
     
     def _load_ldv_data(self, path)->dict:
         """Loads the LDV data in appropriate format. We have channels for time, LDV position, LDV speed, central gauge strain,
-        and downstream gauge strain."""
+        and downstream gauge strain.
+        
+        Returns
+        -------
+            shot_data_dict : dict
+                Dictionary of shot data for the LDV
+        """
 
+        #Initialise the empty shot data dictionary for storing LDV data
         shot_data_dict = {}
 
+        # Create instance of TDMSDATAMANAGER class, which can be used to perform the complex extraction operations
+        # required to get data out of the TDMS
         tdms_data_manager = TdmsDataManager(path)
         pretrigger_df, df_in_s, trigger_dataframes = tdms_data_manager.data_slice_by_time(
-            acq_duration_s = 30,
+            acq_duration_s = 30, #acquisition time in seconds
             pre_trigger_duration_s = 0.040,
             remove_period_s=0.00025,
             time_windows=[5, 10, 20, 30]
@@ -93,8 +102,8 @@ class TdmsDataManager():
             self.velocity_range = tdms_group["ranges"].properties["Velocity Range"].split(" ")
 
             try:
-                displacement_range = float(self.displacement_range[0])
-                velocity_range = float(self.velocity_range[0])
+                self.displacement_range = float(self.displacement_range[0])
+                self.velocity_range = float(self.velocity_range[0])
             except ValueError:
                 self.displacement_range[0] = '1'
                 self.velocity_range[0] = '1'
@@ -122,7 +131,7 @@ class TdmsDataManager():
         return df
 
 
-    def subtract_epoch(self, dataframe):
+    def subtract_epoch(self, dataframe:pd.DataFrame):
         """Converts timestamp column values to time in seconds by zeroing to the initial timestamp.
         
         Parameters
@@ -143,7 +152,7 @@ class TdmsDataManager():
         
         return dataframe_t_to_s
 
-    def slice_data_by_trigger(self, dataframe, acq_time_s, skip_time_s):
+    def slice_data_by_trigger(self, dataframe:pd.DataFrame, acq_time_s:float, skip_time_s:float):
         """Cuts the dataframe into pre- and post-trigger data.
         
         Parameters
@@ -338,7 +347,7 @@ class TdmsDataManager():
         """
         full_df = self.tdms_to_dataframe()
         full_df = self.scale_volts_to_units(full_df)
-        df_in_s = self.substract_epoc(full_df)
+        df_in_s = self.subtract_epoch(full_df)
         trigger_df, pretrigger_df = self.slice_data_by_trigger(df_in_s, acq_time_s, skip_time_s)
         trigger_df = self.add_time_difference_column(trigger_df)
         trigger_df = self.remove_rows_with_time_diff(trigger_df, remove_freq)
