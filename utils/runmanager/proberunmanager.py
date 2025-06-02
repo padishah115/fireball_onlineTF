@@ -1,4 +1,6 @@
 from typing import Dict, Type
+import logging
+logger = logging.getLogger(__name__)
 
 from utils.loadmanager.probeloadmanager import ProbeLoadManager
 from utils.runmanager.runmanager import RunManager
@@ -37,7 +39,7 @@ class ProbeRunManager(RunManager):
         # OPERATION MANAGER MATERIAL #
         ##############################
 
-        print("selecting appropriate data dictionary ... \n")
+        logger.info("Selecting appropriate data dictionary ... \n")
         data_dict = raw_data_dict
 
         # Depending on whether we are displaying the background itself or the experimental shot numbers,
@@ -100,5 +102,5 @@ class ProbeRunManager(RunManager):
         ) 
 
         # PLOTTING        
-        print("Plot ... \n")
+        logger.info("Plot ... \n")
         operations_manager.plot(norm=self.input["NORM_PLOT"])

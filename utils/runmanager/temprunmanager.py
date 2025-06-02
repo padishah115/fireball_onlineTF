@@ -3,7 +3,7 @@ from utils.loadmanager.temploadmanager import TempLoadManager
 from utils.opmanager.pt100operationsmanager import PT100OperationsManager
 
 class TempRunManager(RunManager):
-    def __init__(self, input, data_paths_dict):
+    def __init__(self, input:dict, data_paths_dict:dict):
         super().__init__(input, data_paths_dict)
 
     def run(self):
@@ -18,6 +18,8 @@ class TempRunManager(RunManager):
 
         LABEL = None
 
+        shot_nos = self.data_paths_dict.keys()
+
         for shot_no in shot_nos:
             opmanager = PT100OperationsManager(
                 DEVICE_NAME=self.input["DEVICE_NAME"],
@@ -26,5 +28,4 @@ class TempRunManager(RunManager):
                 shot_data=data_dict[shot_no],
                 input=self.input,
             )
-            print(shot_no)
             opmanager.plot()

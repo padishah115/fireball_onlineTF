@@ -150,9 +150,7 @@ class CamLoadManager(LoadManager):
 
             #y axis encodes information about time in ns
             time_ns_y = img[1:, 0]
-            print(time_ns_y)
             time_resolution = (time_ns_y[-1]-time_ns_y[0])/(len(time_ns_y)-1)
-            print(time_resolution)
 
 
             save_path = os.path.join(self.input["LOG_PATH"], "ORCA-RESOLUTION-NS")

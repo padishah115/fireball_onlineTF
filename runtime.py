@@ -1,5 +1,6 @@
 #External imports
-import os
+import logging
+logger=logging.getLogger(__name__)
 
 # pathmanager imports
 from utils.pathmanager.pathmanager import PathManager
@@ -27,11 +28,10 @@ def main(input):
     path_manager = PathManager(input=input)
     paths_dict = path_manager.get_paths_dict()
 
-
     #######
     # RUN #
     #######
-    print("Starting runs...") 
+    logger.info("Starting runs...") 
     # Initialise the runmanager as appropriate for each device.
     runmanagerdict : dict[str, type[RunManager]]= {
         "PROBE":ProbeRunManager, 
@@ -49,4 +49,4 @@ def main(input):
 
     #Execute the run.
     run_manager.run()
-    print("Run terminated successfully without errors. \n")
+    logger.info("Run terminated successfully without errors. \n")

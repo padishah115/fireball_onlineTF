@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from typing import List, Dict, Tuple
 from scipy.fft import rfftfreq, rfft
+import logging
+logger = logging.getLogger(__name__)
 
 ############################
 # IMAGE OPERATIONS MANAGER #
@@ -37,7 +39,7 @@ class DigicamImageManager(ImageOperationsManager):
         image = self.shot_data["DATA"]
         
         # Check whether we want to normalize
-        print(f"Normalise image: {norm}")
+        logger.info(f"Normalise image: {norm}")
         normalization_factor = np.max(image) if norm else 1
         
         image /= normalization_factor
@@ -311,8 +313,6 @@ class DigicamImageManager(ImageOperationsManager):
                 r_key = min(int(np.floor(r/r_bin_length)), r_bins)*r_bin_length
                 theta_key = min(int(np.floor(theta/theta_bin_length)), theta_bins)*theta_bin_length
 
-                #print(r_max, r)
-
                 # SUM PIXEL INTENSITY
                 r_dict[r_key] += img[j][i] #/ (2*np.pi*r)
                 theta_dict[theta_key] += img[j][i]
@@ -454,7 +454,6 @@ class OrcaImageManager(ImageOperationsManager):
             # Check for std_data
             if self.std_data is not None:
                 std_lineout_y = np.sum(self.std_data["DATA"], axis=1)
-                print("ORCA std_lineout_y dtype: ", type(std_lineout_y))
                 upper_lineout = np.divide(np.add(lineout_y, std_lineout_y), normalization_factor)
                 lower_lineout = np.divide(np.subtract(lineout_y, std_lineout_y), normalization_factor)
     

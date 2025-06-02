@@ -71,16 +71,6 @@ class ProbeLoadManager(LoadManager):
             channel:np.mean(df[channel]) for channel in voltage_channels
         }
 
-        # taking all column headers apart from the first, which we assume to be time data.
-
-        # initialise empty voltages array for cases where the 'scope's data from certain channels is empty or missing.
-        # empty_voltages = np.zeros_like(df[column_names[0]])
-
-        # channel1_voltages = df["CH1"] if "CH1" in voltage_channels else empty_voltages 
-        # channel2_voltages = df["CH2"] if "CH2" in voltage_channels else empty_voltages 
-        # channel3_voltages = df["CH3"] if "CH3" in voltage_channels else empty_voltages 
-        # channel4_voltages = df["CH4"] if "CH4" in voltage_channels else empty_voltages 
-
         # Create a list of voltages and sort by channel number
         if self.input["OPERATIONS"]["SUBTRACT_DC_OFFSET"]:
             voltage_corrections = {
@@ -96,7 +86,6 @@ class ProbeLoadManager(LoadManager):
         }
         channel_voltages = dict(sorted(channel_voltages.items(), key=lambda item : item[0]))
 
-        print(voltage_corrections)
 
         return [channel_voltages.get(f"CH{i}", np.zeros(len(df))) for i in range(1, 5)]
 

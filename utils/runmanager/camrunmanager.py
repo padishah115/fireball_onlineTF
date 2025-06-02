@@ -5,6 +5,8 @@ from utils.loadmanager.camloadmanager import CamLoadManager
 from utils.opmanager.operationsmanager import OperationsManager
 from utils.opmanager.imageoperationsmanager import *
 from utils.stats.stats import img_arrays_stats
+import logging
+logger = logging.getLogger(__name__)
 
 class CamRunManager(RunManager):
     
@@ -74,7 +76,7 @@ class CamRunManager(RunManager):
         }
 
         #  SELECT CORRECT DICTIONARY BASED ON SPECIFIED BACKGROUND REMOVAL STATUS
-        print("selecting appropriate data dictionary ... \n")
+        logger.info("Selecting appropriate data dictionary ... \n")
         data_dict = data_type_key[self.input["BACKGROUND_STATUS"]]
 
         # Depending on whether we are displaying the background itself or the experimental shot numbers,
@@ -134,5 +136,5 @@ class CamRunManager(RunManager):
         ) 
 
         # PLOTTING        
-        print("Plot ... \n")
+        logger.info("Plot ... \n")
         operations_manager.plot(norm=self.input["NORM_PLOT"])

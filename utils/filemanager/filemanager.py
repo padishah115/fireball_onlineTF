@@ -1,6 +1,6 @@
 import os
-import pandas as pd
-import datetime
+import logging
+logger = logging.getLogger(__name__)
 
 class FileManager:
     """Class which is responsible for handling files for a device at some specified location."""
@@ -19,7 +19,6 @@ class FileManager:
         # Initialise the path and input configuration dictionary
         self.all_data_path = all_data_path
         self.input = input
-        print(f"Path contents: {os.listdir(all_data_path)}\n")
 
 
     def get_files(self)->dict[str, str]:
@@ -43,7 +42,7 @@ class FileManager:
             files_dict = {f[timestamp_slice[0]:timestamp_slice[1]]:f for f in os.listdir(self.all_data_path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.all_data_path, f))}
         else:
-            print(f"Warning: no timestamp slice provided for {self.input['DEVICE_NAME']}")
+            logger.info(f"Warning: no timestamp slice provided for {self.input['DEVICE_NAME']}")
             files_dict = {str(int(os.stat(os.path.join(self.all_data_path, f)).st_mtime)):f for f in os.listdir(self.all_data_path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.all_data_path, f))}
         

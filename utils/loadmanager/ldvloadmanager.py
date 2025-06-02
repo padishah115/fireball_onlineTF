@@ -275,11 +275,7 @@ class TdmsDataManager():
         fifth_window_trigger = dataframe[dataframe['time (s)'].between(fifth_window_start, fifth_window_finish)]
         dataframes_list = [first_window_trigger, second_window_trigger, third_window_trigger, fourth_window_trigger,
                            fifth_window_trigger]
-        # print(first_window_start, first_window_finish)
-        # print(second_window_start, second_window_finish)
-        # print(third_window_start, third_window_finish)
-        # print(fourth_window_start, fourth_window_finish)
-        # print(fifth_window_finish, fifth_window_trigger)
+        
         return dataframes_list
 
     def scale_volts_to_units(self, dataframe):
@@ -292,7 +288,7 @@ class TdmsDataManager():
         """
         displacement_range = float(self.displacement_range[0])
         velocity_range = float(self.velocity_range[0])
-        # print(dataframe.head())
+
         # Scale displacement
         dataframe["displacement"] = dataframe["displacement"].apply(lambda x: x / 2 * displacement_range)
 
