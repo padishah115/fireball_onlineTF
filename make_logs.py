@@ -51,6 +51,5 @@ if __name__ == "__main__":
     ti = time.time()
     generate_log(device=myDevice)
     tf = time.time()
-    print(tf-ti)
 
 
