@@ -1,23 +1,25 @@
 import os
 import pandas as pd
+import datetime
 
 class FileManager:
     """Class which is responsible for handling files for a device at some specified location."""
     
-    def __init__(self, path, input):
+    def __init__(self, all_data_path, input):
         """Initialization function for the FileManager class.
         
         Parameters
         ----------
-            path : str
-                Path to the directory containing the data files for the device.
+            all_data_path : str
+                Path to the directory containing all the data files for the device.
             input : dict
                 Input configuration dictionary for the run.
         """
 
         # Initialise the path and input configuration dictionary
-        self.path = path
+        self.all_data_path = all_data_path
         self.input = input
+        print(f"Path contents: {os.listdir(all_data_path)}\n")
 
 
     def get_files(self)->dict[str, str]:
@@ -38,19 +40,21 @@ class FileManager:
         
         # Create dictionary of files and their timestamps. If we have no pre-determined means of doing this, fall back on using os.stat().st_mtime. The dictionaries are of form {Timestamp:Slice}
         if timestamp_slice is not None:
-            files_dict = {f[timestamp_slice[0]:timestamp_slice[1]]:f for f in os.listdir(self.path) if f.endswith(extension)\
-                    and not os.path.isdir(os.path.join(self.path, f))}
+            files_dict = {f[timestamp_slice[0]:timestamp_slice[1]]:f for f in os.listdir(self.all_data_path) if f.endswith(extension)\
+                    and not os.path.isdir(os.path.join(self.all_data_path, f))}
         else:
             print(f"Warning: no timestamp slice provided for {self.input['DEVICE_NAME']}")
-            files_dict = {str(int(os.stat(os.path.join(self.path, f)).st_mtime)):f for f in os.listdir(self.path) if f.endswith(extension)\
-                    and not os.path.isdir(os.path.join(self.path, f))}
+            files_dict = {str(int(os.stat(os.path.join(self.all_data_path, f)).st_mtime)):f for f in os.listdir(self.all_data_path) if f.endswith(extension)\
+                    and not os.path.isdir(os.path.join(self.all_data_path, f))}
             
-        print(files_dict)
+        print(f"File dictionary: {files_dict}\n")
 
-        # Maintain a shot log of all devices.
+        # Maintain a SHOT LOG of all devices.
         if not os.path.exists(self.input["LOG_PATH"]):
             os.makedirs(self.input["LOG_PATH"], exist_ok=True)
-        df = pd.DataFrame({"TIMESTAMPS": files_dict.keys(), "FILES": files_dict.values()})
+        
+        times = [datetime.datetime.fromtimestamp(timestamp) for timestamp in files_dict.keys()]
+        df = pd.DataFrame({"TIMESTAMPS": files_dict.keys(), "TIMES": [times], "FILES": files_dict.values()})
         df.to_csv(os.path.join(self.input["LOG_PATH"], self.input["DEVICE_NAME"] + ".csv"), index=False)
         # Sort the files in reverse order to their timestamps (i.e. most recent files are earlier in the list)
         files_dict_sorted = dict(sorted(files_dict.items(), key=lambda item : item[0], reverse=True))

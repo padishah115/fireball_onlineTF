@@ -11,52 +11,42 @@ from runtime import main as runtime
 # INPUT CONFIGURATION
 
 background_shots = {
-    "ORCA STREAK":"",
+    "ORCA STREAK":['1748851353','1748851337', '1748851311', '1748851286', '1748851261'],
+    "ANDOR SPECTROMETER":['1748852619', '1748852613', '1748852609', '1748852605', '1748852601'],
+    "HRM3": [],    
+    "HRM4": [],
+    "HRM5": [],
+    "HRM6": [],
+    "SCOPE 1": [],
+    "SCOPE 2": [],
+    "SCOPE 3": [],
+    "LDV": [],
+    "PT100": [],
+}
+
+device_info = {
+    "DEVICE_NAME": "ANDOR SPECTROMETER",
+    "DEVICE_TYPE": "CAMERA",
+    "DEVICE_SPECIES": "ANDOR",
 }
 
 input = {
 
-    #################################
-    # Information about the device. #
-    #################################
-    # - DEVICE_NAME tells us which directory to search in
-    # - DEVICE_TYPE type tells us how many channels of data we have/what type of data we're dealing with.
-    # - DEVICE_SPECIES is a subset of type, and helps us decide how to load different types of data files
-    #   even if the underlying data type (i.e. "image") is the same.
-    "DEVICE_NAME": "ORCA STREAK",
-    "DEVICE_TYPE": "CAMERA",
-    "DEVICE_SPECIES": "ORCA",
-
     ##################
     # Shot Selection #
     ##################
-    # - Can select from timestamps or from relative shot no., which is a heuristic term that sorts everything
-    #   in the target directory by timestamp, then 0-indexes the shot from most recent to most distant.
-    # - Can also specify the timestamp specifically. 
+    "EXP_SHOT_NOS": [], #if timestamps, need to be strings
+    "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_info["DEVICE_NAME"]]],
 
-    # Shots indexed from 0 in reverse chronology. This is easy, and the shots are 0-indexed automatically
-    # in reverse-chronological order of acquisition.
-    "EXP_SHOT_NOS": [1, 2], #if timestamps, need to be strings
-    "BKG_SHOT_NOS": [],
-
-    # Do we use the timestamps or the relative reverse-chronology method?
     "SPECIFY_TIMESTAMP_EXP": False,
-    "SPECIFY_TIMESTAMP_BKG": False,
+    "SPECIFY_TIMESTAMP_BKG": True,
 
-    ##########################
-    # Background Subtraction #
-    ##########################
-    # - BKG_NAME tells us how the background will be denoted on-screen during plotting.
-    # - BACKGROUND_STATUS tells us whether we want to remove the background or not. If so, bkg is subtracted BEFORE
-    #   image averaging.
-    # - If more than one background shot was specified, these are averaged before being subtracted from the shot image.
     "BKG_NAME": "DARKFIELD",
     "BACKGROUND_STATUS": "RAW",
 
     #########################
     # Operations Specifiers #
     #########################
-    # - Brief details of what analysis we want to see live, but this is largely fixed for the underlying devices.
     
     "PLOT_ONLY": False, # in case we want to just quickly display the image live.
     
@@ -68,12 +58,16 @@ input = {
         "SHOW_AVERAGE_SHOTS": True,
     },
 
+    #################################
+    # Information about the device. #
+    #################################
+    "DEVICE_NAME": device_info["DEVICE_NAME"],
+    "DEVICE_TYPE": device_info["DEVICE_TYPE"],
+    "DEVICE_SPECIES": device_info["DEVICE_SPECIES"],
+
     #########################
     # Directory Information #
     #########################
-    # - PARENT_DIR tells us which folder contains all the individual devices' data directories.
-    # - FOLDER_NAMES tells us where data has been logged for each of the individual devices.
-    #"PARENT_DIR":r"/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data",
     "PARENT_DIR":r"\\eosproject-smb\eos\project\h\hiradmat\HRMT Experiments\2025\HRMT68 - FIREBALL 3\FB3 repository\HRMT68_data",
     "LOG_PATH":r"H:\user\h\hramm\shot-log",
 
@@ -111,25 +105,11 @@ input = {
             "LDV": ".tdms",
             "PT100": ".csv",
         },
-
-    "TIMESTAMP_SLICE": {
-            "ANDOR SPECTROMETER": (23, 39),
-            "ORCA STREAK": None,
-            "HRM3": (22, 31),    
-            "HRM4": (22, 31),
-            "HRM5": (22, 31),
-            "HRM6": (22, 31),
-            "SCOPE 1": (-21, -4),
-            "SCOPE 2": (-21, -4),
-            "SCOPE 3": (-21, -4),
-            "LDV": (-16, -5),
-            "PT100": None,
-    } 
     
 }
 
-print("Starting runtime ... ")
+print("Starting runtime ... \n")
 runtime(
     input=input
 )
-print("Ending runtime ...")
+print("Ending runtime ...\n")
