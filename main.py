@@ -10,6 +10,10 @@ from runtime import main as runtime
 
 # INPUT CONFIGURATION
 
+background_shots = {
+    "ORCA STREAK":"",
+}
+
 input = {
 
     #################################
@@ -70,7 +74,7 @@ input = {
     # - PARENT_DIR tells us which folder contains all the individual devices' data directories.
     # - FOLDER_NAMES tells us where data has been logged for each of the individual devices.
     #"PARENT_DIR":r"/eos/project/h/hiradmat/HRMT Experiments/2025/HRMT68 - FIREBALL 3/FB3 repository/HRMT68_data",
-    "PARENT_DIR" : "./example_data/",
+    "PARENT_DIR":r"\\eosproject-smb\eos\project\h\hiradmat\HRMT Experiments\2025\HRMT68 - FIREBALL 3\FB3 repository\HRMT68_data",
 
     "FOLDER_NAMES": {
             "ANDOR SPECTROMETER":"andor_spectrometer_contingency/tagged_files",
@@ -82,7 +86,7 @@ input = {
             "SCOPE 1":"scope_test",
             "SCOPE 2":"scope_test",
             "SCOPE 3":"scope_test",
-            "LDV":"enrica",
+            "LDV":"ldv_and_strain_gauges\\Triggers\\2025\\05\\28",
             "PT100":"temperatures",
 
     },
