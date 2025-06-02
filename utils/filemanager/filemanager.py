@@ -44,6 +44,8 @@ class FileManager:
             print(f"Warning: no timestamp slice provided for {self.input['DEVICE_NAME']}")
             files_dict = {str(int(os.stat(os.path.join(self.path, f)).st_mtime)):f for f in os.listdir(self.path) if f.endswith(extension)\
                     and not os.path.isdir(os.path.join(self.path, f))}
+            
+        print(files_dict)
 
         # Maintain a shot log of all devices.
         log_path = os.path.join(self.input["LOG_PATH"], self.input["DEVICE_NAME"])
