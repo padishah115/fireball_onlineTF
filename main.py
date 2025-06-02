@@ -30,7 +30,6 @@ device_info = {
 
 if __name__ == "__main__":
     while True:
-
         input = {
 
             ##################
@@ -140,4 +139,3 @@ if __name__ == "__main__":
         )
         print("Ending runtime ...\n")
         time.sleep(1)
-        print(input["EXP_SHOT_NOS"])
