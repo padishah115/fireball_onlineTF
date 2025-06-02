@@ -20,7 +20,7 @@ background_shots = {
 }
 
 device_info = {
-    "DEVICE_NAME": "SCOPE 1",
+    "DEVICE_NAME": "",
     "DEVICE_TYPE": "PROBE",
     "DEVICE_SPECIES": "PROBE",
 }
@@ -30,7 +30,7 @@ input = {
     ##################
     # Shot Selection #
     ##################
-    "EXP_SHOT_NOS": [0, 1 ], #if timestamps, need to be strings
+    "EXP_SHOT_NOS": [0,], #if timestamps, need to be strings
     "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_info["DEVICE_NAME"]]],
 
     "SPECIFY_TIMESTAMP_EXP": False,
@@ -51,7 +51,7 @@ input = {
         "SHOW_SINGLESHOT_PLOTS": True,
         "LINEOUT_BIN_NO": 100,
         "SHOW_AVERAGE_SHOTS": True,
-        "SUBTRACT_DC_OFFSET": True,
+        "SUBTRACT_DC_OFFSET": False,
     },
 
     #################################
@@ -80,7 +80,7 @@ input = {
             "SCOPE 1":"scope_pool05710001",
             "SCOPE 2":"scope_pool05720010",
             
-            "LDV":"ldv_and_strain_gauges\\Triggers\\2025\\05\\28",
+            "LDV":"ldv_and_strain_gauges\\Triggers\\2025\\06\\2",
             "PT100":"temperatures",
 
     },
