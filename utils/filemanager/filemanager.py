@@ -49,16 +49,20 @@ class FileManager:
             
         print(f"File dictionary: {files_dict}\n")
 
-        # Maintain a SHOT LOG of all devices.
+        #######################################
+        # Maintain a SHOT LOG of all devices. #
+        #######################################
         if not os.path.exists(self.input["LOG_PATH"]):
             os.makedirs(self.input["LOG_PATH"], exist_ok=True)
         
-        times = [datetime.datetime.fromtimestamp(timestamp) for timestamp in files_dict.keys()]
-        df = pd.DataFrame({"TIMESTAMPS": files_dict.keys(), "TIMES": [times], "FILES": files_dict.values()})
+        times = [datetime.datetime.fromtimestamp(int(timestamp)) for timestamp in files_dict.keys()]
+        
+        df = pd.DataFrame({"TIMESTAMPS": files_dict.keys(), "TIMES": times, "FILES": files_dict.values()})
         df.to_csv(os.path.join(self.input["LOG_PATH"], self.input["DEVICE_NAME"] + ".csv"), index=False)
+        
+
         # Sort the files in reverse order to their timestamps (i.e. most recent files are earlier in the list)
         files_dict_sorted = dict(sorted(files_dict.items(), key=lambda item : item[0], reverse=True))
-
         # make sure that we are not asking for a larger number of shots than actually exist ...
         if len(self.input["EXP_SHOT_NOS"]) > len(files_dict_sorted.values()):
             no_of_req_shots = len(self.input["EXP_SHOT_NOS"])

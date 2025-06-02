@@ -1,11 +1,7 @@
 #MODULE IMPORTS
 import sys
-import numpy as np
 sys.path.append(".")
-import importlib
 import runtime
-#Import main function that calls the whole run
-importlib.reload(runtime)
 from runtime import main as runtime
 
 # INPUT CONFIGURATION
@@ -19,7 +15,6 @@ background_shots = {
     "HRM6": [],
     "SCOPE 1": [],
     "SCOPE 2": [],
-    "SCOPE 3": [],
     "LDV": [],
     "PT100": [],
 }
@@ -35,7 +30,7 @@ input = {
     ##################
     # Shot Selection #
     ##################
-    "EXP_SHOT_NOS": [], #if timestamps, need to be strings
+    "EXP_SHOT_NOS": [0, 1, 2], #if timestamps, need to be strings
     "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_info["DEVICE_NAME"]]],
 
     "SPECIFY_TIMESTAMP_EXP": False,
@@ -59,7 +54,7 @@ input = {
     },
 
     #################################
-    # Information about the device. #
+    # Information about the device and run. #
     #################################
     "DEVICE_NAME": device_info["DEVICE_NAME"],
     "DEVICE_TYPE": device_info["DEVICE_TYPE"],
@@ -72,15 +67,18 @@ input = {
     "LOG_PATH":r"H:\user\h\hramm\shot-log",
 
     "FOLDER_NAMES": {
+            
             "ANDOR SPECTROMETER":"andor_spectrometer_contingency\\original_files",
             "ORCA STREAK":"orca_streak\\original_files",
+            
             "HRM3":"chromox_cameras\\HRM3",    
             "HRM4":"chromox_cameras\\HRM4",
             "HRM5":"chromox_cameras\\HRM5",
             "HRM6":"chromox_cameras\\HRM6",
-            "SCOPE 1":"scope_test",
-            "SCOPE 2":"scope_test",
-            "SCOPE 3":"scope_test",
+            
+            "SCOPE 1":"scope_pool05710001",
+            "SCOPE 2":"scope_pool05720010",
+            
             "LDV":"ldv_and_strain_gauges\\Triggers\\2025\\05\\28",
             "PT100":"temperatures",
 
@@ -105,6 +103,20 @@ input = {
             "LDV": ".tdms",
             "PT100": ".csv",
         },
+
+     "TIMESTAMP_SLICE": {
+            "ANDOR SPECTROMETER":None,# (23, 39),
+            "ORCA STREAK":None, #(21, 37),
+            "HRM3": None, #(22, 31),    
+            "HRM4": None, #(22, 31),
+            "HRM5": None, #(22, 31),
+            "HRM6": None, #(22, 31),
+            "SCOPE 1": None, #(-21, -4),
+            "SCOPE 2": None, #(-21, -4),
+            "SCOPE 3": None,#(-21, -4),
+            "LDV": None, #(-16, -5),
+            "PT100":None,
+    } 
     
 }
 
