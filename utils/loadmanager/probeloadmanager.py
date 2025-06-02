@@ -4,6 +4,10 @@ from typing import Dict, Tuple, List
 from utils.loadmanager.loadmanager import LoadManager
 
 class ProbeLoadManager(LoadManager):
+
+    def __init__(self, input, data_paths_dict):
+        super().__init__(input, data_paths_dict)
+
     def load(self)->Tuple[Dict[int, np.ndarray], Dict[int, np.ndarray], Dict[int, np.ndarray]]:
         """Loads dictionaries of indexed experimental, background, and background-corrected data. Each of these
         three dictionaries returned by the function is of the form {SHOT NO : np.ndarray}, where the
@@ -63,17 +67,38 @@ class ProbeLoadManager(LoadManager):
 
         # Load the channels' voltage information. First, we want to see how many channels are present.
         voltage_channels = column_names[1:] # scrape out the voltage channel names, 
+        voltage_means = {
+            channel:np.mean(df[channel]) for channel in voltage_channels
+        }
+
         # taking all column headers apart from the first, which we assume to be time data.
 
         # initialise empty voltages array for cases where the 'scope's data from certain channels is empty or missing.
-        empty_voltages = np.zeros_like(df[column_names[0]])
+        # empty_voltages = np.zeros_like(df[column_names[0]])
 
-        channel1_voltages = df["CH1"] if "CH1" in voltage_channels else empty_voltages 
-        channel2_voltages = df["CH2"] if "CH2" in voltage_channels else empty_voltages 
-        channel3_voltages = df["CH3"] if "CH3" in voltage_channels else empty_voltages 
-        channel4_voltages = df["CH4"] if "CH4" in voltage_channels else empty_voltages 
+        # channel1_voltages = df["CH1"] if "CH1" in voltage_channels else empty_voltages 
+        # channel2_voltages = df["CH2"] if "CH2" in voltage_channels else empty_voltages 
+        # channel3_voltages = df["CH3"] if "CH3" in voltage_channels else empty_voltages 
+        # channel4_voltages = df["CH4"] if "CH4" in voltage_channels else empty_voltages 
 
-        return channel1_voltages, channel2_voltages, channel3_voltages, channel4_voltages
+        # Create a list of voltages and sort by channel number
+        if self.input["OPERATIONS"]["SUBTRACT_DC_OFFSET"]:
+            voltage_corrections = {
+                channel:voltage_means[channel] for channel in voltage_channels
+            }
+        else:
+            voltage_corrections = {
+                channel:0 for channel in voltage_channels
+            }
+        
+        channel_voltages = {
+            channel:np.subtract(df[channel], voltage_corrections[channel]) for channel in voltage_channels 
+        }
+        channel_voltages = dict(sorted(channel_voltages.items(), key=lambda item : item[0]))
+
+        print(voltage_corrections)
+
+        return [channel_voltages.get(f"CH{i}", np.zeros(len(df))) for i in range(1, 5)]
 
     
     def _load_scope_times(self, data_path:str, skiprows:int=16)->tuple[np.ndarray, int, float]:

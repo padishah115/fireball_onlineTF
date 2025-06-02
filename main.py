@@ -51,6 +51,7 @@ input = {
         "SHOW_SINGLESHOT_PLOTS": True,
         "LINEOUT_BIN_NO": 100,
         "SHOW_AVERAGE_SHOTS": True,
+        "SUBTRACT_DC_OFFSET": True,
     },
 
     #################################
