@@ -9,7 +9,7 @@ import time
 import pandas as pd
 
 # Specify the device for which we want to make the shot log
-myDevice = "SCOPE 2"
+myDevice = "SCOPE 1"
 
 #Gather the parent directory and child folder information from the device
 parent_dir : str = input["PARENT_DIR"]
