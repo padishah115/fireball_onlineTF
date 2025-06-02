@@ -17,12 +17,14 @@ background_shots = {
     "SCOPE 2": [],
     "LDV": [],
     "PT100": [],
+
+    "CHROMOX TEST":[]
 }
 
 device_info = {
-    "DEVICE_NAME": "",
-    "DEVICE_TYPE": "PROBE",
-    "DEVICE_SPECIES": "PROBE",
+    "DEVICE_NAME": "CHROMOX TEST",
+    "DEVICE_TYPE": "CAMERA",
+    "DEVICE_SPECIES": "DIGICAM",
 }
 
 input = {
@@ -83,6 +85,8 @@ input = {
             "LDV":"ldv_and_strain_gauges\\Triggers\\2025\\06\\2",
             "PT100":"temperatures",
 
+            "CHROMOX TEST":"plasmacell_cams"
+
     },
 
     ####################
@@ -103,6 +107,8 @@ input = {
             "SCOPE 3": ".csv",
             "LDV": ".tdms",
             "PT100": ".csv",
+
+            "CHROMOX TEST":".csv",
         },
 
      "TIMESTAMP_SLICE": {
@@ -117,6 +123,8 @@ input = {
             "SCOPE 3": None,#(-21, -4),
             "LDV": None, #(-16, -5),
             "PT100":None,
+
+            "CHROMOX TEST":None,
     } 
     
 }

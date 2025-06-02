@@ -87,7 +87,7 @@ class DigicamImageManager(ImageOperationsManager):
             
             
             #initialize figure
-            fig = plt.figure(figsize=(16,8))
+            fig = plt.figure(figsize=(16, 16))
     
             gs = gridspec.GridSpec(nrows=3, ncols=2, wspace=0.3, hspace=0.5, 
                                    #width_ratios=[1,1], 
