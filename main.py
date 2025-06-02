@@ -28,9 +28,9 @@ background_shots = {
 }
 
 device_info = {
-    "DEVICE_NAME": "SCOPE 1",
-    "DEVICE_TYPE": "PROBE",
-    "DEVICE_SPECIES": "PROBE",
+    "DEVICE_NAME": "HRM4",
+    "DEVICE_TYPE": "CAMERA",
+    "DEVICE_SPECIES": "DIGICAM",
 }
 
 input = {
@@ -51,12 +51,12 @@ input = {
     # Operations Specifiers #
     #########################
     
-    "PLOT_ONLY": False, # in case we want to just quickly display the image live.
+    "PLOT_ONLY": True, # in case we want to just quickly display the image live.
     
     "NORM_PLOT": False,
     
     "OPERATIONS": {
-        "SHOW_SINGLESHOT_PLOTS": False,
+        "SHOW_SINGLESHOT_PLOTS": True,
         "LINEOUT_BIN_NO": 100,
         "SHOW_AVERAGE_SHOTS": True,
         "SUBTRACT_DC_OFFSET": False,

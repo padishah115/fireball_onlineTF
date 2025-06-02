@@ -7,9 +7,13 @@ import os
 import datetime
 import time
 import pandas as pd
+import numpy as np
 
 # Specify the device for which we want to make the shot log
-myDevice = "SCOPE 1"
+chromox = [f"HRM{i}" for i in np.arange(3, 7)]
+scopes = ["SCOPE 1", "SCOPE 2"]
+andor_streak = ["ORCA STREAK", "ANDOR SPECTROMETER"]
+
 
 #Gather the parent directory and child folder information from the device
 parent_dir : str = input["PARENT_DIR"]
@@ -25,7 +29,7 @@ def generate_log(device):
     """Generates a shot log for a specified device."""
 
     # Select the appropriate file extension
-    extension = input["EXTENSION_DICT"][myDevice]
+    extension = input["EXTENSION_DICT"][device]
     path = paths_to_data[device]
 
     # Dictionary of files for the device.
@@ -42,14 +46,16 @@ def generate_log(device):
     #Initialise a pandas dataframe to store information about the 
     df = pd.DataFrame({"TIMESTAMPS": files_dict.keys(), "TIMES": times, "FILES": files_dict.values()})
     
-    save_path = os.path.join(input["LOG_PATH"], myDevice + ".csv")
+    save_path = os.path.join(input["LOG_PATH"], device + ".csv")
     print(save_path)
     df.to_csv(save_path, index=False)
 
 
 if __name__ == "__main__":
-    ti = time.time()
-    generate_log(device=myDevice)
-    tf = time.time()
+    
+    for device in scopes:
+        ti = time.time()
+        generate_log(device=device)
+        tf = time.time()
 
 

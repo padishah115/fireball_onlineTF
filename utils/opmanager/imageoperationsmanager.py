@@ -109,7 +109,7 @@ class DigicamImageManager(ImageOperationsManager):
             #########
             #ax1 = fig.add_axes(rect=[0., 0.05, 0.5, 0.5])
             ax1 = fig.add_subplot(gs[1,0])
-            im = ax1.imshow(image, extent=extent, aspect='auto')
+            im = ax1.imshow(image, extent=extent, aspect='auto', vmax=1)
             #ax1.set_aspect(image.shape[0]/image.shape[1])
             
             # Get position of ax1 for colorbar placement
@@ -196,7 +196,7 @@ class DigicamImageManager(ImageOperationsManager):
 
         else:
             fig, axs = plt.subplots(figsize=(16, 9))
-            axs.imshow(image, extent=extent, aspect='auto')
+            axs.imshow(image, extent=extent, aspect='auto', vmax=1)
             # SHOW THE FIGURE
             if norm:
                 fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}\n Normalized to Max Pixel Intensity")
