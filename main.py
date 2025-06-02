@@ -23,9 +23,9 @@ input = {
     # - DEVICE_TYPE type tells us how many channels of data we have/what type of data we're dealing with.
     # - DEVICE_SPECIES is a subset of type, and helps us decide how to load different types of data files
     #   even if the underlying data type (i.e. "image") is the same.
-    "DEVICE_NAME": "LDV",
-    "DEVICE_TYPE": "LDV",
-    "DEVICE_SPECIES": "LDV",
+    "DEVICE_NAME": "ORCA STREAK",
+    "DEVICE_TYPE": "CAMERA",
+    "DEVICE_SPECIES": "ORCA",
 
     ##################
     # Shot Selection #
