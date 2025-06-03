@@ -87,6 +87,7 @@ class ProbeLoadManager(LoadManager):
         channel_voltages = dict(sorted(channel_voltages.items(), key=lambda item : item[0]))
 
 
+
         return [channel_voltages.get(f"CH{i}", np.zeros(len(df))) for i in range(1, 5)]
 
     
