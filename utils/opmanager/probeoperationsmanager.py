@@ -103,6 +103,13 @@ class ProbeOperationsManager(OperationsManager):
         fig2.tight_layout()
         plt.show()
 
+        fig3, axs3 = plt.subplots()
+        ch1_min_ch2 = self.shot_data["DATA"]["VOLTAGES"]["1-2"]
+        axs3.plot(times, ch1_min_ch2)
+        fig3.tight_layout()
+        fig3.suptitle("Channel 2 minus channel 3")
+        plt.show()
+
 
     
     def _get_time_data(self)->tuple[np.ndarray, int, float]:
