@@ -12,8 +12,8 @@ import numpy as np
 # Specify the device for which we want to make the shot log
 chromox = [f"HRM{i}" for i in np.arange(3, 7)]
 scopes = ["SCOPE 1", "SCOPE 2"]
-andor_streak = ["ORCA STREAK", "ANDOR SPECTROMETER"]
-
+andor_n_streak = ["ORCA STREAK", "ANDOR SPECTROMETER"]
+all_devices = chromox + scopes + andor_n_streak
 
 #Gather the parent directory and child folder information from the device
 parent_dir : str = input["PARENT_DIR"]
@@ -53,7 +53,7 @@ def generate_log(device):
 
 if __name__ == "__main__":
     
-    for device in scopes:
+    for device in all_devices:
         ti = time.time()
         generate_log(device=device)
         tf = time.time()

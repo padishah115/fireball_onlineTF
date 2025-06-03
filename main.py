@@ -28,9 +28,9 @@ background_shots = {
 }
 
 device_info = {
-    "DEVICE_NAME": "HRM4",
-    "DEVICE_TYPE": "CAMERA",
-    "DEVICE_SPECIES": "DIGICAM",
+    "DEVICE_NAME": "SCOPE 1",
+    "DEVICE_TYPE": "PROBE",
+    "DEVICE_SPECIES": "PROBE",
 }
 
 input = {
@@ -38,10 +38,10 @@ input = {
     ##################
     # Shot Selection #
     ##################
-    "EXP_SHOT_NOS": [i for i in np.arange(5)], #if timestamps, need to be strings
+    "EXP_SHOT_NOS": ["1748899695"], #if timestamps, need to be strings
     "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_info["DEVICE_NAME"]]],
 
-    "SPECIFY_TIMESTAMP_EXP": False,
+    "SPECIFY_TIMESTAMP_EXP": True,
     "SPECIFY_TIMESTAMP_BKG": True,
 
     "BKG_NAME": "DARKFIELD",

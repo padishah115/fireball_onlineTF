@@ -64,6 +64,8 @@ class ProbeOperationsManager(OperationsManager):
             # REAL-SPACE VOLTAGE VS TIME PLOT
             channel_no = channel_nos[i]
             channel_voltage = channel_voltages_dict[channel_no]
+            max_voltage = np.max(channel_voltage)
+            min_voltage = np.min(channel_voltage)
             axs1[index_tuple].plot(times, channel_voltage)
             if self.std_data is not None:
                 sigma_v = self.std_data["DATA"]["VOLTAGES"][channel_no]
@@ -72,7 +74,7 @@ class ProbeOperationsManager(OperationsManager):
                 axs1[i, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
             axs1[index_tuple].set_ylabel("Amplitude / V")
             axs1[index_tuple].set_xlabel("Time / s")
-            axs1[index_tuple].set_title(f"{ch_label}")
+            axs1[index_tuple].set_title(f"{ch_label}, Min: {min_voltage:.5f} V, Max: {max_voltage:.5f} V")
 
             # Only perform fourier transforms if we don't have the input set to plot only
             if not self.input["PLOT_ONLY"]:
@@ -95,6 +97,8 @@ class ProbeOperationsManager(OperationsManager):
             
             channel_no = channel_nos[i+2]
             channel_voltage = channel_voltages_dict[channel_no]
+            max_voltage = np.max(channel_voltage)
+            min_voltage = np.min(channel_voltage)
 
             axs2[index_tuple].plot(times, channel_voltage)
             
@@ -108,7 +112,7 @@ class ProbeOperationsManager(OperationsManager):
             
             axs2[index_tuple].set_ylabel("Amplitude / V")
             axs2[index_tuple].set_xlabel("Time / s")
-            axs2[index_tuple].set_title(f"{ch_label}")
+            axs2[index_tuple].set_title(f"{ch_label}, Min: {min_voltage:.5f} V, Max: {max_voltage:.5f} V")
             
             if not self.input["PLOT_ONLY"]:
                 freq = rfftfreq(n=N, d=dt)
