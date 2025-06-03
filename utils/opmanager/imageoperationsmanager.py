@@ -43,7 +43,7 @@ class DigicamImageManager(ImageOperationsManager):
         normalization_factor = np.max(image) if norm else 1
         
         image /= normalization_factor
-        vmax = 1
+        vmax = self.input["OPERATIONS"]["VMAX"]
         
         extent = [X[0], X[-1], Y[0], Y[-1]]
 

@@ -18,14 +18,14 @@ logging.basicConfig(filename="log.log", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-device_name = "SCOPE 1"
+device_name = "HRM3"
 
 input = {
 
     ##################
     # Shot Selection #
     ##################
-    "EXP_SHOT_NOS": ["1748899671"], #if timestamps, need to be strings
+    "EXP_SHOT_NOS": ["1748942217"], #if timestamps, need to be strings
     "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_name]],
 
     "SPECIFY_TIMESTAMP_EXP": True,
@@ -45,8 +45,9 @@ input = {
     "OPERATIONS": {
         "SHOW_SINGLESHOT_PLOTS": True,
         "LINEOUT_BIN_NO": 100,
-        "SHOW_AVERAGE_SHOTS": True,
+        "SHOW_AVERAGE_SHOTS": False,
         "SUBTRACT_DC_OFFSET": False,
+        "VMAX":1000,
     },
 
     #################################
@@ -68,10 +69,15 @@ input = {
     
 }
 
-
-if __name__ == "__main__":
+def main():
     logger.info("Starting runtime ... \n")
     runtime(
         input=input
     )
     logger.info("Ending runtime ...\n")
+
+
+if __name__ == "__main__":
+
+    main()
+    
