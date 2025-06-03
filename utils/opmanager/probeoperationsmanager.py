@@ -105,8 +105,8 @@ class ProbeOperationsManager(OperationsManager):
 
         # Plot the subtracted voltages channels for azimuthal BDot
         if self.input["DEVICE_NAME"] == "SCOPE 1":
-            fig3, axs3 = plt.subplots()
-            ch1_min_ch2 = self.shot_data["DATA"]["VOLTAGES"]["1-2"]
+            fig3, axs3 = plt.subplots(figsize=(8, 4.5))
+            ch1_min_ch2 = np.subtract(channel_voltages_dict["1"], channel_voltages_dict["2"])
             axs3.plot(times, ch1_min_ch2)
             fig3.tight_layout()
             fig3.suptitle("Upstream Azimuthal BDot Difference")

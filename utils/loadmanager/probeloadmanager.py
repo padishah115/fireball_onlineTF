@@ -86,9 +86,8 @@ class ProbeLoadManager(LoadManager):
         }
         channel_voltages = dict(sorted(channel_voltages.items(), key=lambda item : item[0]))
 
-        ch2_minus_3 = channel_voltages["CH2"]-channel_voltages["CH3"]
 
-        return ([channel_voltages.get(f"CH{i}", np.zeros(len(df))) for i in range(1, 5)], ch2_minus_3)
+        return [channel_voltages.get(f"CH{i}", np.zeros(len(df))) for i in range(1, 5)]
 
     
     def _load_scope_times(self, data_path:str, skiprows:int=16)->tuple[np.ndarray, int, float]:
@@ -197,13 +196,11 @@ class ProbeLoadManager(LoadManager):
             data_path = data_paths_dict[shot_no]
 
             #VOLTAGE DATA
-            ([voltages_1, voltages_2, voltages_3, voltages_4], ch1_min_ch2) = self._load_scope_voltages(data_path)
+            [voltages_1, voltages_2, voltages_3, voltages_4] = self._load_scope_voltages(data_path)
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["1"] = voltages_1
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["2"] = voltages_2
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["3"] = voltages_3
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["4"] = voltages_4
-
-            scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["1-2"] = ch1_min_ch2
             
             #TIME DATA
             times, N, dt = self._load_scope_times(data_path)
