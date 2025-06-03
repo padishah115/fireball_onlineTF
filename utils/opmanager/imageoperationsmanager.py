@@ -106,7 +106,7 @@ class DigicamImageManager(ImageOperationsManager):
             # IMAGE #
             #########
             ax1 = fig.add_subplot(gs[1,0])
-            im = ax1.imshow(image, extent=extent, aspect='auto', vmax=vmax)
+            im = ax1.imshow(image, extent=extent, aspect='auto', vmax=self.input["OPERATIONS"]["VMAX"])
             
             # Get position of ax1 for colorbar placement
             bbox = ax_data.get_position()
