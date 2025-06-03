@@ -163,7 +163,7 @@ class CamLoadManager(LoadManager):
             return img, space_mm_x, time_ns_y
         
         except Exception as e:
-            raise ValueError(f"Error: ORCA image generation from {path} failed. {e}")
+            raise ValueError(f"Error: ORCA image generation from {path} failed. Perhaps they are empty files? {e}")
 
     
 

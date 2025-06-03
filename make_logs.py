@@ -45,6 +45,9 @@ def generate_log(device):
 
     #Initialise a pandas dataframe to store information about the 
     df = pd.DataFrame({"TIMESTAMPS": files_dict.keys(), "TIMES": times, "FILES": files_dict.values()})
+
+    #Sort!
+    df = df.sort_values(by="TIMESTAMPS")
     
     save_path = os.path.join(input["LOG_PATH"], device + ".csv")
     print(save_path)
@@ -57,5 +60,7 @@ if __name__ == "__main__":
         ti = time.time()
         generate_log(device=device)
         tf = time.time()
+
+    print("Shot logs generated.")
 
 

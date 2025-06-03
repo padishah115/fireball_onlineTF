@@ -34,7 +34,7 @@ class ProbeOperationsManager(OperationsManager):
             ch1_label = "Downstream BDot Longitudinal Line 2"
             ch2_label = "(Unconnected)"
             ch3_label = "Downstream BDot Azimuthal Line 1"
-            ch4_label = "Downstream BDot Azimuthal Line 1"
+            ch4_label = "Downstream BDot Azimuthal Line 2"
 
         else:
             raise ValueError(f"Error: unrecognised scope, {self.input['DEVICE_NAME']}")
@@ -106,10 +106,18 @@ class ProbeOperationsManager(OperationsManager):
         # Plot the subtracted voltages channels for azimuthal BDot
         if self.input["DEVICE_NAME"] == "SCOPE 1":
             fig3, axs3 = plt.subplots(figsize=(8, 4.5))
-            ch1_min_ch2 = np.subtract(channel_voltages_dict["1"], channel_voltages_dict["2"])
-            axs3.plot(times, ch1_min_ch2)
+            ch2_min_ch3 = np.subtract(channel_voltages_dict["2"], channel_voltages_dict["3"])
+            axs3.plot(times, ch2_min_ch3)
             fig3.tight_layout()
-            fig3.suptitle("Upstream Azimuthal BDot Difference")
+            axs3.set_title("Upstream Azimuthal BDot Difference")
+            plt.show()
+
+        if self.input["DEVICE_NAME"] == "SCOPE 2":
+            fig3, axs3 = plt.subplots(figsize=(8, 4.5))
+            ch3_min_ch4 = np.subtract(channel_voltages_dict["3"], channel_voltages_dict["4"])
+            axs3.plot(times, ch3_min_ch4)
+            fig3.tight_layout()
+            axs3.set_title("Downstream Azimuthal BDot Difference")
             plt.show()
 
 
