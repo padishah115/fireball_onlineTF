@@ -43,6 +43,7 @@ class DigicamImageManager(ImageOperationsManager):
         normalization_factor = np.max(image) if norm else 1
         
         image /= normalization_factor
+        vmax = 1
         
         extent = [X[0], X[-1], Y[0], Y[-1]]
 
@@ -61,27 +62,27 @@ class DigicamImageManager(ImageOperationsManager):
                 upper_image = np.multiply(np.add(self.shot_data["DATA"],self.std_data["DATA"]), normalization_factor**-1)
                 lower_image = np.multiply(np.subtract(self.shot_data["DATA"],self.std_data["DATA"]), normalization_factor**-1)
 
-            ###################################
-            # Lineouts for stddev information #
-            ###################################
-    
-            # Upper bound 
-            upper_lineout_x = np.sum(upper_image, axis=0) if self.std_data is not None else lineout_x
-            upper_lineout_y = np.sum(upper_image, axis=1) if self.std_data is not None else lineout_y
-            upper_r_dict, upper_theta_dict = (
-                self._get_polar_lineouts(upper_image) 
-                if self.std_data is not None
-                else (r_dict, theta_dict)
-            )
-    
-            # Lower bound
-            lower_lineout_x = np.sum(lower_image, axis=0) if self.std_data is not None else lineout_x
-            lower_lineout_y = np.sum(lower_image, axis=1) if self.std_data is not None else lineout_y
-            lower_r_dict, lower_theta_dict = (
-                self._get_polar_lineouts(lower_image)
-                if self.std_data is not None
-                else (r_dict, theta_dict)
-            )
+                ###################################
+                # Lineouts for stddev information #
+                ###################################
+        
+                # Upper bound 
+                upper_lineout_x = np.sum(upper_image, axis=0)
+                upper_lineout_y = np.sum(upper_image, axis=1)
+                upper_r_dict, upper_theta_dict = (
+                    self._get_polar_lineouts(upper_image) 
+                    if self.std_data is not None
+                    else (r_dict, theta_dict)
+                )
+        
+                # Lower bound
+                lower_lineout_x = np.sum(lower_image, axis=0)
+                lower_lineout_y = np.sum(lower_image, axis=1)
+                lower_r_dict, lower_theta_dict = (
+                    self._get_polar_lineouts(lower_image)
+                    if self.std_data is not None
+                    else (r_dict, theta_dict)
+                )
 
 
             # GET MOMENTS OF THE IMAGE
@@ -91,10 +92,7 @@ class DigicamImageManager(ImageOperationsManager):
             #initialize figure
             fig = plt.figure(figsize=(16, 16))
     
-            gs = gridspec.GridSpec(nrows=3, ncols=2, wspace=0.3, hspace=0.5, 
-                                   #width_ratios=[1,1], 
-                                   #height_ratios=[1, aspect, 1]
-                                   )
+            gs = gridspec.GridSpec(nrows=3, ncols=2, wspace=0.3, hspace=0.5)
 
             ########
             # DATA #
@@ -107,13 +105,12 @@ class DigicamImageManager(ImageOperationsManager):
             #########
             # IMAGE #
             #########
-            #ax1 = fig.add_axes(rect=[0., 0.05, 0.5, 0.5])
             ax1 = fig.add_subplot(gs[1,0])
-            im = ax1.imshow(image, extent=extent, aspect='auto', vmax=1)
-            #ax1.set_aspect(image.shape[0]/image.shape[1])
+            im = ax1.imshow(image, extent=extent, aspect='auto', vmax=vmax)
             
             # Get position of ax1 for colorbar placement
             bbox = ax_data.get_position()
+            
             # Create colorbar axis above ax1
             cbar_ax = fig.add_axes([
                 bbox.x0,          # left
@@ -122,8 +119,6 @@ class DigicamImageManager(ImageOperationsManager):
                 0.02              # height of colorbar
             ])
             cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal')
-            #cbar_label = "Rel. Pixel Intensity" if norm else "Abs. Pixel Intensity"
-            #cbar.set_label(cbar_label, labelpad=5)
             
             ax1.set_xlabel("x / mm")
             ax1.xaxis.tick_top()
@@ -134,27 +129,27 @@ class DigicamImageManager(ImageOperationsManager):
             ##############
             # X lineouts #
             ##############
-            #ax2 = fig.add_axes(rect=[0., 0., 0.5, 0.08])
             ax2 = fig.add_subplot(gs[0,0], sharex=ax1)
             ax2.plot(X, lineout_x, label="X Marginal")
-            ax2.fill_between(X, lower_lineout_x, upper_lineout_x, alpha=0.2)
-            #ax2.set_title("X Lineout")
+
+            if self.std_data is not None:
+                ax2.fill_between(X, lower_lineout_x, upper_lineout_x, alpha=0.2)
+            
             ax2.set_ylabel("Intensity")
-            #ax2.set_xlabel("x / mm")
             ax2.legend()
             
             ##############
             # Y lineouts #
             ##############
-            #ax3 = fig.add_axes(rect=[0.52, 0.1, 0.08, 0.4])
             ax3 = fig.add_subplot(gs[1,1], sharey=ax1)
             ax3.plot(lineout_y[::-1], Y, label="Y Marginal")
-            ax3.fill_betweenx(Y, lower_lineout_y[::-1], upper_lineout_y[::-1], alpha=0.2)
-            #ax3.set_title("Y Lineout")
+            
+            if self.std_data is not None:
+                ax3.fill_betweenx(Y, lower_lineout_y[::-1], upper_lineout_y[::-1], alpha=0.2)
+            
             ax3.set_xlabel("Intensity")
             ax3.xaxis.tick_top()
             ax3.xaxis.set_label_position("top")
-            #ax3.set_ylabel("y / mm")
             ax3.legend()
     
             ##############
@@ -164,8 +159,10 @@ class DigicamImageManager(ImageOperationsManager):
             ax4.plot(r_dict.keys(), r_dict.values(), 
                      label="Radial Marginal"
                      )
-            ax4.fill_between(r_dict.keys(), lower_r_dict.values(), upper_r_dict.values(), alpha=0.2)
-            #ax4.set_title("Radial Lineout")
+            
+            if self.std_data is not None:
+                ax4.fill_between(r_dict.keys(), lower_r_dict.values(), upper_r_dict.values(), alpha=0.2)
+            
             ax4.set_xlabel("r / mm")
             ax4.set_ylabel("Intensity")
             ax4.legend()
@@ -176,12 +173,15 @@ class DigicamImageManager(ImageOperationsManager):
             ax5 = fig.add_subplot(gs[2,1])
             thetas = [theta_val for theta_val in theta_dict.keys()]
             theta_intensities = [theta_intensity for theta_intensity in theta_dict.values()]
-            lower_theta_intensities = [theta_intensity for theta_intensity in lower_theta_dict.values()]
-            upper_theta_intensities = [theta_intensity for theta_intensity in upper_theta_dict.values()]
+            
             
             ax5.plot(thetas[:-1], theta_intensities[:-1], label="Azimuthal Marginal")
-            ax5.fill_between(thetas, lower_theta_intensities, upper_theta_intensities, alpha=0.2)
-            #ax5.set_title("Azimuthal Lineout")
+            
+            if self.std_data is not None:
+                lower_theta_intensities = [theta_intensity for theta_intensity in lower_theta_dict.values()]
+                upper_theta_intensities = [theta_intensity for theta_intensity in upper_theta_dict.values()]
+                ax5.fill_between(thetas, lower_theta_intensities, upper_theta_intensities, alpha=0.2)
+            
             ax5.set_xlabel("θ / radians")
             ax4.set_ylabel("Intensity")
             ax5.legend()
@@ -196,7 +196,7 @@ class DigicamImageManager(ImageOperationsManager):
 
         else:
             fig, axs = plt.subplots(figsize=(16, 9))
-            axs.imshow(image, extent=extent, aspect='auto', vmax=1)
+            axs.imshow(image, extent=extent, aspect='auto', vmax=vmax)
             # SHOW THE FIGURE
             if norm:
                 fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}\n Normalized to Max Pixel Intensity")

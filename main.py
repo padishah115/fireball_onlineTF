@@ -1,5 +1,4 @@
 #MODULE IMPORTS
-import logging.config
 import sys
 sys.path.append(".")
 import runtime
@@ -28,9 +27,9 @@ background_shots = {
 }
 
 device_info = {
-    "DEVICE_NAME": "SCOPE 1",
-    "DEVICE_TYPE": "PROBE",
-    "DEVICE_SPECIES": "PROBE",
+    "DEVICE_NAME": "HRM3",
+    "DEVICE_TYPE": "CAMERA",
+    "DEVICE_SPECIES": "DIGICAM",
 }
 
 input = {
@@ -38,10 +37,10 @@ input = {
     ##################
     # Shot Selection #
     ##################
-    "EXP_SHOT_NOS": ["1748899695"], #if timestamps, need to be strings
+    "EXP_SHOT_NOS": [0], #if timestamps, need to be strings
     "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_info["DEVICE_NAME"]]],
 
-    "SPECIFY_TIMESTAMP_EXP": True,
+    "SPECIFY_TIMESTAMP_EXP": False,
     "SPECIFY_TIMESTAMP_BKG": True,
 
     "BKG_NAME": "DARKFIELD",
@@ -51,7 +50,7 @@ input = {
     # Operations Specifiers #
     #########################
     
-    "PLOT_ONLY": True, # in case we want to just quickly display the image live.
+    "PLOT_ONLY": False, # in case we want to just quickly display the image live.
     
     "NORM_PLOT": False,
     

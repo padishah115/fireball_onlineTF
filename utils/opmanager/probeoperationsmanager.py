@@ -20,7 +20,7 @@ class ProbeOperationsManager(OperationsManager):
         Parameters
         ----------
             norm : bool = False
-                Whether or not we want to normalize the 
+                Whether or not we want to normalize the plot. Currently no method of doing this is implemented in the code.
         """
 
         # Little modifications required to cater to what the two different scopes are doing
@@ -51,76 +51,52 @@ class ProbeOperationsManager(OperationsManager):
 
         # VOLTAGE information
         channel_voltages_dict = {channel_no:self.shot_data["DATA"]["VOLTAGES"][channel_no] for channel_no in channel_nos}
+
+        fig1, axs1 = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+        fig2, axs2 = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+        axs_tuple = (axs1, axs2)
         
         ####################
         # CHANNELS 1 AND 2 #
         ####################
-        fig1, axs1 = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
-        for i in range(2):
 
-            index_tuple = (i) if self.input["PLOT_ONLY"] else (i, 0)
-            ch_label = ch1_label if i == 0 else ch2_label
-            
-            # REAL-SPACE VOLTAGE VS TIME PLOT
-            channel_no = channel_nos[i]
-            channel_voltage = channel_voltages_dict[channel_no]
-            max_voltage = np.max(channel_voltage)
-            min_voltage = np.min(channel_voltage)
-            axs1[index_tuple].plot(times, channel_voltage)
-            if self.std_data is not None:
-                sigma_v = self.std_data["DATA"]["VOLTAGES"][channel_no]
-                upper_bound = np.add(channel_voltage, sigma_v)
-                lower_bound = np.subtract(channel_voltage, sigma_v)
-                axs1[i, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
-            axs1[index_tuple].set_ylabel("Amplitude / V")
-            axs1[index_tuple].set_xlabel("Time / s")
-            axs1[index_tuple].set_title(f"{ch_label}, Min: {min_voltage:.5f} V, Max: {max_voltage:.5f} V")
+        ch_labels = [ch1_label, ch2_label, ch3_label, ch4_label]
+        
+        for j, axs in enumerate(axs_tuple):
+            for i in range(2):
 
-            # Only perform fourier transforms if we don't have the input set to plot only
-            if not self.input["PLOT_ONLY"]:
-                # FOURIER TRANSFORM
-                freq = rfftfreq(n=N, d=dt)
-                fftvol = np.abs(rfft(channel_voltage))
-                axs1[i,1].plot(freq, fftvol)
-                axs1[i,1].set_ylabel("Fourier Amplitude")
-                axs1[i,1].set_xlabel("Freq / Hz")
-                axs1[i,1].set_title(f"Fourier Transform")
+                index = 2*j + i
 
-        ####################
-        # CHANNELS 3 AND 4 #
-        ####################
-        fig2, axs2 = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
-        for i in range(2):
-
-            index_tuple = (i) if self.input["PLOT_ONLY"] else (i, 0)
-            ch_label = ch3_label if i == 0 else ch4_label
-            
-            channel_no = channel_nos[i+2]
-            channel_voltage = channel_voltages_dict[channel_no]
-            max_voltage = np.max(channel_voltage)
-            min_voltage = np.min(channel_voltage)
-
-            axs2[index_tuple].plot(times, channel_voltage)
-            
-            #Only calculate statistical information if we don't have things set to plot only
-            if not self.input["PLOT_ONLY"]:
+                index_tuple = (i) if self.input["PLOT_ONLY"] else (i, 0)
+                ch_label = ch_labels[index]
+                
+                # REAL-SPACE VOLTAGE VS TIME PLOT
+                channel_no = channel_nos[index]
+                
+                channel_voltage = channel_voltages_dict[channel_no]
+                max_voltage = np.max(channel_voltage)
+                min_voltage = np.min(channel_voltage)
+                axs[index_tuple].plot(times, channel_voltage)
+                
                 if self.std_data is not None:
                     sigma_v = self.std_data["DATA"]["VOLTAGES"][channel_no]
                     upper_bound = np.add(channel_voltage, sigma_v)
                     lower_bound = np.subtract(channel_voltage, sigma_v)
-                    axs2[i, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
-            
-            axs2[index_tuple].set_ylabel("Amplitude / V")
-            axs2[index_tuple].set_xlabel("Time / s")
-            axs2[index_tuple].set_title(f"{ch_label}, Min: {min_voltage:.5f} V, Max: {max_voltage:.5f} V")
-            
-            if not self.input["PLOT_ONLY"]:
-                freq = rfftfreq(n=N, d=dt)
-                fftvol = np.abs(rfft(channel_voltage))
-                axs2[i,1].plot(freq, fftvol)
-                axs2[i,1].set_ylabel("Fourier Amplitude")
-                axs2[i,1].set_xlabel("Freq / Hz")
-                axs2[i,1].set_title(f"Fourier Transform")
+                    axs[i, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
+                
+                axs[index_tuple].set_ylabel("Amplitude / V")
+                axs[index_tuple].set_xlabel("Time / s")
+                axs[index_tuple].set_title(f"{ch_label}, Min: {min_voltage:.5f} V, Max: {max_voltage:.5f} V")
+
+                # Only perform fourier transforms if we don't have the input set to plot only
+                if not self.input["PLOT_ONLY"]:
+                    # FOURIER TRANSFORM
+                    freq = rfftfreq(n=N, d=dt)
+                    fftvol = np.abs(rfft(channel_voltage))
+                    axs[i,1].plot(freq, fftvol)
+                    axs[i,1].set_ylabel("Fourier Amplitude")
+                    axs[i,1].set_xlabel("Freq / Hz")
+                    axs[i,1].set_title(f"Fourier Transform")
 
         fig1.suptitle(f'Probe Data from {self.input["DEVICE_NAME"]}, Shot {self.shot_no}')
         fig1.tight_layout()
