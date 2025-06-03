@@ -25,7 +25,7 @@ input = {
     ##################
     # Shot Selection #
     ##################
-    "EXP_SHOT_NOS": ["1748954901"], #if timestamps, need to be strings
+    "EXP_SHOT_NOS": ["1748956486"], #if timestamps, need to be strings
     "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_name]],
 
     "SPECIFY_TIMESTAMP_EXP": True,
