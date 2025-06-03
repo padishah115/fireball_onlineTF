@@ -53,7 +53,7 @@ def generate_log(device):
 
 if __name__ == "__main__":
     
-    for device in all_devices:
+    for device in andor_n_streak:
         ti = time.time()
         generate_log(device=device)
         tf = time.time()

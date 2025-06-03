@@ -16,8 +16,8 @@ device_info = {
     },
 
     "SPECIES":{
-        "ANDOR SPECTROMETER": "CAMERA",
-        "ORCA STREAK":"CAMERA",
+        "ANDOR SPECTROMETER": "ANDOR",
+        "ORCA STREAK":"ORCA",
         
         "HRM3":"DIGICAM",    
         "HRM4":"DIGICAM",

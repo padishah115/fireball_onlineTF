@@ -18,17 +18,17 @@ logging.basicConfig(filename="log.log", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-device_name = "HRM4"
+device_name = "ORCA STREAK"
 
 input = {
 
     ##################
     # Shot Selection #
     ##################
-    "EXP_SHOT_NOS": [0], #if timestamps, need to be strings
+    "EXP_SHOT_NOS": ["1748851353"], #if timestamps, need to be strings
     "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_name]],
 
-    "SPECIFY_TIMESTAMP_EXP": False,
+    "SPECIFY_TIMESTAMP_EXP": True,
     "SPECIFY_TIMESTAMP_BKG": True,
 
     "BKG_NAME": "DARKFIELD",
