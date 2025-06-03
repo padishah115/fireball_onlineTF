@@ -389,7 +389,7 @@ class AndorImageManager(ImageOperationsManager):
             fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(16,9))
             
             # PHYSICAL IMAGE
-            axs[0].imshow(img, aspect='auto')
+            axs[0].imshow(img, aspect='auto', vmax=self.input["OPERATIONS"]["VMAX"])
             axs[0].set_yticks(y_tick_loc)
             axs[0].set_yticklabels(pixels_y_rounded[::step])
             axs[0].set_xlabel("Pixel no.")
@@ -413,7 +413,7 @@ class AndorImageManager(ImageOperationsManager):
 
         else:
             fig, axs = plt.subplots(figsize=(16,9))
-            axs.imshow(img, aspect="auto")
+            axs.imshow(img, aspect="auto", vmax=self.input["OPERATIONS"]["VMAX"])
             axs.set_yticks(y_tick_loc)
             axs.set_yticklabels(pixels_y_rounded[::step])
             axs.set_xlabel("Pixel no.")
@@ -467,7 +467,7 @@ class OrcaImageManager(ImageOperationsManager):
             ##################
             # PLOT THE IMAGE #
             ##################
-            axs[0].imshow(img, aspect='auto')
+            axs[0].imshow(img, aspect='auto', vmax=self.input["OPERATIONS"]["VMAX"])
             axs[0].set_xlabel("Distance / mm")
             axs[0].set_ylabel("Time / ns")
             axs[0].set_yticks(y_ticks_pos)
@@ -515,7 +515,7 @@ class OrcaImageManager(ImageOperationsManager):
             ##################
             # PLOT THE IMAGE #
             ##################
-            axs.imshow(img, aspect='auto')
+            axs.imshow(img, aspect='auto', vmax=self.input["OPERATIONS"]["VMAX"])
             axs.set_xlabel("Distance / mm")
             axs.set_ylabel("Time / ns")
             axs.set_yticks(y_ticks_pos)

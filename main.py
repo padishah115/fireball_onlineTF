@@ -25,7 +25,7 @@ input = {
     ##################
     # Shot Selection #
     ##################
-    "EXP_SHOT_NOS": ["1748851353"], #if timestamps, need to be strings
+    "EXP_SHOT_NOS": ["1748954901"], #if timestamps, need to be strings
     "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_name]],
 
     "SPECIFY_TIMESTAMP_EXP": True,
@@ -47,7 +47,7 @@ input = {
         "LINEOUT_BIN_NO": 100,
         "SHOW_AVERAGE_SHOTS": False,
         "SUBTRACT_DC_OFFSET": False,
-        "VMAX":1000,
+        "VMAX":1000, #VMAX VALUE FOR THE IMSHOW METHOD
     },
 
     #################################

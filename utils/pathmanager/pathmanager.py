@@ -12,6 +12,7 @@ class PathManager():
        
         # INITIALIZE PATH TO THE ALL THE DEVICE'S DATA, USING CONFIGURATION FILES.
         self.all_data_path = os.path.join(input["PARENT_DIR"], input["FOLDER_NAMES"][input["DEVICE_NAME"]])
+        
         if not os.path.exists(self.all_data_path):
             raise FileNotFoundError(f"Warning: path {self.all_data_path} doesn't exist")
         
