@@ -4,7 +4,7 @@ LOG_PATH=r"H:\user\h\hramm\shot-log"
 
 FOLDER_NAMES = {
             
-            "ANDOR SPECTROMETER":"andor_spectrometer_contingency\\original_files",
+            "ANDOR SPECTROMETER":"tagged_data\\andor",
             "ORCA STREAK":"orca_streak\\manual_save",
             
             "HRM3":"chromox_cameras\\HRM3",    

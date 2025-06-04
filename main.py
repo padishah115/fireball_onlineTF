@@ -25,7 +25,8 @@ device_names = [
     "ANDOR SPECTROMETER",
     "HRM5", 
     "HRM3",
-    #"SCOPE 2"
+    "SCOPE 1",
+    "SCOPE 2"
     ]
 
 
@@ -57,7 +58,7 @@ def main(device_name):
             "LINEOUT_BIN_NO": 100,
             "SHOW_AVERAGE_SHOTS": False,
             "SUBTRACT_DC_OFFSET": True,
-            "VMAX":1000, #VMAX VALUE FOR THE IMSHOW METHOD
+            "VMAX":10000, #VMAX VALUE FOR THE IMSHOW METHOD
         },
 
         #################################

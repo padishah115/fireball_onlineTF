@@ -117,8 +117,10 @@ class ProbeOperationsManager(OperationsManager):
                 axs3.fill_between(times, lower_ch2_min_ch3, upper_ch2_min_ch3)
             
             axs3.plot(times, ch2_min_ch3)
+            fig3.suptitle("Upstream Azimuthal BDot Difference")
+            axs3.set_xlabel("Time / s")
+            axs3.set_ylabel("Amplitude / V")
             fig3.tight_layout()
-            axs3.set_title("Upstream Azimuthal BDot Difference")
             plt.show(block=False)
 
         if self.input["DEVICE_NAME"] == "SCOPE 2":
@@ -133,9 +135,11 @@ class ProbeOperationsManager(OperationsManager):
                 lower_ch3_min_ch4 = np.subtract(ch3_min_ch4, sigma_comb) 
                 axs3.fill_between(times, lower_ch3_min_ch4, upper_ch3_min_ch4)
             
+            axs3.set_xlabel("Time / s")
+            axs3.set_ylabel("Amplitude / V")
             axs3.plot(times, ch3_min_ch4)
+            fig3.suptitle("Downstream Azimuthal BDot Difference")
             fig3.tight_layout()
-            axs3.set_title("Downstream Azimuthal BDot Difference")
             plt.show(block=False)
 
 
