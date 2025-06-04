@@ -1,9 +1,10 @@
 #MODULE IMPORTS
 import sys
 sys.path.append(".")
-from run.runtime import main as runtime
+from run.devicerun import device_run
 import matplotlib.pyplot as plt
 import time
+from utils.directory_methods import clear_directory
 
 # Information about the background shots for each device
 from config.background_shots import background_shots
@@ -12,7 +13,7 @@ from config.background_shots import background_shots
 from config.device_info import device_info, TIMESTAMP_SLICE
 
 #path information!
-from config.paths import PARENT_DIR, LOG_PATH, FOLDER_NAMES, EXTENSION_DICT
+from config.paths import PARENT_DIR, LOG_PATH, FOLDER_NAMES, EXTENSION_DICT, SCOPECACHE_PATH
 
 # build a logger! you know you want to!
 import logging
@@ -21,16 +22,16 @@ logger = logging.getLogger(__name__)
 
 
 device_names = [
-    "ORCA STREAK",
-    "ANDOR SPECTROMETER",
-    "HRM5", 
-    "HRM3",
+    #"ORCA STREAK",
+    # "ANDOR SPECTROMETER",
+    # "HRM5", 
+    # "HRM3",
     "SCOPE 1",
     "SCOPE 2"
     ]
 
 
-def main(device_name):
+def display_device(device_name):
     input = {
 
         ##################
@@ -49,7 +50,7 @@ def main(device_name):
         # Operations Specifiers #
         #########################
         
-        "PLOT_ONLY": True, # in case we want to just quickly display the image live.
+        "PLOT_ONLY": False, # in case we want to just quickly display the image live.
         
         "NORM_PLOT": False,
         
@@ -77,25 +78,36 @@ def main(device_name):
         "EXTENSION_DICT":EXTENSION_DICT,
 
         "TIMESTAMP_SLICE":TIMESTAMP_SLICE,
+
+        "SCOPECACHE_PATH":SCOPECACHE_PATH
         
     }
 
 
     logger.info("Starting runtime ... \n")
-    runtime(
+    device_run(
         input=input
     )
     logger.info("Ending runtime ...\n")
 
 
-if __name__ == "__main__":
 
+def main():
     ti = time.time()
     for device_name in device_names:
         print(device_name)
-        main(device_name=device_name)
+        display_device(device_name=device_name)
     tf = time.time()
     dt = tf-ti
     print(f"Time to execute: {dt:.5f}")
     plt.show()
+    #Clear the cache path
+    clear_directory(SCOPECACHE_PATH)
+
+
+
+
+if __name__ == "__main__":
+    main()
+    
     

@@ -1,8 +1,8 @@
 from utils.opmanager.operationsmanager import OperationsManager
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-from typing import List, Dict, Tuple
+import os
+import pandas as pd
 from scipy.fft import rfftfreq, rfft
 
 ############################
@@ -10,8 +10,9 @@ from scipy.fft import rfftfreq, rfft
 ############################
 
 class ProbeOperationsManager(OperationsManager):
-    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data):
+    def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data, cache_path):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
+        self.cache_path = cache_path
 
     def plot(self, norm:bool=False):
         """Plots the four-channel voltage data from the 'scope readout as a function of time. This will be two 2x2 grids of plots, with each row
@@ -141,6 +142,81 @@ class ProbeOperationsManager(OperationsManager):
             fig3.suptitle("Downstream Azimuthal BDot Difference")
             fig3.tight_layout()
             plt.show(block=False)
+
+
+        longitudinal_cache_fpath = os.path.join(self.cache_path, str(self.shot_no) + ".csv")
+        #LONGITUDINAL BDOT- need to cache the data for the different scope's info about the BDots in the longitudinal direction.
+        if self.input["DEVICE_NAME"] == "SCOPE 1":
+            downstream_longitudinal_bdot = self.shot_data["DATA"]["VOLTAGES"]["4"]
+
+            if os.path.exists(longitudinal_cache_fpath):
+                df = pd.read_csv(longitudinal_cache_fpath)
+                df["DOWNSTREAM"] = downstream_longitudinal_bdot
+
+                longitudinal_difference = np.subtract(df["UPSTREAM"], df["DOWNSTREAM"])
+
+
+                fig4, axs4 = plt.subplots()
+                if self.std_data is not None:
+                    df["DOWNSTREAM STD"] = self.std_data["DATA"]["VOLTAGES"]["4"]
+                    sigma = np.add(df["DOWNSTREAM STD"], df["UPSTREAM STD"])
+                    upper_bound = np.add(longitudinal_difference, sigma)
+                    lower_bound = np.subtract(longitudinal_difference, sigma)
+
+                axs4.fill_between(times, lower_bound, upper_bound)
+                axs4.plot(times, longitudinal_difference)
+                axs4.set_ylabel("Amplitude / V")
+                axs4.set_xlabel("Time / s")
+
+                fig4.suptitle("Longitudinal BDot Difference")
+                fig4.tight_layout()
+                plt.show(block=False)
+
+            else:
+                long_dict = {"DOWNSTREAM":downstream_longitudinal_bdot}
+                if self.std_data is not None:
+                    long_dict["DOWNSTREAM STD"] = self.std_data["DATA"]["VOLTAGES"]["4"]
+
+
+                df = pd.DataFrame(long_dict)
+                df.to_csv(longitudinal_cache_fpath)
+
+
+        if self.input["DEVICE_NAME"] == "SCOPE 2":
+            upstream_longitudinal_bdot = self.shot_data["DATA"]["VOLTAGES"]["1"]
+
+            if os.path.exists(longitudinal_cache_fpath):
+                df = pd.read_csv(longitudinal_cache_fpath)
+                df["UPSTREAM"] = upstream_longitudinal_bdot
+                
+                longitudinal_difference = np.subtract(df["UPSTREAM"], df["DOWNSTREAM"])
+
+                fig4, axs4 = plt.subplots()
+
+                if self.std_data is not None:
+                    df["UPSTREAM STD"] = self.std_data["DATA"]["VOLTAGES"]["1"]
+                    sigma = np.add(df["DOWNSTREAM STD"], df["UPSTREAM STD"])
+                    upper_bound = np.add(longitudinal_difference, sigma)
+                    lower_bound = np.subtract(longitudinal_difference, sigma)
+                    axs4.fill_between(times, lower_bound, upper_bound)
+                
+                
+                axs4.plot(times, longitudinal_difference)
+                axs4.set_ylabel("Amplitude / V")
+                axs4.set_xlabel("Time / s")
+
+                fig4.suptitle("Longitudinal BDot Difference")
+                fig4.tight_layout()
+                plt.show(block=False)
+
+            
+            else:
+                long_dict = {"UPSTREAM":upstream_longitudinal_bdot}
+                if self.std_data is not None:
+                    long_dict["UPSTREAM STD"] = self.std_data["DATA"]["VOLTAGES"]["1"]
+
+                df = pd.DataFrame(long_dict)
+                df.to_csv(longitudinal_cache_fpath)
 
 
     

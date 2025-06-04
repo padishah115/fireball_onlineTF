@@ -60,13 +60,28 @@ def generate_log(device):
     df.to_csv(save_path, index=False)
 
 
+def main(freeze_time=120):
+    """
+    
+    Parameters
+    ----------
+        freeze_time : int
+            The time that we freeze between rounds of generating shot logs.
+    """
+    while True:
+        ti = time.time()
+        
+        for device in fireball_devices:    
+            generate_log(device=device)
+        
+        tf = time.time()
+        dt = tf- ti
+        print(f"Shot logs generated, time taken: {dt:.5f}.")
+        time.sleep(freeze_time)
+
+
 if __name__ == "__main__":
     
-    for device in fireball_devices:
-        ti = time.time()
-        generate_log(device=device)
-        tf = time.time()
-
-    print("Shot logs generated.")
+    main()
 
 

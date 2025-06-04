@@ -35,3 +35,5 @@ EXTENSION_DICT = {
             "LDV": ".tdms",
             "PT100": ".csv",
         }
+
+SCOPECACHE_PATH = "scopecache"

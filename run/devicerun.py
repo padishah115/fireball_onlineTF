@@ -13,7 +13,7 @@ from utils.runmanager.temprunmanager import TempRunManager
 from utils.runmanager.ldvrunmanager import LDVRunManager
 
 
-def main(input):
+def device_run(input):
     """Main function that executes the run.
     
     Parameters

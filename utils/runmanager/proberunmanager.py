@@ -1,6 +1,8 @@
 from typing import Dict, Type
 import logging
 logger = logging.getLogger(__name__)
+import os
+import shutil
 
 from utils.loadmanager.probeloadmanager import ProbeLoadManager
 from utils.runmanager.runmanager import RunManager
@@ -90,6 +92,8 @@ class ProbeRunManager(RunManager):
             std_data : Dict[np.ndarray]
                 By default, none- useful for ensembles.
         """
+
+        
         
         # INITIALIZE THE CORRECT OPERATIONS MANAGER USING THE MANAGER_KEY DICTIONARY
         operations_manager = ProbeOperationsManager(
@@ -98,9 +102,14 @@ class ProbeRunManager(RunManager):
             label=LABEL,
             shot_data=shot_data,
             std_data=std_data,
-            input=self.input
+            input=self.input,
+            cache_path=self.input["SCOPECACHE_PATH"]
         ) 
 
         # PLOTTING        
         logger.info("Plot ... \n")
         operations_manager.plot(norm=self.input["NORM_PLOT"])
+
+        
+
+
