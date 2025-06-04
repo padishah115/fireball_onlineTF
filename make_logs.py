@@ -2,7 +2,7 @@
 # MAKE A SHOT LOG FOR A SPECIFIED DEVICE #
 ##########################################
 
-from main import input
+from config.paths import *
 import os
 import datetime
 import time
@@ -13,11 +13,11 @@ import numpy as np
 chromox = [f"HRM{i}" for i in np.arange(3, 7)]
 scopes = ["SCOPE 1", "SCOPE 2"]
 andor_n_streak = ["ORCA STREAK", "ANDOR SPECTROMETER"]
-all_devices = chromox + scopes + andor_n_streak
+fireball_devices = chromox + scopes + andor_n_streak
 
 #Gather the parent directory and child folder information from the device
-parent_dir : str = input["PARENT_DIR"]
-folder_names : dict = input["FOLDER_NAMES"]
+parent_dir : str = PARENT_DIR
+folder_names : dict = FOLDER_NAMES
 DEVICES = [device for device in folder_names.keys()]
 
 #Initiaize a list of paths to different diagnostic's data.
@@ -29,7 +29,7 @@ def generate_log(device):
     """Generates a shot log for a specified device."""
 
     # Select the appropriate file extension
-    extension = input["EXTENSION_DICT"][device]
+    extension = EXTENSION_DICT[device]
     path = paths_to_data[device]
 
     # Dictionary of files for the device.
@@ -37,8 +37,8 @@ def generate_log(device):
                 if f.endswith(extension) and not os.path.isdir(os.path.join(path, f))}
 
     # If the path for saving doesn't exist, make it!
-    if not os.path.exists(input["LOG_PATH"]):
-                os.makedirs(input["LOG_PATH"], exist_ok=True)
+    if not os.path.exists(LOG_PATH):
+                os.makedirs(LOG_PATH, exist_ok=True)
             
     # Convert the UNIX timestamp to physical time data.
     times = [datetime.datetime.fromtimestamp(int(timestamp)) for timestamp in files_dict.keys()]
@@ -49,14 +49,14 @@ def generate_log(device):
     #Sort!
     df = df.sort_values(by="TIMESTAMPS")
     
-    save_path = os.path.join(input["LOG_PATH"], device + ".csv")
+    save_path = os.path.join(LOG_PATH, device + ".csv")
     print(save_path)
     df.to_csv(save_path, index=False)
 
 
 if __name__ == "__main__":
     
-    for device in chromox:
+    for device in fireball_devices:
         ti = time.time()
         generate_log(device=device)
         tf = time.time()

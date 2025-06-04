@@ -2,6 +2,8 @@
 import sys
 sys.path.append(".")
 from run.runtime import main as runtime
+import matplotlib.pyplot as plt
+import time
 
 # Information about the background shots for each device
 from config.background_shots import background_shots
@@ -18,58 +20,66 @@ logging.basicConfig(filename="log.log", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-device_name = "ORCA STREAK"
+device_names = [
+    "ORCA STREAK",
+    "ANDOR SPECTROMETER",
+    "HRM5", 
+    "HRM6",
+    #"SCOPE 2"
+    ]
 
-input = {
 
-    ##################
-    # Shot Selection #
-    ##################
-    "EXP_SHOT_NOS": [0], #if timestamps, need to be strings
-    "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_name]],
+def main(device_name):
+    input = {
 
-    "SPECIFY_TIMESTAMP_EXP": False,
-    "SPECIFY_TIMESTAMP_BKG": True,
+        ##################
+        # Shot Selection #
+        ##################
+        "EXP_SHOT_NOS": [0], #if timestamps, need to be strings
+        "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_name]],
 
-    "BKG_NAME": "DARKFIELD",
-    "BACKGROUND_STATUS": "RAW",
+        "SPECIFY_TIMESTAMP_EXP": False,
+        "SPECIFY_TIMESTAMP_BKG": True,
 
-    #########################
-    # Operations Specifiers #
-    #########################
-    
-    "PLOT_ONLY": False, # in case we want to just quickly display the image live.
-    
-    "NORM_PLOT": False,
-    
-    "OPERATIONS": {
-        "SHOW_SINGLESHOT_PLOTS": True,
-        "LINEOUT_BIN_NO": 100,
-        "SHOW_AVERAGE_SHOTS": False,
-        "SUBTRACT_DC_OFFSET": False,
-        "VMAX":10000, #VMAX VALUE FOR THE IMSHOW METHOD
-    },
+        "BKG_NAME": "DARKFIELD",
+        "BACKGROUND_STATUS": "RAW",
 
-    #################################
-    # Information about the device and run. #
-    #################################
-    "DEVICE_NAME": device_name,
-    "DEVICE_TYPE": device_info["TYPE"][device_name],
-    "DEVICE_SPECIES": device_info["SPECIES"][device_name],
+        #########################
+        # Operations Specifiers #
+        #########################
+        
+        "PLOT_ONLY": False, # in case we want to just quickly display the image live.
+        
+        "NORM_PLOT": False,
+        
+        "OPERATIONS": {
+            "SHOW_SINGLESHOT_PLOTS": True,
+            "LINEOUT_BIN_NO": 100,
+            "SHOW_AVERAGE_SHOTS": False,
+            "SUBTRACT_DC_OFFSET": True,
+            "VMAX":1000, #VMAX VALUE FOR THE IMSHOW METHOD
+        },
 
-    #########################
-    # Directory Information #
-    #########################
-    "PARENT_DIR":PARENT_DIR,
-    "LOG_PATH":LOG_PATH,
-    "FOLDER_NAMES":FOLDER_NAMES,
-    "EXTENSION_DICT":EXTENSION_DICT,
+        #################################
+        # Information about the device and run. #
+        #################################
+        "DEVICE_NAME": device_name,
+        "DEVICE_TYPE": device_info["TYPE"][device_name],
+        "DEVICE_SPECIES": device_info["SPECIES"][device_name],
 
-    "TIMESTAMP_SLICE":TIMESTAMP_SLICE,
-    
-}
+        #########################
+        # Directory Information #
+        #########################
+        "PARENT_DIR":PARENT_DIR,
+        "LOG_PATH":LOG_PATH,
+        "FOLDER_NAMES":FOLDER_NAMES,
+        "EXTENSION_DICT":EXTENSION_DICT,
 
-def main():
+        "TIMESTAMP_SLICE":TIMESTAMP_SLICE,
+        
+    }
+
+
     logger.info("Starting runtime ... \n")
     runtime(
         input=input
@@ -79,5 +89,12 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
+    ti = time.time()
+    for device_name in device_names:
+        print(device_name)
+        main(device_name=device_name)
+    tf = time.time()
+    dt = tf-ti
+    print(f"{dt:.0f}")
+    plt.show()
     

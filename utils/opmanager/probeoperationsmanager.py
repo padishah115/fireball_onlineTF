@@ -101,7 +101,7 @@ class ProbeOperationsManager(OperationsManager):
         fig1.suptitle(f'Probe Data from {self.input["DEVICE_NAME"]}, Shot {self.shot_no}')
         fig1.tight_layout()
         fig2.tight_layout()
-        plt.show()
+        plt.show(block=False)
 
         # Plot the subtracted voltages channels for azimuthal BDot
         if self.input["DEVICE_NAME"] == "SCOPE 1":
@@ -110,7 +110,7 @@ class ProbeOperationsManager(OperationsManager):
             axs3.plot(times, ch2_min_ch3)
             fig3.tight_layout()
             axs3.set_title("Upstream Azimuthal BDot Difference")
-            plt.show()
+            plt.show(block=False)
 
         if self.input["DEVICE_NAME"] == "SCOPE 2":
             fig3, axs3 = plt.subplots(figsize=(8, 4.5))
@@ -118,7 +118,7 @@ class ProbeOperationsManager(OperationsManager):
             axs3.plot(times, ch3_min_ch4)
             fig3.tight_layout()
             axs3.set_title("Downstream Azimuthal BDot Difference")
-            plt.show()
+            plt.show(block=False)
 
 
     
