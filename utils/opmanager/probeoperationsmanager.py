@@ -102,6 +102,8 @@ class ProbeOperationsManager(OperationsManager):
         fig1.suptitle(f'Probe Data from {self.input["DEVICE_NAME"]}, Shot {self.shot_no}')
         fig1.tight_layout()
         fig2.tight_layout()
+        fig1.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
+        fig2.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
         plt.show(block=False)
 
         # Plot the subtracted voltages channels for azimuthal BDot
@@ -122,6 +124,7 @@ class ProbeOperationsManager(OperationsManager):
             axs3.set_xlabel("Time / s")
             axs3.set_ylabel("Amplitude / V")
             fig3.tight_layout()
+            fig3.canvas.manager.set_window_title(f"Upstream Azimuthal BDot")
             plt.show(block=False)
 
         if self.input["DEVICE_NAME"] == "SCOPE 2":
@@ -141,6 +144,7 @@ class ProbeOperationsManager(OperationsManager):
             axs3.plot(times, ch3_min_ch4)
             fig3.suptitle("Downstream Azimuthal BDot Difference")
             fig3.tight_layout()
+            fig3.canvas.manager.set_window_title(f"Downstream Azimuthal BDot")
             plt.show(block=False)
 
 
@@ -170,6 +174,7 @@ class ProbeOperationsManager(OperationsManager):
 
                 fig4.suptitle("Longitudinal BDot Difference")
                 fig4.tight_layout()
+                fig4.canvas.manager.set_window_title(f"Longitudinal BDot Difference")
                 plt.show(block=False)
 
             else:
@@ -207,6 +212,7 @@ class ProbeOperationsManager(OperationsManager):
 
                 fig4.suptitle("Longitudinal BDot Difference")
                 fig4.tight_layout()
+                fig4.canvas.manager.set_window_title(f"Longitudinal BDot difference")
                 plt.show(block=False)
 
             

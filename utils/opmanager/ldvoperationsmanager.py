@@ -218,6 +218,7 @@ class LDVOperationsManager(OperationsManager):
         axes[3, 1].set_ylabel('Elongation ' + "(" + elongation_range[1] + ")")
         axes[3, 1].legend()
         axes[3, 1].grid()
+        fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
         plt.show()
         
 
@@ -263,6 +264,7 @@ class LDVOperationsManager(OperationsManager):
         ax.set_ylabel('FFT amplitude (a.u.)')
         ax.grid(alpha=0.2, ls='dashed')
         fig.suptitle(title, fontsize=20)
+        fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
         plt.show()
 
     def perform_fft_filtered(self, dataframe, ldv_parameter, sampling_frequency_Hz, display_until_kHz, title):
@@ -305,6 +307,7 @@ class LDVOperationsManager(OperationsManager):
         ax.set_ylabel('FFT amplitude (a.u.)')
         ax.grid(alpha=0.2, ls='dashed')
         fig.suptitle(title, fontsize=20)
+        fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
         plt.show()
 
     def perform_cwt(self, dataframe, ldv_parameter, sampling_frequency_Hz):
@@ -386,6 +389,7 @@ class LDVOperationsManager(OperationsManager):
         cbar.ax.set_ylim(0, 1)
         cbar.ax.set_yticks(np.arange(0, 1 + 0.2, 0.2))
 
+        f.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
         plt.show()
 
 

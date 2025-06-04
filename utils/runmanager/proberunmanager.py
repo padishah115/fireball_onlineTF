@@ -42,7 +42,8 @@ class ProbeRunManager(RunManager):
         ##############################
 
         logger.info("Selecting appropriate data dictionary ... \n")
-        data_dict = raw_data_dict
+        data_dict = raw_data_dict if self.input["BACKGROUND_STATUS"] == "RAW" else corrected_data_dict
+        
 
         # Depending on whether we are displaying the background itself or the experimental shot numbers,
         # we need to make sure that the shot numbers are correct.

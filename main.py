@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 device_names = [
-    #"ORCA STREAK",
+    # "ORCA STREAK",
     # "ANDOR SPECTROMETER",
     # "HRM5", 
     # "HRM3",
@@ -38,10 +38,10 @@ def display_device(device_name):
         # Shot Selection #
         ##################
         "EXP_SHOT_NOS": [0], #if timestamps, need to be strings
-        "BKG_SHOT_NOS": [timestamp for timestamp in background_shots[device_name]],
+        "BKG_SHOT_NOS": [1],
 
         "SPECIFY_TIMESTAMP_EXP": False,
-        "SPECIFY_TIMESTAMP_BKG": True,
+        "SPECIFY_TIMESTAMP_BKG": False,
 
         "BKG_NAME": "DARKFIELD",
         "BACKGROUND_STATUS": "RAW",
@@ -83,6 +83,10 @@ def display_device(device_name):
         
     }
 
+    if input["DEVICE_NAME"] == "SCOPE 1":
+        input["BACKGROUND_STATUS"] = "SUBTRACT"
+
+    print(input["BACKGROUND_STATUS"])
 
     logger.info("Starting runtime ... \n")
     device_run(
@@ -93,16 +97,19 @@ def display_device(device_name):
 
 
 def main():
-    ti = time.time()
-    for device_name in device_names:
-        print(device_name)
-        display_device(device_name=device_name)
-    tf = time.time()
-    dt = tf-ti
-    print(f"Time to execute: {dt:.5f}")
-    plt.show()
-    #Clear the cache path
     clear_directory(SCOPECACHE_PATH)
+    while True:
+        ti = time.time()
+        for device_name in device_names:
+            print(device_name)
+            display_device(device_name=device_name)
+        tf = time.time()
+        dt = tf-ti
+        print(f"Time to execute: {dt:.5f}")
+        plt.show()
+        #Clear the cache path
+        clear_directory(SCOPECACHE_PATH)
+        time.sleep(300)
 
 
 

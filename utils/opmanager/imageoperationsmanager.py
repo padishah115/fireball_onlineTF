@@ -191,6 +191,8 @@ class DigicamImageManager(ImageOperationsManager):
                 fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}\n Normalized to Max Pixel Intensity")
             else:
                 fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+            
+            fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
             plt.show(block=False)
 
 
@@ -202,6 +204,7 @@ class DigicamImageManager(ImageOperationsManager):
                 fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}\n Normalized to Max Pixel Intensity")
             else:
                 fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+            fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
             plt.show(block=False)
         
 
@@ -409,6 +412,7 @@ class AndorImageManager(ImageOperationsManager):
             
             fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
             fig.tight_layout()
+            fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
             plt.show(block=False)
 
         else:
@@ -420,6 +424,7 @@ class AndorImageManager(ImageOperationsManager):
             axs.set_ylabel("Wavelength / nm")
             fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
             fig.tight_layout()
+            fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
             plt.show(block=False)
 
 
@@ -503,6 +508,7 @@ class OrcaImageManager(ImageOperationsManager):
             
             fig.suptitle(f"Data from {self.DEVICE_NAME}, Shot No {self.shot_no}, \n{self.label}")
             fig.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at the top (5%)
+            fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
             plt.show(block=False)
 
         else:
@@ -526,5 +532,6 @@ class OrcaImageManager(ImageOperationsManager):
             axs.set_title("Image")
 
             fig.suptitle(f"Data from {self.DEVICE_NAME}, Shot No {self.shot_no}, \n{self.label}")
+            fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
             plt.show(block=False)
             

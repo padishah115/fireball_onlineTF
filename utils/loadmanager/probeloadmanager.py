@@ -2,11 +2,13 @@ import numpy as np
 import pandas as pd
 from typing import Dict, Tuple, List
 from utils.loadmanager.loadmanager import LoadManager
+from utils.stats.stats import probe_arrays_stats
 
 class ProbeLoadManager(LoadManager):
 
     def __init__(self, input, data_paths_dict):
         super().__init__(input, data_paths_dict)
+        self.channel_nos = [f"{i}" for i in np.arange(1, 5)]
 
     def load(self)->Tuple[Dict[int, np.ndarray], Dict[int, np.ndarray], Dict[int, np.ndarray]]:
         """Loads dictionaries of indexed experimental, background, and background-corrected data. Each of these
@@ -41,11 +43,68 @@ class ProbeLoadManager(LoadManager):
         # {Shot no : Experimental (raw) data}
         exp_data_dict = self.PROBE_load_shots(self.exp_shot_nos, self.data_paths_dict)
         
+        
+        if self.input["BACKGROUND_STATUS"] != "RAW":
+            bkg_data_dict : Dict = self.PROBE_load_shots(self.bkg_shot_nos, 
+                                                self.data_paths_dict,)
+        
+            averaged_bkg = self.get_average_bkg(bkg_data_dict=bkg_data_dict)
+
+            corrected_data_dict = {}
+            for shot_no in self.exp_shot_nos:
+                corrected_data_dict[shot_no] = {"DATA":{"VOLTAGES":{channel_no:None for channel_no in self.channel_nos}, "TIMES":{}}}
+                for channel_no in self.channel_nos:
+                    corrected_voltages = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"]["VOLTAGES"][channel_no],\
+                                                           bkg_arr=averaged_bkg["DATA"]["VOLTAGES"][channel_no])
+                    corrected_data_dict[shot_no]["DATA"]["VOLTAGES"][channel_no] = corrected_voltages 
+                
+                print("corrections!")
+                
+                corrected_data_dict[shot_no]["DATA"]["TIMES"]["TIMES"] = exp_data_dict[shot_no]["DATA"]["TIMES"]["TIMES"]
+                corrected_data_dict[shot_no]["DATA"]["TIMES"]["N"] = exp_data_dict[shot_no]["DATA"]["TIMES"]["N"]
+                corrected_data_dict[shot_no]["DATA"]["TIMES"]["dt"] = exp_data_dict[shot_no]["DATA"]["TIMES"]["dt"]
         # Background-removal is not done shot-via-shot
-        bkg_data_dict = None
-        corrected_data_dict = None
+        else:
+            bkg_data_dict = None
+            corrected_data_dict = None
 
         return exp_data_dict, bkg_data_dict, corrected_data_dict
+    
+    def bkg_subtraction(self, raw_arr:np.ndarray, bkg_arr:np.ndarray)->np.ndarray:
+        """Subtracts some background array from some raw data array.
+        
+        Parameters
+        ----------
+            raw_arr:np.ndarray
+                The "raw" image array, from whom some background is meant to be subtracted.
+            bkg_arr:np.ndarray
+                The "background" image array, which will be subtracted from the raw array.
+
+        Returns
+        -------
+            corrected_array : np.ndarray
+                raw_arr - bkg_arr = corrected_array.
+        """
+        corrected_array = np.subtract(raw_arr, bkg_arr)
+        return corrected_array
+    
+
+    def get_average_bkg(self, bkg_data_dict:dict)->np.ndarray:
+        """Returns the averaged background as a tensor.
+        
+        Parameters
+        ----------
+            bkg_data_dict : dict
+                Dictionary containing background data, which has shot numbers as keys and data as values.
+        """
+        
+        # Create list of background data
+        bkg_data = [bkg_data_dict[shot] for shot in bkg_data_dict.keys()]
+
+        # Get the mean (first value returned by img_arrays_stats() function
+        averaged_bkg = probe_arrays_stats(bkg_data)[0]
+
+        return averaged_bkg
     
 
     def _load_scope_voltages(self, data_path:str, skiprows:int=16)->Tuple[np.ndarray, np.ndarray]:
