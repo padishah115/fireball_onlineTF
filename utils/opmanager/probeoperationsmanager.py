@@ -107,6 +107,15 @@ class ProbeOperationsManager(OperationsManager):
         if self.input["DEVICE_NAME"] == "SCOPE 1":
             fig3, axs3 = plt.subplots(figsize=(8, 4.5))
             ch2_min_ch3 = np.subtract(channel_voltages_dict["2"], channel_voltages_dict["3"])
+            
+            if self.std_data is not None:
+                sigma_2 = self.std_data["DATA"]["VOLTAGES"]["2"]
+                sigma_3 = self.std_data["DATA"]["VOLTAGES"]["3"]
+                sigma_comb = np.add(sigma_2, sigma_3)
+                upper_ch2_min_ch3 = np.add(ch2_min_ch3, sigma_comb)
+                lower_ch2_min_ch3 = np.subtract(ch2_min_ch3, sigma_comb) 
+                axs3.fill_between(times, lower_ch2_min_ch3, upper_ch2_min_ch3)
+            
             axs3.plot(times, ch2_min_ch3)
             fig3.tight_layout()
             axs3.set_title("Upstream Azimuthal BDot Difference")
@@ -115,6 +124,15 @@ class ProbeOperationsManager(OperationsManager):
         if self.input["DEVICE_NAME"] == "SCOPE 2":
             fig3, axs3 = plt.subplots(figsize=(8, 4.5))
             ch3_min_ch4 = np.subtract(channel_voltages_dict["3"], channel_voltages_dict["4"])
+            
+            if self.std_data is not None:
+                sigma_3 = self.std_data["DATA"]["VOLTAGES"]["3"]
+                sigma_4 = self.std_data["DATA"]["VOLTAGES"]["4"]
+                sigma_comb = np.add(sigma_3, sigma_4)
+                upper_ch3_min_ch4 = np.add(ch3_min_ch4, sigma_comb)
+                lower_ch3_min_ch4 = np.subtract(ch3_min_ch4, sigma_comb) 
+                axs3.fill_between(times, lower_ch3_min_ch4, upper_ch3_min_ch4)
+            
             axs3.plot(times, ch3_min_ch4)
             fig3.tight_layout()
             axs3.set_title("Downstream Azimuthal BDot Difference")

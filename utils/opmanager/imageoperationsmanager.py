@@ -499,6 +499,7 @@ class OrcaImageManager(ImageOperationsManager):
             axs[2].set_xlabel("Intensity")
             axs[2].set_title("Fourier Transform of Lineout")
             axs[2].invert_yaxis()
+            axs[2].set_yscale("log")
             
             fig.suptitle(f"Data from {self.DEVICE_NAME}, Shot No {self.shot_no}, \n{self.label}")
             fig.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at the top (5%)

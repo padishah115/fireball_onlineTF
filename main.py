@@ -24,7 +24,7 @@ device_names = [
     "ORCA STREAK",
     "ANDOR SPECTROMETER",
     "HRM5", 
-    "HRM6",
+    "HRM3",
     #"SCOPE 2"
     ]
 
@@ -48,7 +48,7 @@ def main(device_name):
         # Operations Specifiers #
         #########################
         
-        "PLOT_ONLY": False, # in case we want to just quickly display the image live.
+        "PLOT_ONLY": True, # in case we want to just quickly display the image live.
         
         "NORM_PLOT": False,
         
@@ -95,6 +95,6 @@ if __name__ == "__main__":
         main(device_name=device_name)
     tf = time.time()
     dt = tf-ti
-    print(f"{dt:.0f}")
+    print(f"Time to execute: {dt:.5f}")
     plt.show()
     

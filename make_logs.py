@@ -26,7 +26,13 @@ paths_to_data : dict = {
 }
 
 def generate_log(device):
-    """Generates a shot log for a specified device."""
+    """Generates a shot log for a specified device.
+    
+    Parameters
+    ----------
+        device : str
+            The name of the device, passed as a string, for which we want to generate the data shot log.
+    """
 
     # Select the appropriate file extension
     extension = EXTENSION_DICT[device]
