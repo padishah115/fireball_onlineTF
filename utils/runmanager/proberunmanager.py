@@ -48,7 +48,7 @@ class ProbeRunManager(RunManager):
         # Depending on whether we are displaying the background itself or the experimental shot numbers,
         # we need to make sure that the shot numbers are correct.
         shot_nos = self.input["BKG_SHOT_NOS"] if self.input["BACKGROUND_STATUS"] == "SHOW" else self.input["EXP_SHOT_NOS"]
-        LABEL = None
+        LABEL = f"Bkg status: {self.input['BACKGROUND_STATUS']}"
 
         
         # SINGLE-SHOT PROCESSING- go one-by-one through the shots
@@ -65,12 +65,12 @@ class ProbeRunManager(RunManager):
 
             # Assemble list of shot data dictionaries for each of the shots specified.
             data_dict_list = [shot_dict for shot_dict in data_dict.values()]
-
+            print("Running averages")
             mean_data, std_data = probe_arrays_stats(data_dict_list=data_dict_list)
             self._call_operations_manager(
                 shot_no=f"Avg. Over Shots {shot_nos}",
                 shot_data = mean_data,
-                LABEL=LABEL,
+                LABEL=f"Bkg status: {self.input['BACKGROUND_STATUS']}",
                 std_data=std_data
             )
 

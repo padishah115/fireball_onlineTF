@@ -60,7 +60,7 @@ def generate_log(device):
     df.to_csv(save_path, index=False)
 
 
-def main(freeze_time=120):
+def main(freeze_time=60):
     """
     
     Parameters

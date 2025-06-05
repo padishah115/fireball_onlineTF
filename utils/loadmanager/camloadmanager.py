@@ -132,6 +132,7 @@ class CamLoadManager(LoadManager):
             x_coords = img[0, 1:]
             y_coords = img[1:, 0]
             img = img[1:, 1:]
+            
             return img, x_coords, y_coords
         
         except Exception as e:
@@ -146,7 +147,7 @@ class CamLoadManager(LoadManager):
         try:
             img = np.genfromtxt(path)
             #x axis encodes information about space in mm
-            space_mm_x = img[0, 1:]
+            space_mm_x = img[0, 1:][1126:1228]
 
             #y axis encodes information about time in ns
             time_ns_y = img[1:, 0]
@@ -159,6 +160,8 @@ class CamLoadManager(LoadManager):
             
             np.savetxt(os.path.join(save_path,  f"{shot_no}.txt"), X=[time_resolution])
             img = img[1:, 1:]
+            img = img[:, 1126:1228]
+            
 
             return img, space_mm_x, time_ns_y
         
@@ -167,7 +170,7 @@ class CamLoadManager(LoadManager):
 
     
 
-    def _load_ANDOR_image(self, path:str, shot_no, skip_footer:int=41)->Tuple[np.ndarray, List, List]:
+    def _load_ANDOR_image(self, path:str, shot_no, skip_header:int=40)->Tuple[np.ndarray, List, List]:
         """Loads an image produced by the ANDOR synchrotron spectroscopy camera from some specified
         path location.
         
@@ -190,12 +193,12 @@ class CamLoadManager(LoadManager):
         try:
             
             # Extract the image from the spectrometer
-            image = np.genfromtxt(path, delimiter=',', dtype=np.float32, skip_footer=skip_footer)
+            image = np.genfromtxt(path, delimiter=',', dtype=np.float32, skip_header=skip_header)
             
             # Extract metadata about the shot
             metadata = {0:[], 1:[]}
             with open(path, 'r', encoding='utf8', errors='ignore') as f:
-                lines = f.readlines()[-skip_footer:]
+                lines = f.readlines()[:skip_header:]
                 for i, line in enumerate(lines):
                     metadata[i%2].append(line)
 

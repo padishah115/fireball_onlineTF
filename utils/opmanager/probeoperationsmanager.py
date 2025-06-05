@@ -99,7 +99,8 @@ class ProbeOperationsManager(OperationsManager):
                     axs[i,1].set_xlabel("Freq / Hz")
                     axs[i,1].set_title(f"Fourier Transform")
 
-        fig1.suptitle(f'Probe Data from {self.input["DEVICE_NAME"]}, Shot {self.shot_no}')
+        fig1.suptitle(f'Probe Data from {self.input["DEVICE_NAME"]}, Shot No: {self.shot_no}, {self.label}')
+        fig2.suptitle(f"Shot No: {self.shot_no}, {self.label}")
         fig1.tight_layout()
         fig2.tight_layout()
         fig1.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
@@ -120,7 +121,7 @@ class ProbeOperationsManager(OperationsManager):
                 axs3.fill_between(times, lower_ch2_min_ch3, upper_ch2_min_ch3)
             
             axs3.plot(times, ch2_min_ch3)
-            fig3.suptitle("Upstream Azimuthal BDot Difference")
+            fig3.suptitle(f"Upstream Azimuthal BDot Difference, Shot No: {self.shot_no}, {self.label}")
             axs3.set_xlabel("Time / s")
             axs3.set_ylabel("Amplitude / V")
             fig3.tight_layout()
@@ -142,7 +143,7 @@ class ProbeOperationsManager(OperationsManager):
             axs3.set_xlabel("Time / s")
             axs3.set_ylabel("Amplitude / V")
             axs3.plot(times, ch3_min_ch4)
-            fig3.suptitle("Downstream Azimuthal BDot Difference")
+            fig3.suptitle(f"Downstream Azimuthal BDot Difference, Shot No: {self.shot_no}, {self.label}")
             fig3.tight_layout()
             fig3.canvas.manager.set_window_title(f"Downstream Azimuthal BDot")
             plt.show(block=False)
@@ -172,7 +173,7 @@ class ProbeOperationsManager(OperationsManager):
                 axs4.set_ylabel("Amplitude / V")
                 axs4.set_xlabel("Time / s")
 
-                fig4.suptitle("Longitudinal BDot Difference")
+                fig4.suptitle(f"Longitudinal BDot Difference, Shot No: {self.shot_no}, {self.label}")
                 fig4.tight_layout()
                 fig4.canvas.manager.set_window_title(f"Longitudinal BDot Difference")
                 plt.show(block=False)
@@ -210,7 +211,7 @@ class ProbeOperationsManager(OperationsManager):
                 axs4.set_ylabel("Amplitude / V")
                 axs4.set_xlabel("Time / s")
 
-                fig4.suptitle("Longitudinal BDot Difference")
+                fig4.suptitle(f"Longitudinal BDot Difference, Shot No: {self.shot_no}, {self.label}")
                 fig4.tight_layout()
                 fig4.canvas.manager.set_window_title(f"Longitudinal BDot difference")
                 plt.show(block=False)

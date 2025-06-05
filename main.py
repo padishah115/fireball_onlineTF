@@ -4,6 +4,7 @@ sys.path.append(".")
 from run.devicerun import device_run
 import matplotlib.pyplot as plt
 import time
+import numpy as np
 from utils.directory_methods import clear_directory
 
 # Information about the background shots for each device
@@ -26,12 +27,13 @@ device_names = [
     # "ANDOR SPECTROMETER",
     # "HRM5", 
     # "HRM3",
+    # "HRM4",
     "SCOPE 1",
     "SCOPE 2"
     ]
 
 
-def display_device(device_name):
+def display_device(device_name, bkg):
     input = {
 
         ##################
@@ -50,7 +52,7 @@ def display_device(device_name):
         # Operations Specifiers #
         #########################
         
-        "PLOT_ONLY": False, # in case we want to just quickly display the image live.
+        "PLOT_ONLY": True, # in case we want to just quickly display the image live.
         
         "NORM_PLOT": False,
         
@@ -58,8 +60,9 @@ def display_device(device_name):
             "SHOW_SINGLESHOT_PLOTS": True,
             "LINEOUT_BIN_NO": 100,
             "SHOW_AVERAGE_SHOTS": False,
-            "SUBTRACT_DC_OFFSET": True,
-            "VMAX":10000, #VMAX VALUE FOR THE IMSHOW METHOD
+            "SUBTRACT_DC_OFFSET": False,
+            "VMAX":1000, #VMAX VALUE FOR THE IMSHOW METHOD
+
         },
 
         #################################
@@ -84,7 +87,7 @@ def display_device(device_name):
     }
 
     if input["DEVICE_NAME"] == "SCOPE 1":
-        input["BACKGROUND_STATUS"] = "SUBTRACT"
+        input["BACKGROUND_STATUS"] = "SUBTRACT" if bkg else "RAW"
 
     print(input["BACKGROUND_STATUS"])
 
@@ -102,7 +105,14 @@ def main():
         ti = time.time()
         for device_name in device_names:
             print(device_name)
-            display_device(device_name=device_name)
+            if device_name == "SCOPE 1":
+                display_device(device_name=device_name, bkg=True)
+                clear_directory(SCOPECACHE_PATH)
+                display_device(device_name=device_name, bkg=False)
+            else:
+                display_device(device_name=device_name, bkg=False)
+
+
         tf = time.time()
         dt = tf-ti
         print(f"Time to execute: {dt:.5f}")

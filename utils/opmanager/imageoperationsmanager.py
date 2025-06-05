@@ -445,6 +445,12 @@ class OrcaImageManager(ImageOperationsManager):
         
         # INITIALIZE IMAGE AND AXES FROM DATA
         img = self.shot_data["DATA"]
+        print(np.min(img))
+        # dim1 = img.shape[1]
+        # ymin = int(dim1*0.55)
+        # ymax = int(dim1*0.6)
+        # print(ymin, ymax)
+        img = self.shot_data["DATA"]
         space_mm_x = self.shot_data["X"]
         time_ns_y = self.shot_data["Y"]
         lineout_y = np.sum(img, axis=1) # sum along the streak's spatial axis encoding intensity
@@ -490,7 +496,7 @@ class OrcaImageManager(ImageOperationsManager):
             axs[1].set_title("Lineout (Sum Along Spatial Coords)")
             axs[1].invert_yaxis()
             if self.std_data is not None:
-                axs[1].fill_betweenx(time_ns_y, lower_lineout, upper_lineout)
+                axs[1].fill_betweenx(time_ns_y, lower_lineout, upper_lineout, alpha=0.2)
     
             ################################
             # FOURIER TRANSFORM OF LINEOUT #
@@ -504,7 +510,7 @@ class OrcaImageManager(ImageOperationsManager):
             axs[2].set_xlabel("Intensity")
             axs[2].set_title("Fourier Transform of Lineout")
             axs[2].invert_yaxis()
-            axs[2].set_yscale("log")
+            axs[2].set_xscale("log")
             
             fig.suptitle(f"Data from {self.DEVICE_NAME}, Shot No {self.shot_no}, \n{self.label}")
             fig.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at the top (5%)
