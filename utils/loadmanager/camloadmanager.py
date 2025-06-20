@@ -1,6 +1,5 @@
 from utils.stats.stats import img_arrays_stats
 from utils.loadmanager.loadmanager import LoadManager
-from typing import Dict, Tuple, List
 import numpy as np
 import os
 import pandas as pd
@@ -9,7 +8,7 @@ class CamLoadManager(LoadManager):
     def __init__(self, input, data_paths_dict):
         super().__init__(input, data_paths_dict)
 
-    def load(self)->Tuple[Dict[int, np.ndarray], Dict[int, np.ndarray], Dict[int, np.ndarray]]:
+    def load(self)->tuple[dict[int, np.ndarray], dict[int, np.ndarray], dict[int, np.ndarray]]:
         """Loads dictionaries of indexed experimental, background, and background-corrected data. Each of these
         three dictionaries returned by the function is of the form {SHOT NO : np.ndarray}, where the
         np.ndarray is the data itself.
@@ -19,42 +18,44 @@ class CamLoadManager(LoadManager):
             raw_data_dict : Dict[int, np.ndarray]
                 Dictionary containing indexed experimental shot data, where the keys are the experimental shot
                 numbers, and the values are the actual data in np.ndarray form.
-            bkg_data_dict : Dict[int, np.ndarray]
-                Dictionary containing indexed background shot data, where the keys are the background shot
-                numbers, and the values are the actual background data in np.ndarray form.
             corrected_data_dict : Dict[int, np.ndarray]
                 Dictionary containing indexed backgroud-CORRECTED shot data, where the keys correspond to the
                 experimental shot numbers, and the values are the data itself after background subtraction.
                 N.B.: the background subtraction is done using an arithmetic mean of the background images
                 which are supplied to the startup manager.
+            corrected_data_std_dict : dict
         """
         #IF IMAGE, THEN HAVE TO DEAL WITH 2D DATA
-        exp_data_dict : Dict = self.IMAGE_load_shots(shot_nos=self.exp_shot_nos, 
+        raw_data_dict : dict = self.IMAGE_load_shots(shot_nos=self.exp_shot_nos, 
                                                 data_paths_dict=self.data_paths_dict,
                                                 camera_type=self.input["DEVICE_SPECIES"])
         
         # CHECK TO MAKE SURE THAT WE ACTUALLY WANT BACKGROUND SHOTS TO ENTER THE FRAY
         if self.input["BACKGROUND_STATUS"] != "RAW":
-            bkg_data_dict : Dict = self.IMAGE_load_shots(self.bkg_shot_nos, 
+            bkg_data_dict : dict = self.IMAGE_load_shots(self.bkg_shot_nos, 
                                                 self.data_paths_dict,
                                                 camera_type=self.input["DEVICE_SPECIES"])
         
-            averaged_bkg = self.get_average_bkg(bkg_data_dict=bkg_data_dict)
+            mean_bkg, std_bkg = self.get_average_bkg(bkg_data_dict=bkg_data_dict)
 
-            corrected_data_dict = {}
+            corrected_data_dict = {} #Actual data that has been background-subtracted
+            
             for shot_no in self.exp_shot_nos:
-                corrected_data = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"], bkg_arr=averaged_bkg["DATA"])
+                corrected_data = self.bkg_subtraction(raw_arr=raw_data_dict[shot_no]["DATA"], bkg_arr=mean_bkg["DATA"])
                 corrected_data_dict[shot_no] = {}
                 corrected_data_dict[shot_no]["DATA"] = corrected_data
-                corrected_data_dict[shot_no]["X"] = exp_data_dict[shot_no]["X"]
-                corrected_data_dict[shot_no]["Y"] = exp_data_dict[shot_no]["Y"]
+                corrected_data_dict[shot_no]["ERROR"] = {"DATA":None}
+                corrected_data_dict[shot_no]["ERROR"]["DATA"] = std_bkg
+                corrected_data_dict[shot_no]["X"] = raw_data_dict[shot_no]["X"]
+                corrected_data_dict[shot_no]["Y"] = raw_data_dict[shot_no]["Y"]
+        
         else:
-            bkg_data_dict = None
             corrected_data_dict = None
+            std_bkg = None
 
         
 
-        return exp_data_dict, bkg_data_dict, corrected_data_dict
+        return raw_data_dict, corrected_data_dict, std_bkg
     
     
     def bkg_subtraction(self, raw_arr:np.ndarray, bkg_arr:np.ndarray)->np.ndarray:
@@ -76,22 +77,27 @@ class CamLoadManager(LoadManager):
         return corrected_array
     
 
-    def get_average_bkg(self, bkg_data_dict:dict)->np.ndarray:
+    def get_average_bkg(self, bkg_data_dict:dict)->tuple[np.ndarray, np.ndarray]:
         """Returns the averaged background as a tensor.
         
         Parameters
         ----------
             bkg_data_dict : dict
                 Dictionary containing background data, which has shot numbers as keys and data as values.
+
+        Returns
+        -------
+            mean_bkg : dict
+            std_bkg : dict
         """
         
         # Create list of background data
         bkg_data = [bkg_data_dict[shot] for shot in bkg_data_dict.keys()]
 
         # Get the mean (first value returned by img_arrays_stats() function
-        averaged_bkg = img_arrays_stats(bkg_data)[0]
+        mean_bkg, std_bkg = img_arrays_stats(bkg_data)
 
-        return averaged_bkg
+        return mean_bkg, std_bkg
 
 
     ################################################################################
@@ -105,7 +111,7 @@ class CamLoadManager(LoadManager):
     # this is where we HARDCODE all the lovely, idiosyncratic ways in which different cameras store
     # image data.
     
-    def _load_digicam_image(self, path:str, shot_no)->Tuple[np.ndarray, List, List]:
+    def _load_digicam_image(self, path:str, shot_no)->tuple[np.ndarray, list, list]:
         """Loads image object from .csv given by DigiCam. Due to the way that the DigiCams store image data,
         the first column and first row have to be removed, as these contain coordinate information about the
         pixels.
@@ -170,7 +176,7 @@ class CamLoadManager(LoadManager):
 
     
 
-    def _load_ANDOR_image(self, path:str, shot_no, skip_header:int=40)->Tuple[np.ndarray, List, List]:
+    def _load_ANDOR_image(self, path:str, shot_no, skip_header:int=40)->tuple[np.ndarray, list, list]:
         """Loads an image produced by the ANDOR synchrotron spectroscopy camera from some specified
         path location.
         
@@ -237,7 +243,7 @@ class CamLoadManager(LoadManager):
     
     # IMAGE MANAGER
 
-    def IMAGE_load_shots(self, shot_nos:List[int], data_paths_dict:Dict[int, str], camera_type:str)->Dict[int, np.ndarray]:
+    def IMAGE_load_shots(self, shot_nos:list[int], data_paths_dict:dict[int, str], camera_type:str)->dict[int, np.ndarray]:
         """Loads multiple shots' images sequentially, using the data_paths_dict to dynamically select paths to
         different shot numbers' raw data files.
         
@@ -283,6 +289,8 @@ class CamLoadManager(LoadManager):
             image_dict[shot_no] = {}
             image_dict[shot_no]["DATA"], image_dict[shot_no]["X"], image_dict[shot_no]["Y"] = \
                 image_loader_function_dict[camera_type](data_path, shot_no)
+            image_dict[shot_no]["ERROR"] = {"DATA":None}
+            image_dict[shot_no]["ERROR"]["DATA"] = np.zeros_like(image_dict[shot_no]["DATA"])
             
 
 

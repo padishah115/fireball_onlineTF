@@ -14,8 +14,7 @@ class CamRunManager(RunManager):
         super().__init__(input, data_paths_dict)
         
         # BELOW, ALLOWS US TO CALL ARBITRARY "OPERATIONS MANAGER", AND THEN
-        # HAVE THE PROGRAM SELECT THE APPROPRIATE SUBCLASS FOR US WITHOUT
-        # HAVING TO LOOK UNDER-THE-HOOD
+        # HAVE THE PROGRAM SELECT THE APPROPRIATE SUBCLASS FOR US 
         self.cam_manager_key : Dict[str, Type[OperationsManager]] = {
             "DIGICAM": DigicamImageManager, "ANDOR": AndorImageManager, "ORCA": OrcaImageManager, 
         }
@@ -37,32 +36,21 @@ class CamRunManager(RunManager):
         if self.background_status == "SUBTRACT":
             if not self.input["BKG_SHOT_NOS"]:
                 raise ValueError("Error: requested background-subtraction, but did not specify any background shots.")
-            
             LABEL = f"{self.input['BKG_NAME']}-SUBTRACTED"
         
         #PLOT RAW IMAGE ONLY (NO BACKGROUND SUBTRACTION)
         elif self.background_status == "RAW":
             if not self.input["EXP_SHOT_NOS"]:
                 raise ValueError("Error: no experimental shots provided for raw data plotting.")
-            
             LABEL = f"Raw (no background correction)"
         
-        #SHOW BACKGROUND IMAGE ITSELF
-        elif self.background_status == "SHOW":
-            if not self.input["BKG_SHOT_NOS"]:
-                raise ValueError("Error: requested background image display, but no background shots were provided.")
-            
-            LABEL = f"{self.input['BKG_NAME']} BACKGROUND"
         
         else:
             raise ValueError(f"Warning: {self.input['BACKGROUND_STATUS']} is invalid input for\
                             \"BACKGROUND_STATUS\" in input.json file.")
         
         
-        # CALL THE RUNMANAGER.LOAD() METHOD, WHICH RETURNS
-        # DICTIONARIES OF FORM {SHOT NO : {"DATA": [], "X": [], "Y": []}} FOR IMAGES
-        # AND OF FORM {SHOT NO : { "DATA": { "VOLTAGES":[], "TIMES":[] } } } FOR PROBES
-        raw_data_dict, bkg_data_dict, corrected_data_dict = load_manager.load()
+        raw_data_dict, corrected_data_dict, std_bkg = load_manager.load()
 
         ##############################
         # OPERATION MANAGER MATERIAL #
@@ -72,7 +60,6 @@ class CamRunManager(RunManager):
         data_type_key : Dict[str, Dict] = {
             "SUBTRACT":corrected_data_dict,
             "RAW": raw_data_dict,
-            "SHOW": bkg_data_dict
         }
 
         #  SELECT CORRECT DICTIONARY BASED ON SPECIFIED BACKGROUND REMOVAL STATUS
@@ -81,27 +68,43 @@ class CamRunManager(RunManager):
 
         # Depending on whether we are displaying the background itself or the experimental shot numbers,
         # we need to make sure that the shot numbers are correct.
-        shot_nos = self.input["BKG_SHOT_NOS"] if self.input["BACKGROUND_STATUS"] == "SHOW" else self.input["EXP_SHOT_NOS"]
+        shot_nos = self.input["EXP_SHOT_NOS"]
 
         
-        # SINGLE-SHOT PROCESSING- go one-by-one through the shots
+        ##########################
+        # SINGLE-SHOT PROCESSING #
+        ##########################
         if self.operations["SHOW_SINGLESHOT_PLOTS"]:
             for shot_no in shot_nos:
                 self._call_operations_manager(
                     shot_no=shot_no,
                     shot_data=data_dict[shot_no],
                     LABEL=LABEL,
+                    std_data = data_dict[shot_no]["ERROR"]["DATA"]
                 )
 
 
+        ###########################
+        # AVERAGE SHOT PROCESSING #
+        ###########################
         # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING
         if self.operations["SHOW_AVERAGE_SHOTS"]:
 
-            #Create list of shot dictionaries. These shot_dict's contain ["DATA"], ["X"], ["Y"] lists, etc.
-            data_dict_list =[shot_dict for shot_dict in data_dict.values()]
+            raw_data_dict_list = [shot_dict for shot_dict in raw_data_dict.values()]
+            std_raw = img_arrays_stats(raw_data_dict_list)[1]
+            print(std_raw)
 
-            #Returns two dictionarys of form {"DATA":, "X":, "Y":,}
-            mean_data, std_data = img_arrays_stats(data_dict_list=data_dict_list)
+            # ERROR PROPAGATION
+            if self.background_status == "SUBTRACT":
+                #Create list of shot dictionaries. These shot_dict's contain ["DATA"], ["X"], ["Y"] lists, etc.
+                std_data = np.sqrt(np.power(std_raw, 2) + np.power(std_bkg, 2))
+                data_dict_list = [shot_dict for shot_dict in corrected_data_dict.values()]
+
+            if self.background_status == "RAW":
+                std_data = std_raw
+                data_dict_list = [shot_dict for shot_dict in raw_data_dict.values()]
+
+            mean_data = img_arrays_stats(data_dict_list=data_dict_list)[0]
             self._call_operations_manager(
                 shot_no=f"Avg. Over Shots {shot_nos}",
                 shot_data=mean_data,

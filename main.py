@@ -25,11 +25,11 @@ logger = logging.getLogger(__name__)
 device_names = [
     # "ORCA STREAK",
     # "ANDOR SPECTROMETER",
-    # "HRM5", 
+    #"HRM5", 
     # "HRM3",
     # "HRM4",
     "SCOPE 1",
-    "SCOPE 2"
+    #"SCOPE 2"
     ]
 
 
@@ -39,27 +39,27 @@ def display_device(device_name, bkg):
         ##################
         # Shot Selection #
         ##################
-        "EXP_SHOT_NOS": [0], #if timestamps, need to be strings
-        "BKG_SHOT_NOS": [1],
+        "EXP_SHOT_NOS": [0, 1], #if timestamps, need to be strings
+        "BKG_SHOT_NOS": [2, 3, 4, 5, 6, 7, 8, 9, 10],
 
         "SPECIFY_TIMESTAMP_EXP": False,
         "SPECIFY_TIMESTAMP_BKG": False,
 
         "BKG_NAME": "DARKFIELD",
-        "BACKGROUND_STATUS": "RAW",
+        "BACKGROUND_STATUS": "SUBTRACT",
 
         #########################
         # Operations Specifiers #
         #########################
         
-        "PLOT_ONLY": True, # in case we want to just quickly display the image live.
+        "PLOT_ONLY": False, # in case we want to just quickly display the image live.
         
         "NORM_PLOT": False,
         
         "OPERATIONS": {
-            "SHOW_SINGLESHOT_PLOTS": True,
+            "SHOW_SINGLESHOT_PLOTS": False,
             "LINEOUT_BIN_NO": 100,
-            "SHOW_AVERAGE_SHOTS": False,
+            "SHOW_AVERAGE_SHOTS": True,
             "SUBTRACT_DC_OFFSET": False,
             "VMAX":1000, #VMAX VALUE FOR THE IMSHOW METHOD
 
@@ -85,11 +85,6 @@ def display_device(device_name, bkg):
         "SCOPECACHE_PATH":SCOPECACHE_PATH
         
     }
-
-    if input["DEVICE_NAME"] == "SCOPE 1":
-        input["BACKGROUND_STATUS"] = "SUBTRACT" if bkg else "RAW"
-
-    print(input["BACKGROUND_STATUS"])
 
     logger.info("Starting runtime ... \n")
     device_run(

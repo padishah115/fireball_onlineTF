@@ -1,8 +1,6 @@
-from typing import Dict, Type
 import logging
 logger = logging.getLogger(__name__)
-import os
-import shutil
+import numpy as np
 
 from utils.loadmanager.probeloadmanager import ProbeLoadManager
 from utils.runmanager.runmanager import RunManager
@@ -16,7 +14,7 @@ class ProbeRunManager(RunManager):
 
     def __init__(self, input, data_paths_dict):
         super().__init__(input, data_paths_dict)
-        self.probe_manager_key : Dict[str, Type[OperationsManager]]= {
+        self.probe_manager_key : dict[str, type[OperationsManager]]= {
             "PROBE":ProbeOperationsManager
         }
     
@@ -35,7 +33,7 @@ class ProbeRunManager(RunManager):
         # CALL THE RUNMANAGER.LOAD() METHOD, WHICH RETURNS
         # DICTIONARIES OF FORM {SHOT NO : {"DATA": [], "X": [], "Y": []}} FOR IMAGES
         # AND OF FORM {SHOT NO : { "DATA": { "VOLTAGES":[], "TIMES":[] } } } FOR PROBES
-        raw_data_dict, bkg_data_dict, corrected_data_dict = load_manager.load()
+        raw_data_dict, corrected_data_dict, std_bkg = load_manager.load()
 
         ##############################
         # OPERATION MANAGER MATERIAL #
@@ -43,12 +41,12 @@ class ProbeRunManager(RunManager):
 
         logger.info("Selecting appropriate data dictionary ... \n")
         data_dict = raw_data_dict if self.input["BACKGROUND_STATUS"] == "RAW" else corrected_data_dict
+        LABEL = f"Bkg status: {self.input['BACKGROUND_STATUS']}"
         
 
         # Depending on whether we are displaying the background itself or the experimental shot numbers,
         # we need to make sure that the shot numbers are correct.
-        shot_nos = self.input["BKG_SHOT_NOS"] if self.input["BACKGROUND_STATUS"] == "SHOW" else self.input["EXP_SHOT_NOS"]
-        LABEL = f"Bkg status: {self.input['BACKGROUND_STATUS']}"
+        shot_nos = self.input["EXP_SHOT_NOS"]
 
         
         # SINGLE-SHOT PROCESSING- go one-by-one through the shots
@@ -57,26 +55,43 @@ class ProbeRunManager(RunManager):
                 self._call_operations_manager(
                     shot_no=shot_no,
                     shot_data=data_dict[shot_no],
-                    LABEL=LABEL,
+                    std_data=data_dict[shot_no]["ERROR"],
+                    LABEL=LABEL
                 )
 
         # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING
         if self.operations["SHOW_AVERAGE_SHOTS"]:
 
-            # Assemble list of shot data dictionaries for each of the shots specified.
-            data_dict_list = [shot_dict for shot_dict in data_dict.values()]
-            print("Running averages")
-            mean_data, std_data = probe_arrays_stats(data_dict_list=data_dict_list)
+            raw_data_dict_list = [shot_dict for shot_dict in raw_data_dict.values()]
+            std_raw = probe_arrays_stats(raw_data_dict_list)[1]
+
+            # ERROR PROPAGATION
+            if self.background_status == "SUBTRACT":
+                channel_nos = std_raw["DATA"]["VOLTAGES"].keys()
+                std_data = {"DATA":{"VOLTAGES":{channel_no:None for channel_no in channel_nos}}}
+                
+                for channel_no in channel_nos:
+                    raw_sigma = std_raw["DATA"]["VOLTAGES"][channel_no]
+                    bkg_sigma = std_bkg["DATA"]["VOLTAGES"][channel_no]
+                    std_data["DATA"]["VOLTAGES"][channel_no] = np.sqrt(np.power(raw_sigma, 2) + np.power(bkg_sigma, 2))
+                
+                
+                data_dict_list = [shot_dict for shot_dict in corrected_data_dict.values()]
+
+            if self.background_status == "RAW":
+                std_data = std_raw
+                data_dict_list = [shot_dict for shot_dict in raw_data_dict.values()]
+
+            mean_data = probe_arrays_stats(data_dict_list=data_dict_list)[0]
             self._call_operations_manager(
                 shot_no=f"Avg. Over Shots {shot_nos}",
-                shot_data = mean_data,
-                LABEL=f"Bkg status: {self.input['BACKGROUND_STATUS']}",
-                std_data=std_data
+                shot_data=mean_data,
+                std_data=std_data,
+                LABEL=LABEL
             )
-
     
     
-    def _call_operations_manager(self, shot_no, shot_data, LABEL, std_data=None):
+    def _call_operations_manager(self, shot_no, shot_data, LABEL=None, std_data=None):
         """Helper function to wrap up the operations manager clauses in the .run() method for 
         processing shots one at a time.
         

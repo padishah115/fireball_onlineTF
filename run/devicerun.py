@@ -9,8 +9,6 @@ from utils.pathmanager.pathmanager import PathManager
 from utils.runmanager.runmanager import RunManager
 from utils.runmanager.camrunmanager import CamRunManager 
 from utils.runmanager.proberunmanager import ProbeRunManager
-from utils.runmanager.temprunmanager import TempRunManager
-from utils.runmanager.ldvrunmanager import LDVRunManager
 
 
 def device_run(input):
@@ -36,8 +34,6 @@ def device_run(input):
     runmanagerdict : dict[str, type[RunManager]]= {
         "PROBE":ProbeRunManager, 
         "CAMERA": CamRunManager,
-        "PT100": TempRunManager,
-        "LDV": LDVRunManager,
     }
     
     # INITIALIZE THE APPROPRIATE RUN MANAGER

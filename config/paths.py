@@ -4,15 +4,15 @@ LOG_PATH=r"H:\user\h\hramm\shot-log"
 
 FOLDER_NAMES = {
             
-            "ANDOR SPECTROMETER":"tagged_data\\andor",
-            "ORCA STREAK":"orca_streak\\manual_save",
+            "ANDOR SPECTROMETER":r"tagged_data\\andor",
+            "ORCA STREAK":r"orca_streak\\manual_save",
             
             "HRM3":"chromox_cameras\\HRM3",    
             "HRM4":"chromox_cameras\\HRM4",
-            "HRM5":"chromox_cameras\\HRM5",
+            "HRM5":r"/Users/hayden/Desktop/FIREBALL/HRMT68_data/HRM5",
             "HRM6":"chromox_cameras\\HRM6",
             
-            "SCOPE 1":"scope_pool05710001",
+            "SCOPE 1":r"/Users/hayden/Desktop/FIREBALL/HRMT68_data/scope_pool05710001",
             "SCOPE 2":"scope_pool05720010",
             
             "LDV":"ldv_and_strain_gauges\\Triggers\\2025\\06\\2",

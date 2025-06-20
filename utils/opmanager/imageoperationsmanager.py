@@ -59,8 +59,9 @@ class DigicamImageManager(ImageOperationsManager):
 
             # CHECK WHETHER WE HAVE STD DEVIATION INFORMATION
             if self.std_data is not None:
-                upper_image = np.multiply(np.add(self.shot_data["DATA"],self.std_data["DATA"]), normalization_factor**-1)
+                upper_image = np.multiply(np.add(self.shot_data["DATA"], self.std_data["DATA"]), normalization_factor**-1)
                 lower_image = np.multiply(np.subtract(self.shot_data["DATA"],self.std_data["DATA"]), normalization_factor**-1)
+                print(self.shot_data)
 
                 ###################################
                 # Lineouts for stddev information #

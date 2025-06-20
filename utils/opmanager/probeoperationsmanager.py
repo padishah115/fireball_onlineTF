@@ -115,7 +115,9 @@ class ProbeOperationsManager(OperationsManager):
             if self.std_data is not None:
                 sigma_2 = self.std_data["DATA"]["VOLTAGES"]["2"]
                 sigma_3 = self.std_data["DATA"]["VOLTAGES"]["3"]
-                sigma_comb = np.add(sigma_2, sigma_3)
+                sigma_comb = np.sqrt(np.add(np.pow(sigma_2,2), np.pow(sigma_3, 2)))
+
+                print(sigma_2, sigma_3, sigma_comb)
                 upper_ch2_min_ch3 = np.add(ch2_min_ch3, sigma_comb)
                 lower_ch2_min_ch3 = np.subtract(ch2_min_ch3, sigma_comb) 
                 axs3.fill_between(times, lower_ch2_min_ch3, upper_ch2_min_ch3)
@@ -135,7 +137,7 @@ class ProbeOperationsManager(OperationsManager):
             if self.std_data is not None:
                 sigma_3 = self.std_data["DATA"]["VOLTAGES"]["3"]
                 sigma_4 = self.std_data["DATA"]["VOLTAGES"]["4"]
-                sigma_comb = np.add(sigma_3, sigma_4)
+                sigma_comb = np.sqrt(np.add(np.pow(sigma_3,2), np.pow(sigma_4,2)))
                 upper_ch3_min_ch4 = np.add(ch3_min_ch4, sigma_comb)
                 lower_ch3_min_ch4 = np.subtract(ch3_min_ch4, sigma_comb) 
                 axs3.fill_between(times, lower_ch3_min_ch4, upper_ch3_min_ch4)
@@ -164,11 +166,11 @@ class ProbeOperationsManager(OperationsManager):
                 fig4, axs4 = plt.subplots()
                 if self.std_data is not None:
                     df["DOWNSTREAM STD"] = self.std_data["DATA"]["VOLTAGES"]["4"]
-                    sigma = np.add(df["DOWNSTREAM STD"], df["UPSTREAM STD"])
-                    upper_bound = np.add(longitudinal_difference, sigma)
-                    lower_bound = np.subtract(longitudinal_difference, sigma)
+                    sigma_comb = np.sqrt(np.add(np.pow(df["DOWNSTREAM STD"], 2), np.pow(df["UPSTREAM STD"], 2)))
+                    upper_bound = np.add(longitudinal_difference, sigma_comb)
+                    lower_bound = np.subtract(longitudinal_difference, sigma_comb)
+                    axs4.fill_between(times, lower_bound, upper_bound)
 
-                axs4.fill_between(times, lower_bound, upper_bound)
                 axs4.plot(times, longitudinal_difference)
                 axs4.set_ylabel("Amplitude / V")
                 axs4.set_xlabel("Time / s")

@@ -41,34 +41,33 @@ class ProbeLoadManager(LoadManager):
         #IF PROBE, HAVE TO DEAL WITH THE OSCILLOSCOPE DATA
         
         # {Shot no : Experimental (raw) data}
-        exp_data_dict = self.PROBE_load_shots(self.exp_shot_nos, self.data_paths_dict)
+        raw_data_dict = self.PROBE_load_shots(self.exp_shot_nos, self.data_paths_dict)
         
         
         if self.input["BACKGROUND_STATUS"] != "RAW":
             bkg_data_dict : Dict = self.PROBE_load_shots(self.bkg_shot_nos, 
                                                 self.data_paths_dict,)
         
-            averaged_bkg = self.get_average_bkg(bkg_data_dict=bkg_data_dict)
+            mean_bkg, std_bkg = self.get_average_bkg(bkg_data_dict=bkg_data_dict)
 
             corrected_data_dict = {}
             for shot_no in self.exp_shot_nos:
-                corrected_data_dict[shot_no] = {"DATA":{"VOLTAGES":{channel_no:None for channel_no in self.channel_nos}, "TIMES":{}}}
+                corrected_data_dict[shot_no] = {"DATA":{"VOLTAGES":{channel_no:None for channel_no in self.channel_nos}, "TIMES":{}}, "ERROR":{"DATA":{"VOLTAGES":{channel_no:None for channel_no in self.channel_nos}}}}
                 for channel_no in self.channel_nos:
-                    corrected_voltages = self.bkg_subtraction(raw_arr=exp_data_dict[shot_no]["DATA"]["VOLTAGES"][channel_no],\
-                                                           bkg_arr=averaged_bkg["DATA"]["VOLTAGES"][channel_no])
+                    corrected_voltages = self.bkg_subtraction(raw_arr=raw_data_dict[shot_no]["DATA"]["VOLTAGES"][channel_no],\
+                                                           bkg_arr=mean_bkg["DATA"]["VOLTAGES"][channel_no])
                     corrected_data_dict[shot_no]["DATA"]["VOLTAGES"][channel_no] = corrected_voltages 
+                    corrected_data_dict[shot_no]["ERROR"]["DATA"]["VOLTAGES"][channel_no] = std_bkg["DATA"]["VOLTAGES"][channel_no]
                 
-                print("corrections!")
-                
-                corrected_data_dict[shot_no]["DATA"]["TIMES"]["TIMES"] = exp_data_dict[shot_no]["DATA"]["TIMES"]["TIMES"]
-                corrected_data_dict[shot_no]["DATA"]["TIMES"]["N"] = exp_data_dict[shot_no]["DATA"]["TIMES"]["N"]
-                corrected_data_dict[shot_no]["DATA"]["TIMES"]["dt"] = exp_data_dict[shot_no]["DATA"]["TIMES"]["dt"]
+                corrected_data_dict[shot_no]["DATA"]["TIMES"]["TIMES"] = raw_data_dict[shot_no]["DATA"]["TIMES"]["TIMES"]
+                corrected_data_dict[shot_no]["DATA"]["TIMES"]["N"] = raw_data_dict[shot_no]["DATA"]["TIMES"]["N"]
+                corrected_data_dict[shot_no]["DATA"]["TIMES"]["dt"] = raw_data_dict[shot_no]["DATA"]["TIMES"]["dt"]
         # Background-removal is not done shot-via-shot
         else:
-            bkg_data_dict = None
+            std_bkg = None
             corrected_data_dict = None
 
-        return exp_data_dict, bkg_data_dict, corrected_data_dict
+        return raw_data_dict, corrected_data_dict, std_bkg
     
     def bkg_subtraction(self, raw_arr:np.ndarray, bkg_arr:np.ndarray)->np.ndarray:
         """Subtracts some background array from some raw data array.
@@ -102,9 +101,9 @@ class ProbeLoadManager(LoadManager):
         bkg_data = [bkg_data_dict[shot] for shot in bkg_data_dict.keys()]
 
         # Get the mean (first value returned by img_arrays_stats() function
-        averaged_bkg = probe_arrays_stats(bkg_data)[0]
+        mean_bkg, std_bkg = probe_arrays_stats(bkg_data)
 
-        return averaged_bkg
+        return mean_bkg, std_bkg
     
 
     def _load_scope_voltages(self, data_path:str, skiprows:int=16)->Tuple[np.ndarray, np.ndarray]:
@@ -248,6 +247,11 @@ class ProbeLoadManager(LoadManager):
                 "DATA":{
                     "VOLTAGES": {"1":None, "2":None, "3":None, "4":None}, 
                     "TIMES": {"TIMES":None, "N":None, "dt":None}
+                },
+                "ERROR":{
+                    "DATA":{
+                        "VOLTAGES":{channel_no:None for channel_no in self.channel_nos}
+                        }
                 }
             }
 
@@ -257,9 +261,16 @@ class ProbeLoadManager(LoadManager):
             #VOLTAGE DATA
             [voltages_1, voltages_2, voltages_3, voltages_4] = self._load_scope_voltages(data_path)
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["1"] = voltages_1
+            scope_data_dict[shot_no]["ERROR"]["DATA"]["VOLTAGES"]["1"] = np.zeros_like(voltages_1)
+
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["2"] = voltages_2
+            scope_data_dict[shot_no]["ERROR"]["DATA"]["VOLTAGES"]["2"] = np.zeros_like(voltages_2)
+            
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["3"] = voltages_3
+            scope_data_dict[shot_no]["ERROR"]["DATA"]["VOLTAGES"]["3"] = np.zeros_like(voltages_3)
+
             scope_data_dict[shot_no]["DATA"]["VOLTAGES"]["4"] = voltages_4
+            scope_data_dict[shot_no]["ERROR"]["DATA"]["VOLTAGES"]["4"] = np.zeros_like(voltages_4)
             
             #TIME DATA
             times, N, dt = self._load_scope_times(data_path)
