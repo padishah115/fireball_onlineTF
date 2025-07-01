@@ -71,7 +71,9 @@ class PathManager():
         # If we were using relative indexing, need to convert the shots indices to timestamps
         timestamps = [timestamp for timestamp in self.files_dict_sorted.keys()]
         if self.input["SPECIFY_TIMESTAMP_EXP"] == False:
-            self.input["EXP_SHOT_NOS"] = [timestamps[i] for i in self.input["EXP_SHOT_NOS"]]
+            idx_to_unix_shotlist = [timestamps[int(i)] for i in self.input["EXP_SHOT_NOS"]]
+            self.input["EXP_SHOT_NOS"] = idx_to_unix_shotlist
 
         if self.input["SPECIFY_TIMESTAMP_BKG"] == False:
-            self.input["BKG_SHOT_NOS"] = [timestamps[j] for j in self.input["BKG_SHOT_NOS"]]
+            idx_to_unix_bkgshotlist = [timestamps[int(j)] for j in self.input["BKG_SHOT_NOS"]]
+            self.input["BKG_SHOT_NOS"] = idx_to_unix_bkgshotlist

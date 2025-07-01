@@ -68,7 +68,7 @@ class ProbeOperationsManager(OperationsManager):
 
                 index = 2*j + i
 
-                index_tuple = (i) if self.input["PLOT_ONLY"] else (i, 0)
+                index_tuple = (i, ) if self.input["PLOT_ONLY"] else (i, 0)
                 ch_label = ch_labels[index]
                 
                 # REAL-SPACE VOLTAGE VS TIME PLOT
@@ -83,7 +83,7 @@ class ProbeOperationsManager(OperationsManager):
                     sigma_v = self.std_data["DATA"]["VOLTAGES"][channel_no]
                     upper_bound = np.add(channel_voltage, sigma_v)
                     lower_bound = np.subtract(channel_voltage, sigma_v)
-                    axs[i, 0].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
+                    axs[index_tuple].fill_between(times, lower_bound, upper_bound, color='blue', alpha=0.2)
                 
                 axs[index_tuple].set_ylabel("Amplitude / V")
                 axs[index_tuple].set_xlabel("Time / s")
@@ -115,9 +115,8 @@ class ProbeOperationsManager(OperationsManager):
             if self.std_data is not None:
                 sigma_2 = self.std_data["DATA"]["VOLTAGES"]["2"]
                 sigma_3 = self.std_data["DATA"]["VOLTAGES"]["3"]
-                sigma_comb = np.sqrt(np.add(np.pow(sigma_2,2), np.pow(sigma_3, 2)))
+                sigma_comb = np.sqrt(np.add(np.power(sigma_2,2), np.power(sigma_3, 2)))
 
-                print(sigma_2, sigma_3, sigma_comb)
                 upper_ch2_min_ch3 = np.add(ch2_min_ch3, sigma_comb)
                 lower_ch2_min_ch3 = np.subtract(ch2_min_ch3, sigma_comb) 
                 axs3.fill_between(times, lower_ch2_min_ch3, upper_ch2_min_ch3)
@@ -137,7 +136,7 @@ class ProbeOperationsManager(OperationsManager):
             if self.std_data is not None:
                 sigma_3 = self.std_data["DATA"]["VOLTAGES"]["3"]
                 sigma_4 = self.std_data["DATA"]["VOLTAGES"]["4"]
-                sigma_comb = np.sqrt(np.add(np.pow(sigma_3,2), np.pow(sigma_4,2)))
+                sigma_comb = np.sqrt(np.add(np.power(sigma_3,2), np.power(sigma_4,2)))
                 upper_ch3_min_ch4 = np.add(ch3_min_ch4, sigma_comb)
                 lower_ch3_min_ch4 = np.subtract(ch3_min_ch4, sigma_comb) 
                 axs3.fill_between(times, lower_ch3_min_ch4, upper_ch3_min_ch4)
@@ -166,7 +165,7 @@ class ProbeOperationsManager(OperationsManager):
                 fig4, axs4 = plt.subplots()
                 if self.std_data is not None:
                     df["DOWNSTREAM STD"] = self.std_data["DATA"]["VOLTAGES"]["4"]
-                    sigma_comb = np.sqrt(np.add(np.pow(df["DOWNSTREAM STD"], 2), np.pow(df["UPSTREAM STD"], 2)))
+                    sigma_comb = np.sqrt(np.add(np.power(df["DOWNSTREAM STD"], 2), np.power(df["UPSTREAM STD"], 2)))
                     upper_bound = np.add(longitudinal_difference, sigma_comb)
                     lower_bound = np.subtract(longitudinal_difference, sigma_comb)
                     axs4.fill_between(times, lower_bound, upper_bound)

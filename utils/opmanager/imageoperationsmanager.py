@@ -5,6 +5,7 @@ import matplotlib.gridspec as gridspec
 from typing import List, Dict, Tuple
 from scipy.fft import rfftfreq, rfft
 import logging
+import pandas as pd
 logger = logging.getLogger(__name__)
 
 ############################
@@ -61,7 +62,6 @@ class DigicamImageManager(ImageOperationsManager):
             if self.std_data is not None:
                 upper_image = np.multiply(np.add(self.shot_data["DATA"], self.std_data["DATA"]), normalization_factor**-1)
                 lower_image = np.multiply(np.subtract(self.shot_data["DATA"],self.std_data["DATA"]), normalization_factor**-1)
-                print(self.shot_data)
 
                 ###################################
                 # Lineouts for stddev information #
@@ -70,6 +70,7 @@ class DigicamImageManager(ImageOperationsManager):
                 # Upper bound 
                 upper_lineout_x = np.sum(upper_image, axis=0)
                 upper_lineout_y = np.sum(upper_image, axis=1)
+                
                 upper_r_dict, upper_theta_dict = (
                     self._get_polar_lineouts(upper_image) 
                     if self.std_data is not None
@@ -79,11 +80,13 @@ class DigicamImageManager(ImageOperationsManager):
                 # Lower bound
                 lower_lineout_x = np.sum(lower_image, axis=0)
                 lower_lineout_y = np.sum(lower_image, axis=1)
+                
                 lower_r_dict, lower_theta_dict = (
                     self._get_polar_lineouts(lower_image)
                     if self.std_data is not None
                     else (r_dict, theta_dict)
                 )
+                
 
 
             # GET MOMENTS OF THE IMAGE
@@ -446,11 +449,9 @@ class OrcaImageManager(ImageOperationsManager):
         
         # INITIALIZE IMAGE AND AXES FROM DATA
         img = self.shot_data["DATA"]
-        print(np.min(img))
         # dim1 = img.shape[1]
         # ymin = int(dim1*0.55)
         # ymax = int(dim1*0.6)
-        # print(ymin, ymax)
         img = self.shot_data["DATA"]
         space_mm_x = self.shot_data["X"]
         time_ns_y = self.shot_data["Y"]

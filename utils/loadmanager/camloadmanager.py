@@ -165,8 +165,9 @@ class CamLoadManager(LoadManager):
                 os.makedirs(save_path, exist_ok=True)
             
             np.savetxt(os.path.join(save_path,  f"{shot_no}.txt"), X=[time_resolution])
+            
             img = img[1:, 1:]
-            img = img[:, 1126:1228]
+            # img = img[:, 1126:1228]
             
 
             return img, space_mm_x, time_ns_y

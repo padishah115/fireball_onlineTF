@@ -92,16 +92,17 @@ class CamRunManager(RunManager):
 
             raw_data_dict_list = [shot_dict for shot_dict in raw_data_dict.values()]
             std_raw = img_arrays_stats(raw_data_dict_list)[1]
-            print(std_raw)
 
             # ERROR PROPAGATION
             if self.background_status == "SUBTRACT":
                 #Create list of shot dictionaries. These shot_dict's contain ["DATA"], ["X"], ["Y"] lists, etc.
-                std_data = np.sqrt(np.power(std_raw, 2) + np.power(std_bkg, 2))
+                std_data = {}
+                std_data["DATA"] = np.sqrt(np.power(std_raw["DATA"], 2) + np.power(std_bkg["DATA"], 2))
                 data_dict_list = [shot_dict for shot_dict in corrected_data_dict.values()]
 
             if self.background_status == "RAW":
-                std_data = std_raw
+                std_data = {}
+                std_data["DATA"] = std_raw
                 data_dict_list = [shot_dict for shot_dict in raw_data_dict.values()]
 
             mean_data = img_arrays_stats(data_dict_list=data_dict_list)[0]
