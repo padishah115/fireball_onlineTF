@@ -1,32 +1,40 @@
 ***
 ## Getting Started
 These are the README docs for the Fireball online data analysis framework.
-- In order to check that the configuration is valid, navigate to the `./config` folder. 
-	![Config folder screenshot](docs/Figures/Screenshot 2025-07-03 at 11.48.26.png)
+- In order to check that the configuration is valid, navigate to the `./config` folder.
+
+<img src="docs/Figures/Screenshot%202025-07-03%20at%2011.48.26.png" width="250">
+
 - Then navigate to `paths.py`, which is inside of the config folder. ==Check that the directories listed in this folder are **correct for the computer/environment** where the code is being run==. By default, the repository is configured for a user accessing CERN's EOS service via the CERN SWAN service.
 - In order to use the codebase on your local computer, you will need to download the Fireball-III data from [this link](https://cernbox.cern.ch/files/spaces/eos/project/h/hiradmat/HRMT%20Experiments/2025/HRMT68%20-%20FIREBALL%203/FB3%20repository/HRMT68_data?items-per-page=100&view-mode=resource-table-condensed&tiles-size=1&sort-by=name&sort-dir=desc) and **update the paths** in the `paths.py` file accordingly.
 - The `background_shots.py` file is for users to store **UNIX timestamps** of shots that they would like to implement for background subtraction. Currently, background shots are specified from the `./main.ipynb` notebook's `input` variable (see "editing the input configuration" section below). However, it is trivial for users to modify the `main.ipynb` notebook to import shots from this `background_shots.py` file.
 - After the path configuration has been checked, the user can move to running the code.
+
 ***
 ## Selecting Devices
-- Navigate to the ==`./main.ipynb` **Jupyter Notebook**== in the parent directory.![[docs/Figures/Screenshot 2025-07-01 at 17.51.02.png||250]]
+- Navigate to the ==`./main.ipynb` **Jupyter Notebook**== in the parent directory.
+
+<img src="docs/Figures/Screenshot%202025-07-01%20at%2017.51.02.png" width="250">
 
 - ==Edit the `device_names` list== in the **second cell** in order to specify which devices you would like analysis for.
-	- ==Device names **must be spelled correctly**==. If you are unsure how to spell each device, navigate to ``./config/allowed_inputs.json`` and look under the `"DEVICE_NAME"` tab. 
+	- ==Device names **must be spelled correctly**==. If you are unsure how to spell each device, navigate to ``./config/allowed_inputs.json`` and look under the `"DEVICE_NAME"` tab.
 	- Names are **CASE SENSITIVE**.
-	![Device names screenshot](docs/Figures/Screenshot 2025-07-01 at 17.54.38.png)
+
+<img src="docs/Figures/Screenshot%202025-07-01%20at%2017.54.38.png" width="1000">
 
 
 ***
 ## Editing the Input Configuration
 - Note that ==SWAN **does not** have native editing ability for `.json` files==.
 - This means that I have replaced the `.json` with an input dictionary inside of the ``main.ipynb`` file, in cell 3.
-	![[docs/Figures/Screenshot 2025-07-01 at 17.57.28.png]]
+<img src="docs/Figures/Screenshot%202025-07-01%20at%2017.57.28.png" width="1000">
+
 - ==**DO NOT EDIT DIRECTORY INFORMATION**== IN THE INPUT CONFIGURATION DICTIONARY. This is set in the `./config/paths.py` configuration file (see above).
-	![Don't edit!](docs/Figures/Screenshot 2025-07-01 at 17.57.58.png)
+
+<img src="docs/Figures/Screenshot%202025-07-01%20at%2017.57.58.png" width="400">
 
 ### What do each of the settings mean?
-#### **Shot Selection**: 
+#### **Shot Selection**:
 Shot numbers can be specified by UNIX timestamp, as provided by the shot-log (see the section below, **Specifying by Timestamp- Details**) or via relative indexing, wherein supplying `[0, 1, 2]` would correspond to requesting the most-recent, second most-recent, and third most-recent shots by timestamp. Shot numbers must be passed as a list in both cases, even if only a single shot is desired. **==The code is not designed to allow mixing of relative indexing and UNIX timestamp==**.
 - **`"EXP_SHOT_NOS"` *(List of integers)***: Foreground image shots (corresponding to interesting, non-background experimental conditions). As many shots as desired can be requested.
 - **`"BKG_SHOT_NOS"` *(List of integers)***: Shot numbers corresponding to "background conditions", i.e. shots which we would like to subtract from the foreground images. If multiple shot numbers are supplied to this field, the code creates a composite "average" background image, which it then subtracts from the main image.
@@ -47,8 +55,10 @@ Shot numbers can be specified by UNIX timestamp, as provided by the shot-log (se
 
 #### Directory Information
 These are ***not to be edited*** by the user, and are imported from external files (e.g. the `paths.py` files). These variables were introduced to reduce clutter in the `main.ipynb` file by removing input configuration variables that were not expected to change often (for example, paths to data).
-- **`"PARENT_DIR"` *(String \[Path\])***: Path to the "parent directory" of all the data. This directory should look something like the following, where each subdirectory contains device data: 
-	![Parent directory example](docs/Figures/Screenshot 2025-07-03 at 12.35.10.png)
+- **`"PARENT_DIR"` *(String \[Path\])***: Path to the "parent directory" of all the data. This directory should look something like the following, where each subdirectory contains device data:
+
+<img src="docs/Figures/Screenshot%202025-07-03%20at%2012.35.10.png" width="1000">
+
 - **`"LOG_PATH"` *(String \[Path\])***: Path to the shot-log. Online, the code uses this to store metadata from the ORCA and Andor devices.
 - **`"FOLDER_NAMES"` *(Dictionary)***: Dictionary of each device's relative path, relative to the path provided in the `PARENT_DIR` variable above.
  - **`"EXTENSION_DICT"` *(Dictionary)***: Dictionary containing the file extension/file type for each device's raw data files.
@@ -57,8 +67,11 @@ These are ***not to be edited*** by the user, and are imported from external fil
 
 ***
 ## Specifying by Timestamp- Details
-In order to check which timestamps correspond to which shots, navigate to the `./shot-log` directory:
-	![Shot log directory](docs/Figures/Screenshot 2025-07-03 at 11.58.54.png)
+In order to check which timestamps correspond to which shots, navigate to the `./shot-log` directory:	
+
+<img src="docs/Figures/Screenshot%202025-07-03%20at%2011.58.54.png" width="250">
+
 - Here, users can find a ==**summary of timestamps** for each device==. Note that these ==differ from the timestamps found in the experiment's overall shot log== in the CERNbox directory, for the following reasons:
 	- The `shot-log` for this project was generated by scraping CERNbox directories for the time of most-recent modification, which corresponded to the **upload time** on CERNbox
 	- This was **==different to the accelerator cycle UNIX timestamp==** due to latencies in upload.
+
