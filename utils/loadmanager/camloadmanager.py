@@ -44,10 +44,10 @@ class CamLoadManager(LoadManager):
                 corrected_data = self.bkg_subtraction(raw_arr=raw_data_dict[shot_no]["DATA"], bkg_arr=mean_bkg["DATA"])
                 corrected_data_dict[shot_no] = {}
                 corrected_data_dict[shot_no]["DATA"] = corrected_data
-                corrected_data_dict[shot_no]["ERROR"] = {"DATA":None}
-                corrected_data_dict[shot_no]["ERROR"]["DATA"] = std_bkg
+                corrected_data_dict[shot_no]["ERROR"] = std_bkg
                 corrected_data_dict[shot_no]["X"] = raw_data_dict[shot_no]["X"]
                 corrected_data_dict[shot_no]["Y"] = raw_data_dict[shot_no]["Y"]
+                #std_bkg = std_bkg["DATA"]
         
         else:
             corrected_data_dict = None

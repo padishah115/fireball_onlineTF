@@ -80,7 +80,7 @@ class CamRunManager(RunManager):
                     shot_no=shot_no,
                     shot_data=data_dict[shot_no],
                     LABEL=LABEL,
-                    std_data = data_dict[shot_no]["ERROR"]["DATA"]
+                    std_data = data_dict[shot_no]["ERROR"]
                 )
 
 
@@ -102,7 +102,7 @@ class CamRunManager(RunManager):
 
             if self.background_status == "RAW":
                 std_data = {}
-                std_data["DATA"] = std_raw
+                std_data["DATA"] = std_raw["DATA"]
                 data_dict_list = [shot_dict for shot_dict in raw_data_dict.values()]
 
             mean_data = img_arrays_stats(data_dict_list=data_dict_list)[0]
