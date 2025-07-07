@@ -1,0 +1,63 @@
+0,1
+"
+","Date and Time:                Mon Jun  2 10:23:18 2025
+"
+"Software Version:             4.29.30012.0
+","Unstabilized Temperature (C): 10.471
+"
+"Model:                        DH334T-18F-03
+","Data Type:                    Counts
+"
+"Acquisition Mode:             Single Scan
+","Trigger Mode:                 Internal
+"
+"Exposure Time (secs):         1e-05
+","Readout Mode:                 Full Resolution Image
+"
+"Horizontal Binning:           1
+","Vertical Binning:             1
+"
+"Clockwise rotation:           false
+","Anti-Clockwise rotation:      false
+"
+"Horizontally flipped:         false
+","Vertically flipped:           false
+"
+"Vertical Shift Speed (usecs): 6.5
+","Pixel Readout Rate (MHz):     3
+"
+"Clock Amplitude:              Normal
+","Serial Number:                5885
+"
+"Pre-Amplifier Gain:           4x
+","Intelligate:                  off
+"
+"Insertion delay:              ultra fast
+","Gain level:                   0
+"
+"Integrate on chip:            off
+","PIV Mode:                     off
+"
+"Gate Mode:                    DDG on
+","Gate Width (nsecs):           0
+"
+"Gate Delay (nsecs):           0
+","Spurious Noise Filter Mode:   No Filter
+"
+"Photon counted:               false
+","Data Averaging Filter Mode:   No Filter
+"
+"SR303i:
+","Serial Number:                SR0649
+"
+"Wavelength (nm):              530.08
+","Grating Groove Density (l/mm):150
+"
+"Grating Blaze:                300
+","Output Flipper Port:          Direct
+"
+"Filter:                       6-empty
+","Input Side Slit Width (um):   200
+"
+"
+",

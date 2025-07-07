@@ -1,7 +1,4 @@
 0,1
-"Date and Time:                Thu Jun  5 20:49:17 2025
-","Software Version:             4.29.30012.0
-"
 "Temperature (C):              10
 ","Model:                        DH334T-18F-03
 "
@@ -53,9 +50,14 @@
 "SR303i:
 ","Serial Number:                SR0649
 "
-"Wavelength (nm):              500
-","
+"Wavelength (nm):              724.995
+","Grating Groove Density (l/mm):600
+"
+"Grating Blaze:                500
+","Output Flipper Port:          Direct
+"
+"Filter:                       6-empty
+","Input Side Slit Width (um):   200
 "
 "
-","
-"
+",
