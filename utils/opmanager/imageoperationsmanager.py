@@ -5,7 +5,7 @@ import matplotlib.gridspec as gridspec
 from typing import List, Dict, Tuple
 from scipy.fft import rfftfreq, rfft
 import logging
-import pandas as pd
+from skimage.transform import ProjectiveTransform, warp
 logger = logging.getLogger(__name__)
 
 ############################
@@ -16,6 +16,9 @@ class ImageOperationsManager(OperationsManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data=None):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
     
+###########
+# CHROMOX #
+###########
 
 class DigicamImageManager(ImageOperationsManager):
     """Specialized ImageManager for Chromox camaeras."""
@@ -46,7 +49,35 @@ class DigicamImageManager(ImageOperationsManager):
         image /= normalization_factor
         vmax = self.input["OPERATIONS"]["VMAX"]
         
-        extent = [X[0], X[-1], Y[0], Y[-1]]
+        if self.input["OPERATIONS"]["WARP"]:
+            try:
+                extent = self.input["OPERATIONS"]["WARP_SPECS"]["EXTENT"][self.DEVICE_NAME]
+                H = self.input["OPERATIONS"]["WARP_SPECS"]["H"][self.DEVICE_NAME]
+                W = self.input["OPERATIONS"]["WARP_SPECS"]["W"][self.DEVICE_NAME]
+                corners = [0, W, 0, H]
+            except:
+                KeyError(f"Error: no warp specifications implemented for {self.DEVICE_NAME}, even though warping requested.")
+
+            tform = ProjectiveTransform()
+            ok = tform.estimate(corners, extent)
+            if not ok:
+                raise RuntimeError("Homography estimation failed")
+
+            image = warp(
+                image,
+                inverse_map=tform.inverse,
+                output_shape = (H, W),
+                preserve_range = True 
+            )
+
+            self.std_data = warp(
+                self.std_data,
+                inverse_map=tform.inverse,
+                output_shape = (H, W),
+                preserve_range = True 
+            )
+        else:
+            extent = [X[0], X[-1], Y[0], Y[-1]]
 
         # WRAP THE CALCULATIONS BELOW IN CASE WE JUST WANT TO SPEED THINGS UP AND JUST PLOT THE IMAGES
         if not self.input["PLOT_ONLY"]:
@@ -349,6 +380,10 @@ class DigicamImageManager(ImageOperationsManager):
         return theta
 
 
+#############################
+# ANDOR SPECTROMETER CAMERA #
+#############################
+
 class AndorImageManager(ImageOperationsManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data=None):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
@@ -432,6 +467,10 @@ class AndorImageManager(ImageOperationsManager):
             plt.show(block=False)
 
 
+######################
+# ORCA STREAK CAMERA #
+######################
+
 class OrcaImageManager(ImageOperationsManager):
     def __init__(self, DEVICE_NAME, shot_no, label, shot_data, input, std_data=None):
         super().__init__(DEVICE_NAME, shot_no, label, shot_data, input, std_data)
@@ -449,9 +488,6 @@ class OrcaImageManager(ImageOperationsManager):
         
         # INITIALIZE IMAGE AND AXES FROM DATA
         img = self.shot_data["DATA"]
-        # dim1 = img.shape[1]
-        # ymin = int(dim1*0.55)
-        # ymax = int(dim1*0.6)
         img = self.shot_data["DATA"]
         space_mm_x = self.shot_data["X"]
         time_ns_y = self.shot_data["Y"]
