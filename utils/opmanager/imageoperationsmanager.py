@@ -49,7 +49,7 @@ class DigicamImageManager(ImageOperationsManager):
         image /= normalization_factor
         vmax = self.input["OPERATIONS"]["VMAX"]
         
-        if self.input["OPERATIONS"]["WARP"]:
+        if self.input["OPERATIONS"]["WARP"][self.DEVICE_NAME]:
             try:
                 extent = self.input["OPERATIONS"]["WARP_SPECS"]["EXTENT"][self.DEVICE_NAME]
                 H = self.input["OPERATIONS"]["WARP_SPECS"]["H"][self.DEVICE_NAME]
