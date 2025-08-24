@@ -37,53 +37,57 @@ class DigicamImageManager(ImageOperationsManager):
                 Whether or not we want to normalize the image to maximum pixel intensity.
         """
 
-        image = self.shot_data["DATA"]
+        self.image = self.shot_data["DATA"]
         
         # Check whether we want to normalize
         logger.info(f"Normalise image: {norm}")
-        normalization_factor = np.max(image) if norm else 1
+        normalization_factor = np.max(self.image) if norm else 1
         
         self.image /= normalization_factor
         vmax = self.input["OPERATIONS"]["VMAX"]
         
         if self.input["OPERATIONS"]["WARP"][self.DEVICE_NAME]:
-            try:
-                extent = self.input["OPERATIONS"]["WARP_SPECS"]["EXTENT"][self.DEVICE_NAME]
-                H = self.input["OPERATIONS"]["WARP_SPECS"]["H"][self.DEVICE_NAME]
-                W = self.input["OPERATIONS"]["WARP_SPECS"]["W"][self.DEVICE_NAME]
-                corners = [0, W, 0, H]
-            except:
-                KeyError(f"Error: no warp specifications implemented for {self.DEVICE_NAME}, even though warping requested.")
+    
+            H = self.input["OPERATIONS"]["WARP_SPECS"]["H"][self.DEVICE_NAME]
+            W = self.input["OPERATIONS"]["WARP_SPECS"]["W"][self.DEVICE_NAME]
+            dest = np.array([[0,0], [W,0], [W,H], [0,H]])
+            corners = self.input["OPERATIONS"]["WARP_SPECS"]["CORNERS"][self.DEVICE_NAME]
+
+            if self.DEVICE_NAME == "HRM6":
+                corners = [[0, 0], [self.image.shape[1],0], [self.image.shape[1], self.image.shape[0]], [0, self.image.shape[0]]]
 
             tform = ProjectiveTransform()
-            ok = tform.estimate(corners, extent)
+            ok = tform.estimate(corners, dest)
             if not ok:
                 raise RuntimeError("Homography estimation failed")
 
             self.image = warp(
-                image,
+                self.image,
                 inverse_map=tform.inverse,
                 output_shape = (H, W),
                 preserve_range = True 
             )
+        else:
+            raise RuntimeError("Must allow warping on this branch due to Hayden's inability to make things work properly (yet)")
 
         # WRAP THE CALCULATIONS BELOW IN CASE WE JUST WANT TO SPEED THINGS UP AND JUST PLOT THE IMAGES
         if not self.input["PLOT_ONLY"]:
             # GET LINEOUTS
-            lineout_x = np.sum(image, axis=0) # x lineout
+            lineout_x = np.sum(self.image, axis=0) # x lineout
 
             # CHECK WHETHER WE HAVE STD DEVIATION INFORMATION
             if self.std_data is not None:
 
                 if self.input["OPERATIONS"]["WARP"][self.DEVICE_NAME]:
-                    self.std_data = warp(
-                    self.std_data,
+                    self.std_image = warp(
+                    self.std_data["DATA"],
                     inverse_map=tform.inverse,
                     output_shape = (H, W),
                     preserve_range = True 
                     )
+                else:
+                    self.std_image = self.std_data["DATA"]
 
-                self.std_image = self.std_data["DATA"]
                 self.std_image /= normalization_factor
                 upper_image = np.add(self.image, self.std_image)
                 lower_image = np.subtract(self.image, self.std_image)
@@ -100,14 +104,14 @@ class DigicamImageManager(ImageOperationsManager):
                 
             
             #initialize figure
-            fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(16, 16))
+            fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8, 4))
 
 
     
             #########
             # IMAGE #
             #########
-            axs[0].imshow(image, extent=extent, aspect='auto', vmax=self.input["OPERATIONS"]["VMAX"])
+            axs[0].imshow(self.image, aspect='auto', vmax=self.input["OPERATIONS"]["VMAX"])
             axs[0].set_xlabel("x / mm")
             axs[0].xaxis.tick_top()
             axs[0].xaxis.set_label_position("top")
@@ -129,7 +133,7 @@ class DigicamImageManager(ImageOperationsManager):
             if norm:
                 fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}\n Normalized to Max Pixel Intensity")
             else:
-                fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}")
+                fig.suptitle(f"Image from {self.DEVICE_NAME}, Shots {self.shot_no} \n ({self.input['NAME']})")
             
             fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
             plt.show(block=False)
@@ -137,7 +141,7 @@ class DigicamImageManager(ImageOperationsManager):
 
         else:
             fig, axs = plt.subplots(figsize=(16, 9))
-            axs.imshow(image, extent=extent, aspect='auto', vmax=vmax)
+            axs.imshow(self.image, aspect='auto', vmax=vmax)
             # SHOW THE FIGURE
             if norm:
                 fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}\n Normalized to Max Pixel Intensity")

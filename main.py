@@ -21,17 +21,12 @@ print("Modules loaded")
 # but HRM3 won't!)
 
 device_names = [
-    # "ORCA STREAK",
-    # "ANDOR SPECTROMETER",
-    # "HRM3",
-    # "HRM4",
     "HRM5",
     "HRM6",
-    # "SCOPE 1",
-    # "SCOPE 2"
     ]
 
 input = {
+        "NAME": "",
 
         ##################
         # Shot Selection #
@@ -43,7 +38,7 @@ input = {
         "SPECIFY_TIMESTAMP_BKG": False,
 
         "BKG_NAME": "DARKFIELD",
-        "BACKGROUND_STATUS": "SUBTRACT",
+        "BACKGROUND_STATUS": "RAW",
 
         #########################
         # Operations Specifiers #
@@ -54,18 +49,18 @@ input = {
         "NORM_PLOT": False,
         
         "OPERATIONS": {
-            "SHOW_SINGLESHOT_PLOTS": True,
+            "SHOW_SINGLESHOT_PLOTS": False,
             "LINEOUT_BIN_NO": 100,
             "SHOW_AVERAGE_SHOTS": True,
             "SUBTRACT_DC_OFFSET": False,
-            "VMAX":1000, #VMAX VALUE FOR THE IMSHOW METHOD
+            "VMAX":1, #VMAX VALUE FOR THE IMSHOW METHOD
             
             #Warping specifications
             "WARP":{
                 "HRM3":False,
                 "HRM4":False,
                 "HRM5":True,
-                "HRM6":False
+                "HRM6":True
             }, 
             "WARP_SPECS":{
                 # Pixel values corresponding to corner locations
@@ -103,14 +98,10 @@ def main(device_names:list):
     # Iterate through specified devices and call functions.
     for device_name in device_names:
         print(device_name)
-        #Clear the cache path
-        clear_directory(SCOPECACHE_PATH)
         input_config = copy.deepcopy(input)
         myrun = run(device_name, input_config)
         myrun.display_device()
         plt.show()
-        #Clear the cache path
-        clear_directory(SCOPECACHE_PATH)
 
 if __name__ == "__main__":
     #Execute the run.
