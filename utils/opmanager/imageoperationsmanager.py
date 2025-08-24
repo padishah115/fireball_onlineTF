@@ -53,8 +53,8 @@ class DigicamImageManager(ImageOperationsManager):
             dest = np.array([[0,0], [W,0], [W,H], [0,H]])
             corners = self.input["OPERATIONS"]["WARP_SPECS"]["CORNERS"][self.DEVICE_NAME]
 
-            if self.DEVICE_NAME == "HRM6":
-                corners = [[0, 0], [self.image.shape[1],0], [self.image.shape[1], self.image.shape[0]], [0, self.image.shape[0]]]
+            #if self.DEVICE_NAME == "HRM6":
+            #    corners = [[0, 0], [self.image.shape[1],0], [self.image.shape[1], self.image.shape[0]], [0, self.image.shape[0]]]
 
             tform = ProjectiveTransform()
             ok = tform.estimate(corners, dest)
@@ -104,7 +104,7 @@ class DigicamImageManager(ImageOperationsManager):
                 
             
             #initialize figure
-            fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8, 4))
+            fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8, 10))
 
 
     
@@ -113,8 +113,6 @@ class DigicamImageManager(ImageOperationsManager):
             #########
             axs[0].imshow(self.image, aspect='auto', vmax=self.input["OPERATIONS"]["VMAX"])
             axs[0].set_xlabel("x / mm")
-            axs[0].xaxis.tick_top()
-            axs[0].xaxis.set_label_position("top")
             axs[0].set_ylabel("y / mm")
     
             
@@ -124,18 +122,20 @@ class DigicamImageManager(ImageOperationsManager):
             axs[1].plot(np.arange(W), lineout_x, label="X Marginal")
 
             if self.std_data is not None:
-                axs[1].fill_between(np.arange(W), lower_lineout_x, upper_lineout_x, alpha=0.2)
+                axs[1].fill_between(np.arange(W), lower_lineout_x, upper_lineout_x, alpha=0.2, label='± 1σ')
             
             axs[1].set_ylabel("Intensity")
+            axs[1].set_xmargin(0)
             axs[1].legend()
     
             # SHOW THE FIGURE
             if norm:
                 fig.suptitle(f"Image from {self.DEVICE_NAME}, Shot {self.shot_no} \n {self.label}\n Normalized to Max Pixel Intensity")
             else:
-                fig.suptitle(f"Image from {self.DEVICE_NAME}, Shots {self.shot_no} \n ({self.input['NAME']})")
+                fig.suptitle(f"Image from {self.DEVICE_NAME}, \n{self.shot_no} \n ({self.input['NAME']})")
             
             fig.canvas.manager.set_window_title(f"{self.DEVICE_NAME}")
+            fig.tight_layout()
             plt.show(block=False)
 
 

@@ -21,20 +21,20 @@ print("Modules loaded")
 # but HRM3 won't!)
 
 device_names = [
-    "HRM5",
     "HRM6",
+    #"HRM6",
     ]
 
 input = {
-        "NAME": "",
+        "NAME": "PAIR BEAM + ARGON",
 
         ##################
         # Shot Selection #
         ##################
-        "EXP_SHOT_NOS": [0, 1], #if timestamps, need to be strings
-        "BKG_SHOT_NOS": [5, 6, 7, 8, 9],
+        "EXP_SHOT_NOS": ["1749040010", "1749040082", "1749040154", "1749040227", "1749040296"], #if timestamps, need to be strings
+        "BKG_SHOT_NOS": [],
 
-        "SPECIFY_TIMESTAMP_EXP": False,
+        "SPECIFY_TIMESTAMP_EXP": True,
         "SPECIFY_TIMESTAMP_BKG": False,
 
         "BKG_NAME": "DARKFIELD",
@@ -53,7 +53,7 @@ input = {
             "LINEOUT_BIN_NO": 100,
             "SHOW_AVERAGE_SHOTS": True,
             "SUBTRACT_DC_OFFSET": False,
-            "VMAX":1, #VMAX VALUE FOR THE IMSHOW METHOD
+            "VMAX":500, #VMAX VALUE FOR THE IMSHOW METHOD
             
             #Warping specifications
             "WARP":{
