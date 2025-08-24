@@ -111,7 +111,7 @@ class CamLoadManager(LoadManager):
     # this is where we HARDCODE all the lovely, idiosyncratic ways in which different cameras store
     # image data.
     
-    def _load_digicam_image(self, path:str)->tuple[np.ndarray, list, list]:
+    def _load_digicam_image(self, path:str, shot_no)->tuple[np.ndarray, list, list]:
         """Loads image object from .csv given by DigiCam. Due to the way that the DigiCams store image data,
         the first column and first row have to be removed, as these contain coordinate information about the
         pixels.
