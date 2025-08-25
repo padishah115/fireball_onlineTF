@@ -26,12 +26,12 @@ device_names = [
     ]
 
 input = {
-        "NAME": "PAIR BEAM + ARGON",
+        "NAME": "PAIR BEAM + PLASMA",
 
         ##################
         # Shot Selection #
         ##################
-        "EXP_SHOT_NOS": ["1749040010", "1749040082", "1749040154", "1749040227", "1749040296"], #if timestamps, need to be strings
+        "EXP_SHOT_NOS": ["1749038043", "1749038472", "1749038616", "1749038760", "1749038930"], #if timestamps, need to be strings
         "BKG_SHOT_NOS": [],
 
         "SPECIFY_TIMESTAMP_EXP": True,

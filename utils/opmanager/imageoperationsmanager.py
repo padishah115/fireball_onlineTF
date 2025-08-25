@@ -101,6 +101,17 @@ class DigicamImageManager(ImageOperationsManager):
 
                 # Lower bound
                 lower_lineout_x = np.sum(lower_image, axis=0)
+
+            initial_intensity = lineout_x[1]
+            print(initial_intensity)
+            print(upper_lineout_x[1] - initial_intensity)
+            fall_off_index = 0
+            for i, value in enumerate(lineout_x):
+                if value < initial_intensity/np.sqrt(np.e):
+                    fall_off_index = i
+            print(list(lineout_x).index(initial_intensity))
+            print(fall_off_index)
+            print(len(lineout_x))
                 
             
             #initialize figure
