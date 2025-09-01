@@ -38,9 +38,6 @@ class LoadManager:
         # DICTIONARY KEYED BY SHOT NUMBER, WITH VALUES CORRESPONDING TO THE PATHS TO THE DATA
         # FOR BOTH BACKGROUND AND EXPERIMENTAL SHOTS
         self.data_paths_dict = data_paths_dict
-
-        #SEE WHETHER WE WANT TO NORMALIZE THE DATA
-        self.norm = self.input["NORM_PLOT"]
         
 
     def load(self)->Tuple[Dict[int, np.ndarray], Dict[int, np.ndarray], Dict[int, np.ndarray]]:

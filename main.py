@@ -21,17 +21,17 @@ print("Modules loaded")
 # but HRM3 won't!)
 
 device_names = [
-    "HRM6",
+    "HRM5",
     #"HRM6",
     ]
 
 input = {
-        "NAME": "PAIR BEAM + PLASMA",
+        "NAME": "PAIR_BEAM_PLASMA",
 
         ##################
         # Shot Selection #
         ##################
-        "EXP_SHOT_NOS": ["1749038043", "1749038472", "1749038616", "1749038760", "1749038930"], #if timestamps, need to be strings
+        "EXP_SHOT_NOS": ["1749046563", "1749046899", "1749047018", "1749047138", "1749047258"], #if timestamps, need to be strings
         "BKG_SHOT_NOS": [],
 
         "SPECIFY_TIMESTAMP_EXP": True,
@@ -44,12 +44,8 @@ input = {
         # Operations Specifiers #
         #########################
         
-        "PLOT_ONLY": False, # in case we want to just quickly display the image live.
-        
-        "NORM_PLOT": False,
-        
         "OPERATIONS": {
-            "SHOW_SINGLESHOT_PLOTS": False,
+            "SHOW_SINGLESHOT_PLOTS": True,
             "LINEOUT_BIN_NO": 100,
             "SHOW_AVERAGE_SHOTS": True,
             "SUBTRACT_DC_OFFSET": False,

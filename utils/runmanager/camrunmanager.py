@@ -76,11 +76,13 @@ class CamRunManager(RunManager):
         ##########################
         if self.operations["SHOW_SINGLESHOT_PLOTS"]:
             for shot_no in shot_nos:
+                shot_data = {0:None}
+                shot_data[0] = data_dict[shot_no]
+                shot_data["N"] = 1
                 self._call_operations_manager(
                     shot_no=shot_no,
-                    shot_data=data_dict[shot_no],
+                    shot_data=shot_data,
                     LABEL=LABEL,
-                    std_data = data_dict[shot_no]["ERROR"]
                 )
 
 
@@ -90,30 +92,17 @@ class CamRunManager(RunManager):
         # CHECK TO SEE WHETHER WE WANT AVERAGE SHOT PROCESSING
         if self.operations["SHOW_AVERAGE_SHOTS"]:
 
-            raw_data_dict_list = [shot_dict for shot_dict in raw_data_dict.values()]
-            std_raw = img_arrays_stats(raw_data_dict_list)[1]
+            N = len(raw_data_dict.values())
+            shot_data = {i:array for i, (_, array) in enumerate(raw_data_dict.items())}
+            shot_data["N"] = N
 
-            # ERROR PROPAGATION
-            if self.background_status == "SUBTRACT":
-                #Create list of shot dictionaries. These shot_dict's contain ["DATA"], ["X"], ["Y"] lists, etc.
-                std_data = {}
-                std_data["DATA"] = np.sqrt(np.power(std_raw["DATA"], 2) + np.power(std_bkg["DATA"], 2))
-                data_dict_list = [shot_dict for shot_dict in corrected_data_dict.values()]
-
-            if self.background_status == "RAW":
-                std_data = {}
-                std_data["DATA"] = std_raw["DATA"]
-                data_dict_list = [shot_dict for shot_dict in raw_data_dict.values()]
-
-            mean_data = img_arrays_stats(data_dict_list=data_dict_list)[0]
             self._call_operations_manager(
                 shot_no=f"Avg. Over Shots {shot_nos}",
-                shot_data=mean_data,
+                shot_data=shot_data,
                 LABEL=LABEL,
-                std_data=std_data,
             )
     
-    def _call_operations_manager(self, shot_no, shot_data, LABEL, std_data=None):
+    def _call_operations_manager(self, shot_no, shot_data, LABEL):
         """Helper function to wrap up the operations manager clauses in the .run() method for 
         processing shots one at a time.
         
@@ -125,8 +114,6 @@ class CamRunManager(RunManager):
                 The shot data itself in processed form.
             LABEL : str
                 Extra detail about the nature of processing which the data has undergone.
-            std_data : Dict[np.ndarray]
-                By default, none- useful for ensembles.
         """
         
         # INITIALIZE THE CORRECT OPERATIONS MANAGER USING THE MANAGER_KEY DICTIONARY
@@ -135,10 +122,9 @@ class CamRunManager(RunManager):
             shot_no=shot_no,
             label=LABEL,
             shot_data=shot_data,
-            std_data=std_data,
             input=self.input
         ) 
 
         # PLOTTING        
         logger.info("Plot ... \n")
-        operations_manager.plot(norm=self.input["NORM_PLOT"])
+        operations_manager.plot()
